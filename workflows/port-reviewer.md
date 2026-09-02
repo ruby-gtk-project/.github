@@ -8,6 +8,8 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
 
+engine: claude
+
 permissions: read-all
 
 network:

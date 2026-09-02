@@ -25,7 +25,6 @@ A single JSON object, nothing else:
 ```json
 {
   "repo": "ruby-gtk-project/tally-rb",
-  "phase": "bootstrap|survey|port|converge",
   "units_done": 0,
   "units_open": 0,
   "ruby_files": 0,
@@ -35,9 +34,6 @@ A single JSON object, nothing else:
   "blocker": "one sentence, or null"
 }
 ```
-
-Phase rules: no Ruby files → `bootstrap`; no ledger → `survey`; unticked units
-remain → `port`; all units ticked → `converge`.
 
 Set `blocker` when something is visibly stuck: an open PR older than a week
 with failing CI, a ledger unchanged for two weeks while units remain, a build

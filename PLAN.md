@@ -30,10 +30,10 @@ would have written the same way.
 ## The unit
 
 A **unit** is the smallest piece of the app that can be ported, run and seen:
-one window, one dialog, one page, one list view, one action group. Not "the
-model layer" — a unit has to be demonstrable.
+one window, one dialog, one page, one menu item, one shortcut, one error state.
+Not "the model layer" — a unit has to be demonstrable.
 
-Every unit is a sub-issue of its app's epic. Every unit gets one draft PR.
+Every unit gets one draft PR.
 Every port PR carries a screenshot of the thing running, captured with the
 `ruby-gtk-testing` skill. No screenshot, no review.
 
@@ -44,15 +44,15 @@ units, their state, and a cursor. It is the source of truth — agent memory is
 a cache of it, not a replacement. The fleet orchestrator reads it to decide
 where effort goes, and mirrors it into the app's epic here.
 
-## Phases
+## How a port runs
 
-1. **Bootstrap** — the fork builds, `bundle install` succeeds, an empty window
-   opens headlessly. Nothing else starts until this passes.
-2. **Survey** — enumerate units from the upstream branch into `PORTING.md`,
-   open the epic and its sub-issues here.
-3. **Port** — one unit per draft PR, screenshot attached, house style clean.
-4. **Converge** — reconcile the ported app against upstream behaviour; close
-   the epic when its sub-issues are done.
+Two passes per run. **Port**: take the next unticked feature, read its upstream
+implementation, write it, run it, screenshot it, draft PR. **Prove**: go back
+to the upstream source and account for every branch, signal, shortcut and error
+state of that feature — implemented, or written down as still missing.
+
+The ledger is the completeness contract. A feature that was skipped and never
+written down is the only failure mode that matters.
 
 ## Boundaries
 

@@ -11,6 +11,8 @@ on:
     name: fleet
   reaction: "eyes"
 
+engine: claude
+
 permissions:
   contents: read
   issues: read
@@ -78,7 +80,7 @@ update its epic body to:
 ```markdown
 🤖 *Maintained by Port Fleet.*
 
-**Phase:** port · **Units:** 7 done / 19 total · **Open PRs:** 2
+**Units:** 7 done / 19 total · **Open PRs:** 2
 **Repo:** https://github.com/ruby-gtk-project/tally-rb
 **Ledger:** https://github.com/ruby-gtk-project/tally-rb/blob/ruby/PORTING.md
 
@@ -100,9 +102,9 @@ automatically). Body:
 
 ## Fleet
 
-| Fork | Phase | Units | Open PRs | Last commit | Blocker |
-|---|---|---|---|---|---|
-| [tally-rb](…) | port | 7/19 | 2 | 2026-09-01 | — |
+| Fork | Units | Open PRs | Last commit | Blocker |
+|---|---|---|---|---|
+| [tally-rb](…) | 7/19 | 2 | 2026-09-01 | — |
 
 ## Where effort went
 
