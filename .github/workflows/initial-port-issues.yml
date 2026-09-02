@@ -45,7 +45,9 @@ jobs:
           3. Port it using the \`ruby-gtk\` skill in \`.claude/skills/\`, and check it actually runs with \`ruby-gtk-testing\`.
           4. Push to \`ruby\`.
 
-          Every user-visible feature — windows, dialogs, menu items, shortcuts, preferences, empty and error states. Anything deliberately left out goes in the PR description.")
+          This is a full parity port. Nothing is left out: every window, dialog, page, menu item, keyboard shortcut, preference, action, empty state and error state the original has, the port has. Working through the \`$upstream\` source file by file is the only way to know you have them all.
+
+          It is done when the app does everything the original does.")
               echo "created $url"
             fi
 
