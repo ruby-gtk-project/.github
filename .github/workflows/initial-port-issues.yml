@@ -1,0 +1,51 @@
+name: Initial port issues
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PROJECT_TOKEN }}
+      ORG: ruby-gtk-project
+      PROJECT: Initial port
+    steps:
+      - name: Ensure every fork has an Initial port issue on the project
+        run: |
+          set -euo pipefail
+
+          NUM=$(gh project list --owner "$ORG" --format json \
+                --jq ".projects[] | select(.title==\"$PROJECT\") | .number")
+          if [ -z "$NUM" ]; then
+            NUM=$(gh project create --owner "$ORG" --title "$PROJECT" --format json --jq .number)
+            echo "created project $NUM"
+          fi
+
+          gh project item-list "$NUM" --owner "$ORG" --limit 500 --format json \
+            --jq '.items[].content.url // empty' > /tmp/on-board.txt
+
+          gh repo list "$ORG" --limit 200 --json name,isArchived \
+            --jq '.[] | select(.isArchived | not) | .name' | grep -- '-rb$' | while read -r repo; do
+            url=$(gh issue list --repo "$ORG/$repo" --state all --limit 100 \
+                  --json number,title --jq '[.[] | select(.title == "Initial port")] | .[0].number' \
+                  | sed "s#^#https://github.com/$ORG/$repo/issues/#;s#/issues/\$##")
+
+            if [ -z "$url" ]; then
+              upstream=$(gh api "repos/$ORG/$repo" --jq '.parent.default_branch // "main"')
+              url=$(gh issue create --repo "$ORG/$repo" --title "Initial port" --body \
+          "Port this app to Ruby GTK4/Libadwaita.
+
+          1. Clone the repo. The default branch \`ruby\` is the port — it has the dev shell, rubocop config and skills, but no app code yet.
+          2. The original implementation is on the \`$upstream\` branch of this same repo. That is the spec: read it, don't copy it.
+          3. Port it using the \`ruby-gtk\` skill in \`.claude/skills/\`, and check it actually runs with \`ruby-gtk-testing\`.
+          4. Push to \`ruby\`.
+
+          Every user-visible feature — windows, dialogs, menu items, shortcuts, preferences, empty and error states. Anything deliberately left out goes in the PR description.")
+              echo "created $url"
+            fi
+
+            grep -qxF "$url" /tmp/on-board.txt || gh project item-add "$NUM" --owner "$ORG" --url "$url"
+          done
