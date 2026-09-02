@@ -7,11 +7,14 @@ on:
   schedule: daily
   workflow_dispatch:
 
-engine: claude
+engine: copilot
 
 timeout-minutes: 20
 
-permissions: read-all
+permissions:
+  contents: read
+  issues: read
+  copilot-requests: write
 
 network:
   allowed: [defaults, github]
