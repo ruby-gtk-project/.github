@@ -13,10 +13,7 @@ engine:
 
 timeout-minutes: 20
 
-permissions:
-  contents: read
-  issues: read
-  copilot-requests: write
+permissions: read-all
 
 network:
   allowed: [defaults, github]
