@@ -70,7 +70,6 @@ safe-outputs:
     max: 100
     labels: [port]
     deduplicate-by-title: true
-    allowed-repos: ["ruby-gtk-project/*"]
 ---
 
 # Initial port
@@ -111,8 +110,6 @@ A repo is **not** a port target when any of these hold:
 - `app` is non-zero — that port has started, and this issue is only for ones
   that have not.
 - `archived` is true.
-- `issues_enabled` is false — the issue cannot be filed there. List these
-  separately under "Blocked — issues disabled" so they can be fixed.
 
 If a repo is genuinely ambiguous, **leave it alone** and list it at the end of
 your run under "Skipped — unclear". Do not guess. A wrong issue in someone's
@@ -128,15 +125,18 @@ port target already there is done, skip it.
 
 ## Step 3 — The issues
 
-For each port target with no item on the board, call `create_issue` with
-`repo` set to that fork, title exactly `Initial port`, and this body, with
-`<upstream>` replaced by that repo's `upstream_branch` from the inventory:
+The issues live **here**, in `${{ github.repository }}` — one per port target,
+all on the board. Do not create issues in the forks.
+
+For each port target with no item on the board, call `create_issue` with title
+`Initial port: <repo>` and this body, replacing `<repo>` with the fork's name
+and `<upstream>` with its `upstream_branch` from the inventory:
 
 ```markdown
-Port this app to Ruby GTK4/Libadwaita.
+Port **<repo>** to Ruby GTK4/Libadwaita.
 
-1. Clone the repo. The default branch `ruby` is the port — it has the dev shell, rubocop config and skills, but no app code yet.
-2. The original implementation is on the `<upstream>` branch of this same repo. That is the spec: read it, don't copy it.
+1. `git clone https://github.com/ruby-gtk-project/<repo>`. The default branch `ruby` is the port — it has the dev shell, rubocop config and skills, but no app code yet.
+2. The original implementation is on the `<upstream>` branch of that same repo. That is the spec: read it, don't copy it.
 3. Port it using the `ruby-gtk` skill in `.claude/skills/`, and check it actually runs with `ruby-gtk-testing`.
 4. Push to `ruby`.
 
@@ -151,8 +151,8 @@ project's real full URL in every call** — the configured default contains a
 
 ## Rules
 
-- Only ever create the one issue per repo, with that exact title. It is
-  deduplicated by title, so a repo that already has one is untouched.
+- One issue per port target, titled `Initial port: <repo>`, always in this
+  repo. Titles are deduplicated, so a target that already has one is untouched.
 - Never create issues in repos you could not positively identify as port
   targets.
 - If every port target is already on the board, do nothing and say so.
