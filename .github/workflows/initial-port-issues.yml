@@ -29,11 +29,13 @@ jobs:
 
           gh repo list "$ORG" --limit 200 --json name,isArchived \
             --jq '.[] | select(.isArchived | not) | .name' | grep -- '-rb$' | while read -r repo; do
-            url=$(gh issue list --repo "$ORG/$repo" --state all --limit 100 \
-                  --json number,title --jq '[.[] | select(.title == "Initial port")] | .[0].number' \
-                  | sed "s#^#https://github.com/$ORG/$repo/issues/#;s#/issues/\$##")
+            num=$(gh issue list --repo "$ORG/$repo" --state all --limit 100 \
+                  --json number,title \
+                  --jq '[.[] | select(.title == "Initial port")] | .[0].number // empty')
 
-            if [ -z "$url" ]; then
+            if [ -n "$num" ]; then
+              url="https://github.com/$ORG/$repo/issues/$num"
+            else
               upstream=$(gh api "repos/$ORG/$repo" --jq '.parent.default_branch // "main"')
               url=$(gh issue create --repo "$ORG/$repo" --title "Initial port" --body \
           "Port this app to Ruby GTK4/Libadwaita.
