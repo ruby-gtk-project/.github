@@ -10,24 +10,6 @@ its own reference implementation.
 This repo is the planning hub: the campaign plan, the per-app epics, the fleet
 dashboard, and the canonical agentic workflows the forks redirect to.
 
-```
-CLAUDE wrote this
-|||||||||||||||||
-vvvvvvvvvvvvvvvvv
-```
-
-## Layout
-
-| Path | What |
-|---|---|
-| `PLAN.md` | The campaign plan: phases, pilot set, what a "unit" is |
-| `registry.yml` | Every app the campaign covers: name, upstream repo, our fork |
-| `port-scaffold/` | What every fork's `ruby` branch starts from; copied in verbatim |
-| `workflows/` | Canonical agentic workflows; forks hold 3-line `redirect:` stubs |
-| `workflows/shared/` | Shared fragments imported by the above |
-| `.github/agents/` | Subagents dispatched by the fleet orchestrator |
-| `.github/workflows/` | This hub's own workflows (planning, triage, reporting) |
-
 ## Workflows
 
 Nine workflows. Two of them are the discovery loop, and the rest were here
