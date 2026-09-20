@@ -2,7 +2,7 @@
 # Set up a fork for porting: create the orphan `ruby` branch, put the shared
 # scaffold on it, and make it the repo's default branch.
 #
-#   .github/aw/scaffold-fork.sh <repo> [app-name]   e.g. ... frogr-rb Frogr
+#   .github/aw/apply-port-scaffold.sh <repo> [app-name]   e.g. ... frogr-rb Frogr
 #
 # The scaffold is port-scaffold/ at the root of this repo — all six skills, the
 # GTK4 dev shell, the house rubocop config and cops, AGENTS.md (CLAUDE.md
@@ -20,7 +20,7 @@ set -uo pipefail
 
 ORG=ruby-gtk-project
 SCAFFOLD=$(cd "$(dirname "$0")/../../port-scaffold" && pwd)
-repo=${1:?usage: scaffold-fork.sh <repo> [app-name]}
+repo=${1:?usage: apply-port-scaffold.sh <repo> [app-name]}
 app=${2:-${repo%-rb}}
 
 gh api "repos/$ORG/$repo" >/dev/null || exit 1
