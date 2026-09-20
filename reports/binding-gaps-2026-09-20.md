@@ -2,11 +2,11 @@
 
 ## Summary
 
-35 gaps across 82 ports, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists. All from `fleet` and `coverage`.
+47 gaps across 51 ports, 26 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists. All from `fleet` and `coverage`.
 
-One gem, Soup, unblocks the most ports: 20.
+The demand is concentrated: 1 gem, `Soup`, reaches the largest group of 20 ports.
 
-The gap count is a floor because unclassified names remain.
+The gap count is a floor: 78 names are unclassified.
 
 ## Ranked gaps
 
@@ -62,7 +62,9 @@ The gap count is a floor because unclassified names remain.
 
 ## Since last week
 
-This is the first run; no previous scan exists, so delta.new, delta.closed, and delta.moved are omitted.
+New: —.
+Closed: —.
+Moved: —.
 
 ## Ports by what they are waiting on
 
@@ -124,8 +126,4 @@ This is the first run; no previous scan exists, so delta.new, delta.closed, and 
 
 ## Not bindings
 
-The Rust crates in `rust_not_bindings` are pure-Rust dependencies of the Rust upstreams. They need a Ruby equivalent rather than a gem, and no issue was opened. The most common are gettext-rs, log, serde_json, async-channel, and tracing-subscriber.
-
-## Unclassified
-
-The scan found no unclassified names with app_count of 2 or more. Each unclassified name is either a missing gap or a name that should be marked as not a binding target; until names are classified, the numbers above are a floor.
+These are pure-Rust dependencies of the Rust upstreams; they need a Ruby equivalent rather than a gem, and no issue was opened. The most common are `gettext-rs` (16), `log` (9), `serde_json` (8), `async-channel` (7), and `tracing-subscriber` (7).
