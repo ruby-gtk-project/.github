@@ -1,0 +1,46 @@
+# Mirrors ruby-gtk-project/skills into port-scaffold/.claude/skills/.
+#
+# The skills repo is the only editable home for the six skills. This copy is
+# generated: edits made here are overwritten. Plain Actions, not gh-aw — it is
+# a file copy, there is no judgement in it and nothing to compile.
+name: Sync skills
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ruby-gtk-project/skills
+          path: .skills-src
+
+      - name: Mirror into the scaffold
+        run: |
+          set -euo pipefail
+          test -d .skills-src/ruby-gtk   # the sync is wrong if this is missing
+          rm -rf .skills-src/.git .skills-src/README.md
+          rsync -a --delete .skills-src/ port-scaffold/.claude/skills/
+          rm -rf .skills-src
+
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "scaffold skills already match ruby-gtk-project/skills"
+            exit 0
+          fi
+          git add port-scaffold/.claude/skills
+          git commit -m "Sync skills from ruby-gtk-project/skills"
+          git push
