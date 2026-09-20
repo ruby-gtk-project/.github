@@ -92,24 +92,42 @@ The inventory has already been gathered for you. Read these files:
 
 The name tells you nothing — plenty of repos here end in `-rb` and are not port
 targets, and the org also holds tooling, demos and infrastructure. Judge on the
-inventory:
+inventory, and on what the upstream repo actually is.
 
 A repo **is** a port target when all of these hold:
 
 - `parent` is not null — it is a fork of an upstream app.
-- `default_branch` is `ruby`.
-- `scaffolding` is non-zero and `app` is zero — the branch is set up for the
-  port but the port has not been written.
 - `archived` is false.
+- the upstream is an **application** — something a user launches. A toolkit, a
+  demo collection, an examples repo or a set of design files is not, however
+  much GTK code it contains.
+- no other fork in the org has the same `parent`. Where two do, exactly one is
+  the port: keep whichever is already on the board, and if neither is, keep the
+  one whose name follows the `<app>-rb` convention.
 
 A repo is **not** a port target when any of these hold:
 
 - `parent` is null — it is someone's own project, tooling, demos or org
   infrastructure.
-- `no_ruby_branch`, or `default_branch` is not `ruby`.
-- `app` is non-zero — that port has started, and this issue is only for ones
-  that have not.
 - `archived` is true.
+- the upstream is not an application, by the test above.
+- another fork of the same upstream is already the port target.
+
+Deliberately absent from that list: how much has been ported, and whether the
+`ruby` branch is scaffolded.
+
+- **Port progress is not a condition.** A fork with a half-written port is
+  still a port target and still needs its issues — that is what the board's
+  Status field is for. Gating the issue on `app == 0` is how `console-rb`,
+  `gnome-contacts-rb` and `gnome-logs-rb` — the three pilots — sat off the
+  board for a month while this workflow reported success every day.
+- **Scaffolding is not a condition, and not your job.** The `Reconcile forks`
+  workflow creates the orphan `ruby` branch and keeps `port-scaffold/` in sync
+  on it, nightly, for every fork on the board. An unscaffolded fork is one you
+  should add, not skip; adding it is what causes it to be scaffolded.
+
+The `scaffolding` and `app` counts in the inventory are there to tell you what
+state a port is in, not whether it belongs on the board.
 
 If a repo is genuinely ambiguous, **leave it alone** and list it at the end of
 your run under "Skipped — unclear". Do not guess. A wrong issue in someone's
@@ -194,7 +212,10 @@ project's real full URL in every call** — the configured default contains a
 
 - Two issues per port target — `Initial port: <repo>` and `Gem release: <repo>`
   — always in this repo. Titles are deduplicated, so a target that already has
-  one of them keeps it and only the missing one is created.
+  one of them keeps it and only the missing one is created. Check for the two
+  **separately**: at the time of writing every target on the board has its
+  `Initial port` issue and not one has its `Gem release` issue, which is what
+  happens when a target is treated as done because one of the pair exists.
 - Never create issues in repos you could not positively identify as port
   targets.
 - If every port target already has both issues on the board, do nothing and
