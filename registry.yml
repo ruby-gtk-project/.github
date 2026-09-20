@@ -176,6 +176,9 @@
 - app: Impression
   repo: https://github.com/adhami3310/Impression
   fork: https://github.com/ruby-gtk-project/Impression-rb
+- app: Identity
+  repo: https://gitlab.gnome.org/YaLTeR/identity
+  fork: https://github.com/ruby-gtk-project/identity-rb
 - app: Junction
   repo: https://github.com/sonnyp/Junction
   fork: https://github.com/ruby-gtk-project/Junction-rb
