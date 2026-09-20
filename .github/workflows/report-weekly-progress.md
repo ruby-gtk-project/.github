@@ -120,6 +120,40 @@ steps:
         /tmp/gh-aw/agent/fleet.json
 
 post-steps:
+  - name: Put the review issue on the board
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+    run: |
+      set -euo pipefail
+      REPO="${{ github.repository }}"
+      ORG=ruby-gtk-project
+      title="Review weekly report — ${REPORT_DATE}"
+
+      num=$(gh api "repos/$REPO/issues?state=open&labels=report&per_page=100" \
+        --jq "[.[] | select(.pull_request == null and .title == \"$title\")][0].number // empty")
+      [ -n "$num" ] || { echo "::error::review issue not found: $title"; exit 1; }
+
+      # Idempotent: addProjectV2ItemById returns the existing item when the
+      # issue is already on the board, so first runs and re-runs both work.
+      PID=$(gh api graphql -f query='query($o:String!,$n:Int!){ organization(login:$o){ projectV2(number:$n){ id } } }' \
+        -f o="$ORG" -F n=3 --jq '.data.organization.projectV2.id')
+      IID=$(gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){ repository(owner:$o,name:$r){ issue(number:$n){ id } } }' \
+        -f o="$ORG" -f r="${REPO##*/}" -F n="$num" --jq '.data.repository.issue.id')
+      ITEM=$(gh api graphql -f query='mutation($p:ID!,$c:ID!){ addProjectV2ItemById(input:{projectId:$p,contentId:$c}){ item { id } } }' \
+        -f p="$PID" -f c="$IID" --jq '.data.addProjectV2ItemById.item.id')
+
+      # Status=Todo, looked up by name so a renamed field fails loudly, not silently.
+      gh api graphql -f query='query($p:ID!){ node(id:$p){ ... on ProjectV2 { fields(first:30){ nodes {
+        ... on ProjectV2SingleSelectField { id name options { id name } } } } } } }' \
+        -f p="$PID" > /tmp/fields.json
+      F=$(jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .id' /tmp/fields.json)
+      O=$(jq -r '.data.node.fields.nodes[] | select(.name=="Status") | .options[] | select(.name=="Todo") | .id' /tmp/fields.json)
+      [ -n "$F" ] && [ -n "$O" ] || { echo "::error::project 3 is missing Status/Todo"; exit 1; }
+      gh api graphql -f query='mutation($p:ID!,$i:ID!,$f:ID!,$v:String!){ updateProjectV2ItemFieldValue(
+        input:{projectId:$p,itemId:$i,fieldId:$f,value:{singleSelectOptionId:$v}}){ clientMutationId } }' \
+        -f p="$PID" -f i="$ITEM" -f f="$F" -f v="$O" >/dev/null
+      echo "issue #$num on the board as Todo"
+
   - name: Commit the report
     env:
       # The one PAT with write access. strict mode forbids giving the agent
@@ -149,10 +183,6 @@ safe-outputs:
     max: 1
     labels: [report]
     deduplicate-by-title: true
-  update-project:
-    max: 1
-    project: https://github.com/orgs/ruby-gtk-project/projects/3
-    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
 ---
 
 # Weekly fleet report
@@ -316,8 +346,9 @@ Close this issue once the report has been reviewed and next week's priorities
 are confirmed.
 ```
 
-Then add it to the board with `update_project`, using the project URL
-`https://github.com/orgs/ruby-gtk-project/projects/3` and status `Todo`.
+The board is synced for you after you finish — never call `update_project`.
+A deduplicated issue registers no temporary id, so on any run after the first
+the attach has nothing to reference; that is why it lives in a post-step.
 
 ## Rules
 

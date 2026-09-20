@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# Writes one .tf per fork in registry.yml: an import block plus the resource it
+# imports into. Called by bin/tofu; re-run after registry.yml changes.
+require "yaml"
+
+out  = File.expand_path("../..", __dir__) + "/opentofu"
+reg  = File.expand_path("../../registry.yml", __dir__)
+
+YAML.load_file(reg).each do |e|
+  name = e.fetch("fork").split("/").last
+  id   = name.gsub(/[^A-Za-z0-9]+/, "_").downcase
+  File.write("#{out}/#{id}.tf", <<~TF)
+    import {
+      to = github_repository.#{id}
+      id = "#{name}"
+    }
+
+    resource "github_repository" "#{id}" {
+      name = "#{name}"
+    }
+  TF
+end

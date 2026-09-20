@@ -126,6 +126,33 @@ post-steps:
       .github/aw/project-sync.sh ruby-gtk-project 4 "${{ github.repository }}" \
         /tmp/gh-aw/agent/scan/gaps.json "${MIN_APPS}"
 
+      # Refresh issues whose port count moved. A deduplicated issue has no
+      # temporary id for the agent to reference, so this mechanical rewrite
+      # happens here where the numbers live, not through the agent.
+      G=/tmp/gh-aw/agent/scan/gaps.json
+      REPO="${{ github.repository }}"
+      DATE=$(cat /tmp/gh-aw/agent/scan-date.txt)
+      moved=$(jq -r '.moved_detail // [] | length' "$G")
+      if [ "$moved" != "0" ]; then
+        gh api "repos/$REPO/issues?state=open&labels=binding&per_page=100" --paginate \
+          --jq '.[] | select(.pull_request == null) | [.number, .title] | @tsv' > /tmp/binding-issues.tsv
+        jq -c '.moved_detail[]' "$G" | while read -r row; do
+          ns=$(jq -r '.namespace' <<<"$row")
+          now=$(jq -r '.now' <<<"$row")
+          num=$(awk -F'\t' -v t="[binding] $ns: Ruby binding needed" '$2 == t {print $1; exit}' /tmp/binding-issues.tsv)
+          if [ -z "$num" ]; then
+            echo "::warning::no open issue found for moved gap $ns"
+            continue
+          fi
+          body=$(jq -r --arg ns "$ns" --arg now "$now" --arg date "$DATE" --arg repo "$REPO" '
+            (.gaps[] | select(.namespace == $ns)) as $g
+            | "`\($ns)` has no Ruby binding. **\($now)** ports need it.\n\nMatched as \($g.pkgconfig | map("`" + . + "`") | join(", ")), seen in \($g.evidence | join(", ")).\nruby-gnome coverage read from `\(.coverage.source)`.\n\n### Blocked ports\n\n\($g.apps | map("`" + . + "`") | join(", "))\n\n---\n[Scan for \($date)](https://github.com/\($repo)/blob/main/reports/binding-gaps-\($date).md)"
+          ' "$G")
+          gh api -X PATCH "repos/$REPO/issues/$num" -f body="$body" >/dev/null
+          echo "refreshed #$num ($ns: $now ports)"
+        done
+      fi
+
   - name: Commit the report
     env:
       # The one PAT with write access. strict mode forbids giving the agent
@@ -160,14 +187,6 @@ safe-outputs:
     labels: [binding]
     title-prefix: "[binding] "
     deduplicate-by-title: true
-  # deduplicate-by-title skips a title that already exists, it does not
-  # refresh it - so without this an issue's port count is frozen at whatever
-  # it was the week it was filed while the board silently stays correct.
-  update-issue:
-    max: 15
-    target: "*"
-    status:
-    body:
 ---
 
 # Binding gaps
@@ -237,7 +256,7 @@ Two things that look like gaps and are not:
   has entries the gap count is a **floor, not a total**, and the report has to
   say so.
 
-**Do Steps 1 and 2 before you start Step 3.** The issues are the output that
+**Do Step 1 before you start Step 2.** The issues are the output that
 matters; the report is written from the same files and can be rewritten next
 week if the run runs long.
 
@@ -270,24 +289,14 @@ no bullets, no links.>
 
 You do not touch the project board. It is synced from the same scan after you
 finish, so an issue that already exists still lands on it with its fields set.
+The same post-step refreshes the bodies of issues whose port count moved since
+the last run — a deduplicated title registers no temporary id, so that refresh
+is mechanical work done there, not by you.
 
 Titles are deduplicated, so a gap that was filed last week updates nothing
 rather than filing twice. Do not close, rename or re-file an existing issue.
 
-## Step 2 — Refresh the issues that moved
-
-An issue body is written once. A title that already exists is skipped, not
-rewritten, so a gap whose port count changed keeps last week's number until
-someone corrects it.
-
-For each entry in `report.json`'s `moved_detail`, call `update_issue` on the
-open issue titled `[binding] <namespace>: Ruby binding needed` and replace its
-body with the same shape Step 1 uses, built from `now` and `apps`. Change
-nothing else — not the title, not the status, not the labels.
-
-If `moved_detail` is empty, skip this step entirely and say so in the report.
-
-## Step 3 — The report
+## Step 2 — The report
 
 Write `reports/binding-gaps-<DATE>.md`. Exactly this shape:
 

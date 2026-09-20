@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Regenerate the per-repo .tf files from registry.yml, then run tofu.
+#   ./opentofu/bin/tofu plan
+#   ./opentofu/bin/tofu apply
+set -euo pipefail
+cd "$(dirname "$0")/.."
+ruby bin/generate
+[ -d .terraform ] || tofu init
+exec tofu "$@"
