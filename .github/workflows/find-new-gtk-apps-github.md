@@ -229,4 +229,4 @@ yourself.
 - If you cannot find anything new that clears Step 3, open no pull request and
   say what you searched and what you rejected. An honest empty run is fine.
   Padding the registry with an app you would not want to port is not.
-- Never edit the `forked` section.
+- Never remove or edit an existing entry. You only add.
