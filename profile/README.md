@@ -1,4 +1,4 @@
-## RubyxGTK
+## Ruby x GTK
 
 <!--
 
@@ -10,5 +10,5 @@
 🍿 Fun facts - what does your team eat for breakfast?
 🧙 Remember, you can do mighty things with the power of [Markdown](https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 -->
-[ports in progress](https://github.com/ruby-gtk-project/projects/1)
-[planning](https://github.com/ruby-gtk-project/.github)
+* [ports in progress](https://github.com/ruby-gtk-project/projects/1)
+* [planning](https://github.com/ruby-gtk-project/.github)
