@@ -40,6 +40,9 @@ tools:
     - ".github/aw/apply-port-scaffold.sh *"
   github:
     toolsets: [repos, issues]
+    # The agent pushes to the forks' ruby branches — other repositories, which
+    # the repo-scoped GITHUB_TOKEN cannot write. The one PAT that can.
+    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
 ---
 
 # Scaffold port forks

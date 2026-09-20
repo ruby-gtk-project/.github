@@ -128,9 +128,9 @@ post-steps:
 
   - name: Commit the report
     env:
-      # Repo-scoped, contents:write on this repo only. strict mode forbids
-      # giving the agent job that permission, so the push carries its own token.
-      GITHUB_TOKEN: ${{ secrets.GH_AW_REPORT_GITHUB_TOKEN }}
+      # The one PAT with write access. strict mode forbids giving the agent
+      # job contents:write, so the push carries its own token.
+      GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
     run: |
       set -euo pipefail
       f="reports/binding-gaps-${SCAN_DATE}.md"

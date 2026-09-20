@@ -32,7 +32,7 @@ checkout:
     path: ./target
     fetch-depth: 0
     fetch: ["*"]
-    github-token: ${{ secrets.GH_AW_PORT_REPO_TOKEN }}
+    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
 
 tools:
   edit:
@@ -86,7 +86,7 @@ steps:
 safe-outputs:
   create-pull-request:
     target-repo: "*"
-    github-token: ${{ secrets.GH_AW_PORT_REPO_TOKEN }}
+    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
     title-prefix: "[parity] "
     labels: [parity-review]
     max: 1

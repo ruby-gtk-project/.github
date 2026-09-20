@@ -40,6 +40,9 @@ tools:
     - "rm -rf /tmp/gh-aw/agent/*"
   github:
     toolsets: [repos]
+    # The agent creates and pushes repositories in the org — the repo-scoped
+    # GITHUB_TOKEN cannot do that. This is the one PAT with those powers.
+    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
 ---
 
 # Fork new GTK apps
