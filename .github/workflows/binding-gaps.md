@@ -105,6 +105,16 @@ steps:
       echo "agent inputs: $(wc -c < /tmp/gh-aw/agent/to-file.json) + $(wc -c < /tmp/gh-aw/agent/report.json) bytes (scan was $(wc -c < "$G"))"
 
 post-steps:
+  - name: Sync the Bindings board
+    env:
+      # Project-scoped. The agent job is read-all, so this carries its own.
+      GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      MIN_APPS: ${{ inputs.min_apps || '2' }}
+    run: |
+      set -euo pipefail
+      .github/aw/project-sync.sh ruby-gtk-project 4 "${{ github.repository }}" \
+        /tmp/gh-aw/agent/scan/gaps.json "${MIN_APPS}"
+
   - name: Commit the report
     env:
       # Repo-scoped, contents:write on this repo only. strict mode forbids
@@ -130,15 +140,15 @@ post-steps:
       git push "$url" HEAD:main
 
 safe-outputs:
+  # The board is synced in post-steps, not here. A deduplicated issue registers
+  # no temporary id, so update_project had nothing to attach to on any run
+  # after the first, and the per-run safe output budget is shared - 35 issues
+  # plus 35 board updates overran it and the last ten failed outright.
   create-issue:
     max: 40
     labels: [binding]
     title-prefix: "[binding] "
     deduplicate-by-title: true
-  update-project:
-    max: 40
-    project: https://github.com/orgs/ruby-gtk-project/projects/4
-    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
 ---
 
 # Binding gaps
@@ -202,15 +212,14 @@ Two things that look like gaps and are not:
   has entries the gap count is a **floor, not a total**, and the report has to
   say so.
 
-**Do all of Step 1 before you start Step 2.** The issues and the board are the
-output that matters; the report is written from the same file and can be
-rewritten next week if the run runs long.
+**Do all of Step 1 before you start Step 2.** The issues are the output that
+matters; the report is written from the same files and can be rewritten next
+week if the run runs long.
 
 ## Step 1 — The issues
 
-For every entry in `to-file.json`'s `gaps[]`, call `create_issue`. Give each one a
-`temporary_id` so you can reference it from `update_project` — the issue has no
-number yet.
+For every entry in `to-file.json`'s `gaps[]`, call `create_issue`. Nothing else
+references the issue afterwards, so it needs no `temporary_id`.
 
 Title, exactly — the prefix is added for you, so do not type it:
 
@@ -234,19 +243,8 @@ no bullets, no links.>
 [Scan for <DATE>](https://github.com/${{ github.repository }}/blob/main/reports/binding-gaps-<DATE>.md)
 ```
 
-Then add each one to the board with `update_project`. Pass exactly these four
-arguments and **no others** — in particular there is no `temporary_id` argument
-and no `add` operation. Adding an item is what the tool does when `operation`
-is omitted, and the temporary id goes in `content_number`:
-
-- `project` — `https://github.com/orgs/ruby-gtk-project/projects/4`
-- `content_type` — `issue`
-- `content_number` — the `temporary_id` you gave that issue, e.g. `aw_gap_soup`
-- `fields` — `{"Status": "Todo", "Apps blocked": <app_count>, "Namespace": "<namespace>"}`
-
-One `update_project` call per issue, so the number of calls matches the number
-of issues exactly. An argument the tool does not recognise makes it drop every
-argument and add nothing, so do not add any.
+You do not touch the project board. It is synced from the same scan after you
+finish, so an issue that already exists still lands on it with its fields set.
 
 Titles are deduplicated, so a gap that was filed last week updates nothing
 rather than filing twice. Do not close, rename or re-file an existing issue.
