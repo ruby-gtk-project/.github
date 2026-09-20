@@ -1,0 +1,69 @@
+# Turns a registry-proposal issue into a pull request against the registry.
+#
+# The agents that scan for apps cannot write files — their container's edits
+# never reach the checkout, so every pull request they built came out empty.
+# They post a fenced yaml block in an issue instead; this applies it. Plain
+# Actions: parsing a known format and committing it is not a judgement.
+name: Apply registry proposals
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number carrying the proposal"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: registry-proposals
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'registry-proposal')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE: ${{ inputs.issue || github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply the proposal
+        id: apply
+        run: |
+          set -euo pipefail
+          gh issue view "$ISSUE" -R "$GITHUB_REPOSITORY" --json body -q .body > /tmp/proposal.md
+          if ! grep -q '```yaml' /tmp/proposal.md && ! grep -q '```yml' /tmp/proposal.md; then
+            echo "issue #$ISSUE has no yaml block — nothing to apply" >&2
+            exit 1
+          fi
+          python3 .github/aw/apply-proposal.py .github/port-registry.yml /tmp/proposal.md | tee /tmp/changes.txt
+          if git diff --quiet .github/port-registry.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open the pull request
+        if: steps.apply.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          branch="registry/proposal-$ISSUE"
+          git checkout -b "$branch"
+          git add .github/port-registry.yml
+          git commit -m "Registry: apply proposal from #$ISSUE"
+          git push -u origin "$branch"
+          url=$(gh pr create \
+            --title "[registry] Apply proposal from #$ISSUE" \
+            --body "$(printf 'Applies the yaml block in #%s.\n\n```\n%s\n```\n\nMerging this is what authorises the fork or import. The nightly `Reconcile forks` run acts on it from there.' "$ISSUE" "$(cat /tmp/changes.txt)")" \
+            --label registry)
+          gh issue comment "$ISSUE" --body "Applied in $url"

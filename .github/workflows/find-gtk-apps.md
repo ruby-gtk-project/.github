@@ -56,12 +56,9 @@ steps:
       wc -l /tmp/gh-aw/agent/claimed-upstreams.txt /tmp/gh-aw/agent/issue-titles.txt
 
 safe-outputs:
-  create-pull-request:
-    title-prefix: "[registry] "
-    labels: [registry, discovery]
+  create-issue:
     max: 1
-    allowed-files: [".github/port-registry.yml"]
-    if-no-changes: "ignore"
+    labels: [registry-proposal]
 ---
 
 # Find GTK apps
@@ -163,16 +160,20 @@ licence, but an app that fails several is not a good use of a port.
 
 ## Step 4 — Propose it
 
-Write `.github/port-registry.yml` with `python3`, adding the app under
-`candidates`. Do not rely on a file editing tool — in this workflow those
-edits are silently dropped and the pull request is discarded as empty. After writing, run `git status --porcelain .github/port-registry.yml`. If that
-prints nothing your edit went somewhere that does not count — you are probably
-writing under `/tmp`. Fix it and check again, then `git diff --stat`.
+You cannot edit files in this workflow — writes from the agent container never
+reach the checkout, so a pull request built from them comes out empty. Report
+instead; a script applies it.
 
-Add it with `status: ready-to-fork` and a `github:` field naming
-`owner/repo`, since anything you found on GitHub can be forked directly.
+Open one issue whose body contains a fenced `yaml` block. That block is what
+gets applied:
 
-Then open one pull request. In the body, for each app:
+```yaml
+- app: Save Desktop
+  status: ready-to-fork
+  github: vikdevelop/SaveDesktop
+```
+
+Outside the block, for each app:
 
 - what it is, in a sentence
 - the licence, and where you saw it
@@ -182,8 +183,8 @@ Then open one pull request. In the body, for each app:
 - anything that worries you, stated plainly
 - which searches you ran, so the next run can go somewhere else
 
-Merging the pull request is what authorises the fork. You never fork anything
-yourself.
+Merging the pull request the script opens is what authorises the fork. You
+never fork anything yourself.
 
 ## Rules
 
