@@ -61,8 +61,10 @@ steps:
       print(len(out), 'apps')
       PY
 
-      cp .github/port-registry.yml /tmp/gh-aw/agent/registry.yml
-      wc -l /tmp/gh-aw/agent/registry.yml
+      # Deliberately NOT copied to /tmp. An earlier version handed the agent
+      # a copy there and it edited the copy, so every run produced a perfect
+      # pull request body and an empty patch.
+      wc -l .github/port-registry.yml
 
 safe-outputs:
   create-pull-request:
@@ -84,9 +86,12 @@ from it and add them.
 - `/tmp/gh-aw/agent/apps.json` — every app on apps.gnome.org, with its group
   (`core` or `circle`), its app ID, and whatever `vcs_browser`, `homepage` and
   `bugtracker` Flathub holds for it.
-- `/tmp/gh-aw/agent/registry.yml` — the current registry. `forked` entries are
-  apps we already have; `candidates` are apps we know about but have no GitHub
-  home for yet.
+- `.github/port-registry.yml` — the registry, in the working directory. This
+  is the real file and the only copy: read it and write it **at that path**.
+  There is deliberately no copy under `/tmp`, because a previous run edited
+  one and its pull request came out empty. `forked` entries are apps we
+  already have; `candidates` are apps we know about but have no GitHub home
+  for yet.
 
 ## Step 0 — Count what you were given
 
@@ -144,9 +149,11 @@ ends up unchanged, and the pull request is discarded as empty no matter how
 good your analysis was. A previous run found all 27 GitHub homes, wrote a
 full pull request body, and produced nothing, for exactly this reason.
 
-Read the file, rewrite it, write it back, then run `git diff --stat` and state
-what changed. If the diff is empty, your edit did not happen — fix that before
-going any further.
+Read `.github/port-registry.yml`, rewrite it, write it back to that same path,
+then run `git status --porcelain .github/port-registry.yml`. If that prints
+nothing, your edit went somewhere that does not count — you are probably
+writing to a path under `/tmp`. Fix it and check again before going further.
+Then `git diff --stat` and state what changed.
 
 Keep the file's existing shape and ordering.
 
