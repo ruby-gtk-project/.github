@@ -42,7 +42,10 @@ jobs:
       - name: Let git push with the same token
         run: gh auth setup-git
 
-      - name: Reconcile
+      - name: Issues match the registry and the templates
+        run: .github/aw/ensure-port-issues.sh
+
+      - name: Forks match the scaffold
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
