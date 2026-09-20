@@ -46,20 +46,33 @@ steps:
       mkdir -p /tmp/gh-aw/agent
       ORG=ruby-gtk-project
 
+      # GitHub's GraphQL flakes often enough that one transient 500 must not
+      # kill the run — retry each read a few times before failing for real.
+      fetch() { # fetch <output-file> <command...>
+        local out=$1; shift
+        local n
+        for n in 1 2 3 4; do
+          if "$@" > "$out.tmp" 2>/dev/null; then mv "$out.tmp" "$out"; return 0; fi
+          sleep $((n * 5))
+        done
+        echo "::error::read failed after 4 attempts: $*" >&2
+        return 1
+      }
+
       # Deliberately NOT copied to /tmp: an agent handed a copy there edits
       # the copy, and the pull request comes out empty.
 
       # Every upstream already claimed, one per line, lowercased — the cheap
       # check before spending a search on something we have.
-      gh repo list "$ORG" --limit 300 --json name,parent \
-        --jq '.[] | select(.parent != null) | "\(.parent.owner.login)/\(.parent.name)" | ascii_downcase' \
-        | sort -u > /tmp/gh-aw/agent/claimed-upstreams.txt
+      fetch /tmp/gh-aw/agent/claimed-raw.txt gh repo list "$ORG" --limit 300 --json name,parent \
+        --jq '.[] | select(.parent != null) | "\(.parent.owner.login)/\(.parent.name)" | ascii_downcase'
+      sort -u /tmp/gh-aw/agent/claimed-raw.txt > /tmp/gh-aw/agent/claimed-upstreams.txt
 
-      gh issue list -R "$ORG/.github" --state all --limit 500 --json title \
-        --jq '.[].title' > /tmp/gh-aw/agent/issue-titles.txt
+      fetch /tmp/gh-aw/agent/issue-titles.txt gh issue list -R "$ORG/.github" --state all --limit 500 --json title \
+        --jq '.[].title'
 
-      gh pr list -R "$ORG/.github" --state all --limit 200 --json title,body \
-        --jq '.[] | "\(.title)\n\(.body)"' > /tmp/gh-aw/agent/pr-text.txt
+      fetch /tmp/gh-aw/agent/pr-text.txt gh pr list -R "$ORG/.github" --state all --limit 200 --json title,body \
+        --jq '.[] | "\(.title)\n\(.body)"'
 
       wc -l /tmp/gh-aw/agent/claimed-upstreams.txt /tmp/gh-aw/agent/issue-titles.txt
 
