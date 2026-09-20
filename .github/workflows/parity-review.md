@@ -89,6 +89,10 @@ safe-outputs:
     github-token: ${{ secrets.GH_AW_PORT_REPO_TOKEN }}
     title-prefix: "[parity] "
     labels: [parity-review]
+    max: 1
+    # A review reports; it does not fix. An exclusive allowlist means a PR
+    # carrying anything but the report is refused rather than reviewed.
+    allowed-files: ["PARITY_REPORT-*.md"]
     if-no-changes: "error"
 ---
 
