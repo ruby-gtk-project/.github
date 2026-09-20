@@ -24,20 +24,11 @@ network:
   allowed: [defaults, github, "gitlab.gnome.org", "gitlab.com", "codeberg.org"]
 
 tools:
-  bash:
-    - "cat *"
-    - "ls *"
-    - "wc *"
-    - "grep *"
-    - "gh repo view *"
-    - "gh repo fork *"
-    - "gh repo create *"
-    - "gh api *"
-    - "git clone *"
-    - "git ls-remote *"
-    - "git push *"
-    - "git -C *"
-    - "rm -rf /tmp/gh-aw/agent/*"
+  # Scheduled workflow with no untrusted input — per the gh-aw bash allowlist
+  # decision rule, "*" is acceptable. A narrow list here compiles to
+  # bare-command entries that deny `gh repo view <name>` with args, which is
+  # why a run reported "no write access" and claimed 0 of 83 forks existed.
+  bash: ["*"]
   github:
     toolsets: [repos]
     # The agent creates and pushes repositories in the org — the repo-scoped

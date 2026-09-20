@@ -24,20 +24,10 @@ network:
   allowed: [defaults, github]
 
 tools:
-  bash:
-    - "cat *"
-    - "ls *"
-    - "wc *"
-    - "grep *"
-    - "diff *"
-    - "cp *"
-    - "sed *"
-    - "rm -rf /tmp/gh-aw/agent/*"
-    - "gh repo view *"
-    - "gh api *"
-    - "git clone *"
-    - "git -C *"
-    - ".github/aw/apply-port-scaffold.sh *"
+  # Scheduled workflow with no untrusted input — per the gh-aw bash allowlist
+  # decision rule, "*" is acceptable. A narrow list here compiles to
+  # bare-command entries that deny the workflow's own documented commands.
+  bash: ["*"]
   github:
     toolsets: [repos, issues]
     # The agent pushes to the forks' ruby branches — other repositories, which
