@@ -173,6 +173,9 @@
 - app: Mousai
   repo: https://github.com/SeaDve/Mousai
   fork: https://github.com/ruby-gtk-project/Mousai-rb
+- app: MissionCenter
+  repo: https://github.com/OdyseeTeam/MissionCenter
+  fork: https://github.com/ruby-gtk-project/MissionCenter-rb
 - app: nautilus
   repo: https://github.com/GNOME/nautilus
   fork: https://github.com/ruby-gtk-project/nautilus-rb
