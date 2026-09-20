@@ -83,6 +83,16 @@ steps:
             scan_date,
             fleet,
             coverage: {source: .coverage.source, namespaces: .coverage.namespaces},
+            counts: {
+              gaps_total: (.gaps | length),
+              gaps_filed: ([.gaps[] | select(.app_count >= $min)] | length),
+              gaps_tail: ([.gaps[] | select(.app_count < $min)] | length),
+              ports_blocked: (.per_app | length),
+              ports_clear: (.fleet.apps_fully_covered),
+              covered_namespaces: (.coverage.namespaces),
+              top4_unblocks: ([.gaps[:4][].apps] | flatten | unique | length),
+              top4_names: [.gaps[:4][].namespace]
+            },
             delta,
             ranked: [ .gaps[] | {namespace, app_count, evidence,
                                  filed: (.namespace | IN($filed[]))} ],
@@ -182,7 +192,12 @@ entry — no more, no fewer.
   `evidence` and `filed` (whether it got an issue). The threshold has already
   been applied; do not re-apply it.
 - `per_app` — fork name → the namespaces it is waiting on.
-- `fleet`, `coverage` — counts and where coverage was read from.
+- `counts` — **every figure the Summary line needs, already counted**:
+  `gaps_total` (all gaps, not just the filed ones), `gaps_filed`, `gaps_tail`,
+  `ports_blocked`, `ports_clear`, `covered_namespaces`, and `top4_unblocks` /
+  `top4_names` for the concentration sentence. Use these verbatim. Do not
+  count rows in `ranked` — it is the whole list, not the filed ones.
+- `fleet`, `coverage` — where coverage was read from, and the fleet totals.
 - `delta` — `new`, `closed`, `moved`, and `had_previous`. **`had_previous:
   false` means this is the first run**: say so and skip every delta.
 - `unclassified[]` — names the scan found but `namespace-map.json` does not
@@ -258,13 +273,15 @@ Write `reports/binding-gaps-<DATE>.md`. Exactly this shape:
 
 ## Summary
 
-<One line: N gaps across N ports, N namespaces already covered by ruby-gnome,
-N ports needing nothing beyond what exists. All from `fleet` and `coverage`.>
+<One line, every number straight from `counts`: `gaps_total` gaps across
+`ports_blocked` ports, `gaps_filed` of them with an issue and `gaps_tail`
+blocking a single port each, `covered_namespaces` namespaces already covered by
+ruby-gnome, `ports_clear` ports needing nothing beyond what exists.>
 
-<Then the headline: how concentrated the demand is. Name how many gems it takes
-to unblock the most ports — count it off the sorted `gaps` list, do not
-estimate. This is the report's reason to exist: the issues each say who they
-block, but only the report says what to build first.>
+<Then the headline, from `counts` as well: the top four gaps (`top4_names`)
+unblock `top4_unblocks` of the `ports_blocked` blocked ports between them. This
+is the report's reason to exist — the issues each say who they block, but only
+the report says what to build first.>
 
 <If `unclassified` is non-empty, one sentence saying the gap count is a floor
 and how many names are unclassified.>
