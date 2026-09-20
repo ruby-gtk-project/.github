@@ -1,0 +1,193 @@
+{
+  "scan_date": "2026-09-20",
+  "gaps": [
+    {
+      "namespace": "Soup",
+      "app_count": 20
+    },
+    {
+      "namespace": "Xdp",
+      "app_count": 17
+    },
+    {
+      "namespace": "Json",
+      "app_count": 9
+    },
+    {
+      "namespace": "XdpGtk4",
+      "app_count": 8
+    },
+    {
+      "namespace": "Gly",
+      "app_count": 7
+    },
+    {
+      "namespace": "GstPbutils",
+      "app_count": 7
+    },
+    {
+      "namespace": "GWeather",
+      "app_count": 5
+    },
+    {
+      "namespace": "GlyGtk4",
+      "app_count": 5
+    },
+    {
+      "namespace": "GstPlay",
+      "app_count": 5
+    },
+    {
+      "namespace": "Spelling",
+      "app_count": 5
+    },
+    {
+      "namespace": "Gee",
+      "app_count": 4
+    },
+    {
+      "namespace": "Geoclue",
+      "app_count": 4
+    },
+    {
+      "namespace": "GnomeDesktop",
+      "app_count": 4
+    },
+    {
+      "namespace": "GTop",
+      "app_count": 3
+    },
+    {
+      "namespace": "GeocodeGlib",
+      "app_count": 3
+    },
+    {
+      "namespace": "Goa",
+      "app_count": 3
+    },
+    {
+      "namespace": "GtkUnixPrint",
+      "app_count": 3
+    },
+    {
+      "namespace": "Malcontent",
+      "app_count": 3
+    },
+    {
+      "namespace": "UDisks",
+      "app_count": 3
+    },
+    {
+      "namespace": "AppStream",
+      "app_count": 2
+    },
+    {
+      "namespace": "Colord",
+      "app_count": 2
+    },
+    {
+      "namespace": "EDataServer",
+      "app_count": 2
+    },
+    {
+      "namespace": "Flatpak",
+      "app_count": 2
+    },
+    {
+      "namespace": "GExiv2",
+      "app_count": 2
+    },
+    {
+      "namespace": "GUdev",
+      "app_count": 2
+    },
+    {
+      "namespace": "Gcr",
+      "app_count": 2
+    },
+    {
+      "namespace": "GstBadAudio",
+      "app_count": 2
+    },
+    {
+      "namespace": "IBus",
+      "app_count": 2
+    },
+    {
+      "namespace": "PackageKitGlib",
+      "app_count": 2
+    },
+    {
+      "namespace": "Polkit",
+      "app_count": 2
+    },
+    {
+      "namespace": "Shumate",
+      "app_count": 2
+    },
+    {
+      "namespace": "Tracker",
+      "app_count": 2
+    },
+    {
+      "namespace": "Tsparql",
+      "app_count": 2
+    },
+    {
+      "namespace": "WebKitWebProcessExtension",
+      "app_count": 2
+    },
+    {
+      "namespace": "Xmlb",
+      "app_count": 2
+    },
+    {
+      "namespace": "CloudProviders",
+      "app_count": 1
+    },
+    {
+      "namespace": "Gck",
+      "app_count": 1
+    },
+    {
+      "namespace": "GnomeAutoar",
+      "app_count": 1
+    },
+    {
+      "namespace": "Grl",
+      "app_count": 1
+    },
+    {
+      "namespace": "Gspell",
+      "app_count": 1
+    },
+    {
+      "namespace": "GstTag",
+      "app_count": 1
+    },
+    {
+      "namespace": "GstVideo",
+      "app_count": 1
+    },
+    {
+      "namespace": "MediaArt",
+      "app_count": 1
+    },
+    {
+      "namespace": "Notify",
+      "app_count": 1
+    },
+    {
+      "namespace": "Rest",
+      "app_count": 1
+    },
+    {
+      "namespace": "TelepathyGLib",
+      "app_count": 1
+    },
+    {
+      "namespace": "UPowerGlib",
+      "app_count": 1
+    }
+  ]
+}
