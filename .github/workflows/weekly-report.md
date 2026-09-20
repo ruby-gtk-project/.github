@@ -107,7 +107,7 @@ steps:
       ' /tmp/gh-aw/agent/raw.json > /tmp/gh-aw/agent/fleet.json
 
       # Last week's report, for the deltas. Empty on the first ever run.
-      prev=$(ls -1 reports/*.md 2>/dev/null | grep -v "/${REPORT_DATE}\.md$" | tail -1 || true)
+      prev=$(ls -1 reports/weekly-fleet-report-*.md 2>/dev/null | grep -v "\-${REPORT_DATE}\.md$" | tail -1 || true)
       if [ -n "$prev" ]; then
         cp "$prev" /tmp/gh-aw/agent/previous-report.md
         echo "$prev" > /tmp/gh-aw/agent/previous-report-path.txt
@@ -127,7 +127,7 @@ post-steps:
       GITHUB_TOKEN: ${{ secrets.GH_AW_REPORT_GITHUB_TOKEN }}
     run: |
       set -euo pipefail
-      f="reports/${REPORT_DATE}.md"
+      f="reports/weekly-fleet-report-${REPORT_DATE}.md"
       if [ ! -s "$f" ]; then
         echo "::error::agent did not write $f"
         exit 1
@@ -205,7 +205,8 @@ in the org is tooling, demos or infrastructure.
 
 ## Step 1 — Write the report
 
-Write it to `reports/<DATE>.md` in the repo. Exactly this shape:
+Write it to `reports/weekly-fleet-report-<DATE>.md` in the repo — `reports/` at
+the repository root. Exactly this shape:
 
 ```markdown
 # Weekly fleet report — <DATE>
@@ -284,14 +285,14 @@ write that it is unknown.
 
 ## Step 2 — The review issue
 
-Call `create_issue` with title exactly:
+Call `create_issue` with `temporary_id: "#aw_report"` and title exactly:
 
 `Review weekly report — <DATE>`
 
 and this body, with the placeholders filled from your own report:
 
 ```markdown
-[Weekly fleet report — <DATE>](https://github.com/${{ github.repository }}/blob/main/reports/<DATE>.md)
+[Weekly fleet report — <DATE>](https://github.com/${{ github.repository }}/blob/main/reports/weekly-fleet-report-<DATE>.md)
 
 - Ports in flight: **<N>** of <N> targets · <N> not started
 - Measurable: **<N>%** across the <N> forks with an enumerated ledger <or: "no fork has an enumerated ledger, so there is no fleet percentage yet">
@@ -311,13 +312,30 @@ Close this issue once the report has been reviewed and next week's priorities
 are confirmed.
 ```
 
-Then add it to the board with `update_project`, using the project URL
-`https://github.com/orgs/ruby-gtk-project/projects/3` and status `Todo`.
+Then put it on the board with **one** `update_project` call, exactly this:
+
+```json
+{
+  "project": "https://github.com/orgs/ruby-gtk-project/projects/3",
+  "content_type": "issue",
+  "content_number": "#aw_report",
+  "fields": { "Status": "Todo" }
+}
+```
+
+**Omit `operation`.** Adding an item is what `update_project` does when
+`operation` is absent — the only values it accepts are `create_fields` and
+`create_view`, and neither is what you want. There is no `add` operation, and
+its absence is not a failure: do not report the run incomplete over it.
+
+`content_number` is the `#aw_report` temporary id from the `create_issue` call
+above, not a real issue number — the issue does not exist yet when you make
+this call, and the id is resolved to its number afterwards.
 
 ## Rules
 
-- Write `reports/<DATE>.md`. The commit is automatic — if the file is missing the
-  run fails, so write it before you finish.
+- Write `reports/weekly-fleet-report-<DATE>.md`. The commit is automatic — if the
+  file is missing the run fails, so write it before you finish.
 - Never edit an older report. They are the record the deltas are computed from.
 - One issue per week. The title carries the date, so re-running today updates
   nothing rather than piling up duplicates.
