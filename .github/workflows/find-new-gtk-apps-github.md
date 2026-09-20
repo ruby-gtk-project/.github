@@ -218,7 +218,7 @@ three keys:
 - `app` — what the app is called
 - `repo` — where its source lives, the URL you found it at
 - `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
-  be created. It does not exist yet; `check-and-fork-registry-apps` reads this file and
+  be created. It does not exist yet; `fork-new-gtk-apps` reads this file and
   creates whatever is missing.
 
 Nothing else goes in the file — no status, no notes, no sections.

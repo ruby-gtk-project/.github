@@ -88,7 +88,7 @@ fleet does not fit on the runner.
   maintain the scaffold, nothing else. The two port issues belong to
   `create-initial-port-issues`, not to you.
 - Never edit `registry.yml`.
-- If a fork in the registry does not exist, say so and move on — `Fork or
-  mirror` creates it, not you.
+- If a fork in the registry does not exist, say so and move on —
+  `fork-new-gtk-apps` creates it, not you.
 - Report counts at the end: how many forks were already correct, what you
   changed, and anything that failed.

@@ -42,7 +42,7 @@ tools:
     toolsets: [repos]
 ---
 
-# Check and fork registry apps
+# Fork new GTK apps
 
 `registry.yml` at the root of this repo lists every app the campaign covers:
 its name, where its source lives upstream, and the fork we keep in the org.
