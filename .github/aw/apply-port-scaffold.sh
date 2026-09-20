@@ -13,9 +13,9 @@
 # never fetched. Refuses if `ruby` already exists: recreating it would throw
 # away whatever port work is sitting on it.
 #
-# The initial-port workflow only counts a fork as a port target once its `ruby`
-# branch has scaffolding, so an unscaffolded fork never reaches the board.
-# Scaffold first; the daily run picks it up from there.
+# Run by the scaffold-port-forks workflow for every registry fork with no
+# `ruby` branch. create-initial-port-issues adds forks to the board whether or
+# not they are scaffolded yet — scaffolding is not a condition for the board.
 set -uo pipefail
 
 ORG=ruby-gtk-project

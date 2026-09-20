@@ -1,0 +1,135 @@
+# Every fork in registry.yml has a scaffolded `ruby` branch matching
+# port-scaffold/. Plain Actions, not gh-aw — the work is scripted; there is no
+# judgement in it. Callable from fork-new-gtk-apps.yml, which triggers it after
+# creating new forks so they get their ruby branch in the same minute.
+name: Scaffold port forks
+
+on:
+  schedule:
+    - cron: "34 17 * * *"  # daily
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Reconcile a single fork (name or app), blank = all"
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      only:
+        required: false
+        type: string
+        default: ""
+    secrets:
+      GH_AW_PROJECT_GITHUB_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  issues: write  # the failure-issue step
+
+concurrency:
+  group: scaffold-port-forks
+  cancel-in-progress: false
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ORG: ruby-gtk-project
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scaffold every fork
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          set -uo pipefail
+
+          gh auth setup-git  # git pushes authenticate with the PAT
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          python3 -c 'import yaml' 2>/dev/null || pip install --quiet --user pyyaml
+          python3 - <<'PY' > /tmp/registry.tsv
+          import yaml
+          for e in yaml.safe_load(open('registry.yml')):
+              fork = e['fork'].rstrip('/').rsplit('/', 1)[-1]
+              print(f"{fork}\t{e['app']}")
+          PY
+
+          branched=(); synced=(); ok=(); missing=(); failed=()
+
+          while IFS=$'\t' read -r name app; do
+            [ -n "$ONLY" ] && [ "$name" != "$ONLY" ] && [ "$app" != "$ONLY" ] && continue
+
+            if ! gh api "repos/$ORG/$name" >/dev/null 2>&1; then
+              # fork-new-gtk-apps owns creation — a missing fork is its job,
+              # not an error here. Listed in the summary.
+              missing+=("$name"); continue
+            fi
+
+            if ! gh api "repos/$ORG/$name/branches/ruby" >/dev/null 2>&1; then
+              # No ruby branch: the script creates the orphan branch, seeds the
+              # scaffold, and makes it the default. It refuses if ruby exists.
+              if .github/aw/apply-port-scaffold.sh "$name" "$app"; then
+                branched+=("$name")
+              else
+                failed+=("$name (branch)")
+              fi
+              continue
+            fi
+
+            # Drift sync. `.claude/skills/` and `cops/` are ours outright and
+            # must match exactly; everything else in port-scaffold/ is seeded
+            # once and never overwritten — real ports grow it.
+            tmp=$(mktemp -d)
+            if ! git clone --quiet --depth 1 --branch ruby "https://github.com/$ORG/$name" "$tmp/r"; then
+              failed+=("$name (clone)"); rm -rf "$tmp"; continue
+            fi
+            rsync -a --delete port-scaffold/.claude/skills/ "$tmp/r/.claude/skills/"
+            rsync -a --delete port-scaffold/cops/ "$tmp/r/cops/"
+            for f in flake.nix Gemfile .rubocop.yml .envrc .gitignore CLAUDE.md; do
+              [ -e "$tmp/r/$f" ] || cp -a "port-scaffold/$f" "$tmp/r/$f"
+            done
+            if [ ! -e "$tmp/r/AGENTS.md" ]; then
+              sed "s/{{APP}}/$app/g" port-scaffold/AGENTS.md > "$tmp/r/AGENTS.md"
+            fi
+            git -C "$tmp/r" add -A
+            if git -C "$tmp/r" diff --cached --quiet; then
+              ok+=("$name")
+            elif git -C "$tmp/r" commit -qm "Sync the scaffold from port-scaffold" \
+                 && git -C "$tmp/r" push -q origin ruby; then
+              synced+=("$name")
+            else
+              failed+=("$name (push)")
+            fi
+            rm -rf "$tmp"
+          done < /tmp/registry.tsv
+
+          echo "== ruby branch created (${#branched[@]})";   printf '%s\n' "${branched[@]}"
+          echo "== scaffold synced (${#synced[@]})";         printf '%s\n' "${synced[@]}"
+          echo "== already correct (${#ok[@]})"
+          echo "== no repo yet (${#missing[@]})";            printf '%s\n' "${missing[@]}"
+          echo "== failed (${#failed[@]})";                  printf '%s\n' "${failed[@]}"
+
+          # Fail loudly on errors in our own work. A fork that does not exist
+          # is not our error — the daily fork sweep owns it.
+          if [ ${#failed[@]} -gt 0 ]; then
+            printf '%s\n' "${failed[@]}" > /tmp/scaffold-failed.txt
+            echo "::error::forks that could not be scaffolded: ${failed[*]}"
+            exit 1
+          fi
+
+      - name: File an issue when the run failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+        run: |
+          title="[scaffold-port-forks] Run failed"
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ "$(gh issue list -R "$ORG/.github" --state open --search "in:title \"$title\"" --json number --jq 'length')" = "0" ]; then
+            gh issue create -R "$ORG/.github" --title "$title" \
+              --body "$(printf 'The scaffold run failed — see %s\n\n```\n%s\n```' "$url" "$(cat /tmp/scaffold-failed.txt 2>/dev/null || echo 'see the run log')")"
+          fi

@@ -123,7 +123,7 @@ Deliberately absent from that list: how much has been ported, and whether the
   board for a month while this workflow reported success every day.
 - **Scaffolding is not a condition, and not your job.** The `Scaffold port forks`
   workflow creates the orphan `ruby` branch and keeps `port-scaffold/` in sync
-  on it, nightly, for every fork on the board. An unscaffolded fork is one you
+  on it for every fork on the board. An unscaffolded fork is one you
   should add, not skip; adding it is what causes it to be scaffolded.
 
 The `scaffolding` and `app` counts in the inventory are there to tell you what

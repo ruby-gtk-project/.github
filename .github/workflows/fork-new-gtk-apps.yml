@@ -28,10 +28,13 @@ jobs:
     timeout-minutes: 45
     env:
       ORG: ruby-gtk-project
+    outputs:
+      created_count: ${{ steps.create.outputs.created_count }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Create every missing fork
+        id: create
         env:
           GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
           ONLY: ${{ inputs.only }}
@@ -95,6 +98,7 @@ jobs:
           done < /tmp/registry.tsv
 
           echo "== created (${#created[@]})"; printf '%s\n' "${created[@]}"
+          echo "created_count=${#created[@]}" >> "$GITHUB_OUTPUT"
           echo "== already present (${#skipped[@]})"
           echo "== failed (${#failed[@]})"; printf '%s\n' "${failed[@]}"
 
@@ -127,3 +131,11 @@ jobs:
             gh issue create -R "$ORG/.github" --title "$title" \
               --body "$(printf 'The fork run failed — see %s\n\n```\n%s\n```' "$url" "$(cat /tmp/fork-failed.txt 2>/dev/null || echo 'see the run log')")"
           fi
+
+  # New forks have no ruby branch — the scaffold gives them one. Run it right
+  # after forks are created rather than waiting for its weekly slot.
+  scaffold:
+    needs: fork
+    if: success() && needs.fork.outputs.created_count != '0'
+    uses: ./.github/workflows/scaffold-port-forks.yml
+    secrets: inherit
