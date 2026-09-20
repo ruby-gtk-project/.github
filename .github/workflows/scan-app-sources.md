@@ -20,6 +20,7 @@ network:
   allowed: [defaults, github]
 
 tools:
+  edit:
   bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *"]
   github:
     toolsets: [repos, search]
@@ -86,6 +87,12 @@ from it and add them.
 - `/tmp/gh-aw/agent/registry.yml` — the current registry. `forked` entries are
   apps we already have; `candidates` are apps we know about but have no GitHub
   home for yet.
+
+## Step 0 — Count what you were given
+
+`jq length /tmp/gh-aw/agent/apps.json` and say the number. Every app in that
+file is in scope. A previous run reported working through "all 83 apps" when
+the file held 99 — if your count and the file disagree, the file is right.
 
 ## Step 1 — What needs work this run
 
