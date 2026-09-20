@@ -80,6 +80,11 @@ safe-outputs:
     labels: [translation-parity]
     max: 1
     draft: false
+    # .reports/ is a top-level dot-folder, which gh-aw protects by default
+    # (ADR-28486). The parity document is the whole point, and allowed-files
+    # above already restricts every patch to exactly that document — so the
+    # protected-files guard is redundant here and is switched off.
+    protected-files: allowed
     # The census documents and nothing else. An exclusive allowlist means a PR
     # carrying anything but them is refused rather than reviewed.
     allowed-files: [".reports/TRANSLATION_PARITY.md", ".reports/translation-parity.yaml"]

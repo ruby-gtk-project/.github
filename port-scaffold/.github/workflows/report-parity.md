@@ -73,6 +73,11 @@ safe-outputs:
     labels: [parity-review]
     max: 1
     draft: false
+    # .reports/ is a top-level dot-folder, which gh-aw protects by default
+    # (ADR-28486). The parity document is the whole point, and allowed-files
+    # above already restricts every patch to exactly that document — so the
+    # protected-files guard is redundant here and is switched off.
+    protected-files: allowed
     # A review reports; it does not fix. An exclusive allowlist means a PR
     # carrying anything but the report is refused rather than reviewed.
     allowed-files: [".reports/PARITY_REPORT-*.md"]
