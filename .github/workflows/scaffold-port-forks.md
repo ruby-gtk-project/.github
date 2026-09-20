@@ -86,7 +86,7 @@ fleet does not fit on the runner.
 - Never delete a repository, a branch or an issue.
 - Never touch a fork's `lib/`, `bin/`, `test/` or any other port code. You
   maintain the scaffold, nothing else. The two port issues belong to
-  `initial-port`, not to you.
+  `create-initial-port-issues`, not to you.
 - Never edit `registry.yml`.
 - If a fork in the registry does not exist, say so and move on — `Fork or
   mirror` creates it, not you.
