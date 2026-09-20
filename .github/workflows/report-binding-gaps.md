@@ -120,6 +120,7 @@ post-steps:
     env:
       # Project-scoped. The agent job is read-all, so this carries its own.
       GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
       MIN_APPS: ${{ inputs.min_apps || '2' }}
     run: |
       set -euo pipefail

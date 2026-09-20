@@ -123,6 +123,7 @@ post-steps:
   - name: Put the review issue on the board
     env:
       GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
     run: |
       set -euo pipefail
       REPO="${{ github.repository }}"
