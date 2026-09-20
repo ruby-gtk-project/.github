@@ -83,6 +83,9 @@
 - app: eartag
   repo: https://github.com/serialuart/eartag
   fork: https://github.com/ruby-gtk-project/eartag-rb
+- app: Emblem
+  repo: https://gitlab.gnome.org/World/design/emblem
+  fork: https://github.com/ruby-gtk-project/emblem-rb
 - app: epiphany
   repo: https://github.com/GNOME/epiphany
   fork: https://github.com/ruby-gtk-project/epiphany-rb
