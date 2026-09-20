@@ -44,6 +44,9 @@
 - app: cartridges
   repo: https://github.com/kra-mo/cartridges
   fork: https://github.com/ruby-gtk-project/cartridges-rb
+- app: Citations
+  repo: https://gitlab.gnome.org/World/citations
+  fork: https://github.com/ruby-gtk-project/Citations-rb
 - app: clairvoyant
   repo: https://github.com/cassidyjames/clairvoyant
   fork: https://github.com/ruby-gtk-project/clairvoyant-rb
