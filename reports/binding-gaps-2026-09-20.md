@@ -2,16 +2,14 @@
 
 ## Summary
 
-47 gaps across 51 ports, 26 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists. All from `fleet` and `coverage`.
+35 gaps across 51 ports, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists. All from `fleet` and `coverage`.
 
-The demand is concentrated: 1 gem, `Soup`, reaches the largest group of 20 ports.
-
-The gap count is a floor: 78 names are unclassified.
+It takes one gem to unblock the most ports: Soup, which is needed by 20 ports. Xdp is the next highest-leverage target at 17 ports.
 
 ## Ranked gaps
 
 | Namespace | Ports blocked | Seen in | Issue |
-|---|---:|---|---|
+|---|---|---|---|
 | Soup | 20 | cargo, import, meson | filed |
 | Xdp | 17 | cargo, import, meson | filed |
 | Json | 9 | import, meson | filed |
@@ -62,68 +60,66 @@ The gap count is a floor: 78 names are unclassified.
 
 ## Since last week
 
-New: —.
-Closed: —.
-Moved: —.
+New: none. Closed: none. Moved: none.
 
 ## Ports by what they are waiting on
 
 | Port | Waiting on | Count |
-|---|---|---:|
+|---|---|---|
 | gnome-control-center-rb | Colord, GTop, GUdev, Gcr, GnomeDesktop, Goa, IBus, Json, Malcontent, Polkit, Soup, UDisks, UPowerGlib | 13 |
 | nautilus-rb | CloudProviders, GExiv2, Gly, GlyGtk4, GnomeAutoar, GnomeDesktop, GstPbutils, GstTag, Tsparql, Xdp, XdpGtk4 | 11 |
 | gnome-software-rb | AppStream, Flatpak, GUdev, GnomeDesktop, Json, Malcontent, PackageKitGlib, Polkit, Soup, Xmlb | 10 |
-| gnome-maps-rb | GWeather, Geoclue, GeocodeGlib, Json, Rest, Shumate, Soup, Xdp | 8 |
 | bazaar-rb | AppStream, Flatpak, Gly, GlyGtk4, Json, Malcontent, Soup, Xmlb | 8 |
+| gnome-maps-rb | GWeather, Geoclue, GeocodeGlib, Json, Rest, Shumate, Soup, Xdp | 8 |
 | epiphany-rb | Gck, Gcr, GtkUnixPrint, Json, Soup, WebKitWebProcessExtension, XdpGtk4 | 7 |
-| gnome-music-rb | Grl, GstPbutils, MediaArt, Soup, Tracker, Tsparql | 6 |
 | gnome-contacts-rb | EDataServer, Gee, Gly, GlyGtk4, Goa, XdpGtk4 | 6 |
-| snapshot-rb | Gly, GlyGtk4, GstBadAudio, GstVideo, Xdp | 5 |
-| gnome-weather-rb | GWeather, Geoclue, GeocodeGlib, Json, Soup | 5 |
+| gnome-music-rb | Grl, GstPbutils, MediaArt, Soup, Tracker, Tsparql | 6 |
 | Tuba-rb | GExiv2, Gee, Json, Soup, Spelling | 5 |
-| textpieces-rb | Gee, Json, Xdp, XdpGtk4 | 4 |
-| gnome-clocks-rb | GWeather, Geoclue, GeocodeGlib, GnomeDesktop | 4 |
-| gnome-calendar-rb | EDataServer, GWeather, Geoclue, Soup | 4 |
+| gnome-weather-rb | GWeather, Geoclue, GeocodeGlib, Json, Soup | 5 |
+| snapshot-rb | Gly, GlyGtk4, GstBadAudio, GstVideo, Xdp | 5 |
 | Workbench-rb | Gly, Shumate, Xdp, XdpGtk4 | 4 |
-| polari-rb | Soup, TelepathyGLib, Tracker | 3 |
-| loupe-rb | GWeather, Gly, Xdp | 3 |
-| gnome-podcasts-rb | GstBadAudio, GstPbutils, GstPlay | 3 |
-| forge-sparks-rb | Soup, Xdp, XdpGtk4 | 3 |
+| gnome-calendar-rb | EDataServer, GWeather, Geoclue, Soup | 4 |
+| gnome-clocks-rb | GWeather, Geoclue, GeocodeGlib, GnomeDesktop | 4 |
+| textpieces-rb | Gee, Json, Xdp, XdpGtk4 | 4 |
 | Mousai-rb | GstPbutils, GstPlay, Soup | 3 |
-| yelp-rb | GtkUnixPrint, WebKitWebProcessExtension | 2 |
-| simple-scan-rb | Colord, PackageKitGlib | 2 |
-| showtime-rb | GstPbutils, GstPlay | 2 |
-| papers-rb | GtkUnixPrint, Spelling | 2 |
-| gnome-disk-utility-rb | Notify, UDisks | 2 |
-| gnome-calculator-rb | Gee, Soup | 2 |
-| dialect-rb | Soup, Spelling | 2 |
-| decibels-rb | GstPbutils, GstPlay | 2 |
-| blanket-rb | Xdp, XdpGtk4 | 2 |
-| Solanum-rb | GstPbutils, GstPlay | 2 |
-| Junction-rb | Xdp, XdpGtk4 | 2 |
-| Impression-rb | UDisks, Xdp | 2 |
-| Gradia-rb | Soup, Xdp | 2 |
-| Errands-rb | Goa, Xdp | 2 |
-| Constrict-rb | Gly, GlyGtk4 | 2 |
+| forge-sparks-rb | Soup, Xdp, XdpGtk4 | 3 |
+| gnome-podcasts-rb | GstBadAudio, GstPbutils, GstPlay | 3 |
+| loupe-rb | GWeather, Gly, Xdp | 3 |
+| polari-rb | Soup, TelepathyGLib, Tracker | 3 |
 | Commit-rb | Spelling, Xdp | 2 |
-| webfont-kit-generator-rb | Soup | 1 |
-| valuta-rb | Soup | 1 |
-| resources-rb | Soup | 1 |
-| pika-backup-rb | Xdp | 1 |
-| gnome-text-editor-rb | Spelling | 1 |
-| gnome-system-monitor-rb | GTop | 1 |
-| gnome-characters-rb | IBus | 1 |
-| frogr-rb | Json | 1 |
-| eyedropper-rb | Xdp | 1 |
-| console-rb | GTop | 1 |
-| Wike-rb | Soup | 1 |
-| Tangram-rb | Soup | 1 |
-| Switcheroo-rb | Xdp | 1 |
-| Biblioteca-rb | Xdp | 1 |
+| Constrict-rb | Gly, GlyGtk4 | 2 |
+| Errands-rb | Goa, Xdp | 2 |
+| Gradia-rb | Soup, Xdp | 2 |
+| Impression-rb | UDisks, Xdp | 2 |
+| Junction-rb | Xdp, XdpGtk4 | 2 |
+| Solanum-rb | GstPbutils, GstPlay | 2 |
+| blanket-rb | Xdp, XdpGtk4 | 2 |
+| decibels-rb | GstPbutils, GstPlay | 2 |
+| dialect-rb | Soup, Spelling | 2 |
+| gnome-calculator-rb | Gee, Soup | 2 |
+| gnome-disk-utility-rb | Notify, UDisks | 2 |
+| papers-rb | GtkUnixPrint, Spelling | 2 |
+| showtime-rb | GstPbutils, GstPlay | 2 |
+| simple-scan-rb | Colord, PackageKitGlib | 2 |
+| yelp-rb | GtkUnixPrint, WebKitWebProcessExtension | 2 |
 | Apostrophe-rb | Gspell | 1 |
+| Biblioteca-rb | Xdp | 1 |
+| Switcheroo-rb | Xdp | 1 |
+| Tangram-rb | Soup | 1 |
+| Wike-rb | Soup | 1 |
+| console-rb | GTop | 1 |
+| eyedropper-rb | Xdp | 1 |
+| frogr-rb | Json | 1 |
+| gnome-characters-rb | IBus | 1 |
+| gnome-system-monitor-rb | GTop | 1 |
+| gnome-text-editor-rb | Spelling | 1 |
+| pika-backup-rb | Xdp | 1 |
+| resources-rb | Soup | 1 |
+| valuta-rb | Soup | 1 |
+| webfont-kit-generator-rb | Soup | 1 |
 
 28 port targets have no gaps at all.
 
 ## Not bindings
 
-These are pure-Rust dependencies of the Rust upstreams; they need a Ruby equivalent rather than a gem, and no issue was opened. The most common are `gettext-rs` (16), `log` (9), `serde_json` (8), `async-channel` (7), and `tracing-subscriber` (7).
+The Rust upstreams also use pure-Rust dependencies; these need a Ruby equivalent rather than a gem, so no issue was opened. The most common are `gettext-rs`, `log`, `serde_json`, `async-channel`, `tracing-subscriber`, and `serde`.
