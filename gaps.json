@@ -3,7 +3,7 @@
   "gaps": [
     {
       "namespace": "Soup",
-      "app_count": 21
+      "app_count": 22
     },
     {
       "namespace": "Xdp",
@@ -11,7 +11,7 @@
     },
     {
       "namespace": "Json",
-      "app_count": 10
+      "app_count": 11
     },
     {
       "namespace": "XdpGtk4",
@@ -19,11 +19,15 @@
     },
     {
       "namespace": "Gly",
-      "app_count": 7
+      "app_count": 8
     },
     {
       "namespace": "GstPbutils",
       "app_count": 7
+    },
+    {
+      "namespace": "GlyGtk4",
+      "app_count": 6
     },
     {
       "namespace": "Spelling",
@@ -35,10 +39,6 @@
     },
     {
       "namespace": "Gee",
-      "app_count": 5
-    },
-    {
-      "namespace": "GlyGtk4",
       "app_count": 5
     },
     {
