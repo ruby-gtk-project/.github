@@ -4,8 +4,8 @@
 # repo — where its source lives upstream
 # fork — our copy of it in the org
 #
-# `Scan app sources` adds entries here by pull request when it finds an app
-# with no fork. `Fork or mirror` reads this file and creates any fork that
+# `check-gnome-apps-site` adds entries here by pull request when it finds an app
+# with no fork. `check-and-fork-registry-apps` reads this file and creates any fork that
 # does not exist yet. Nothing else goes in this file.
 
 - app: Apostrophe

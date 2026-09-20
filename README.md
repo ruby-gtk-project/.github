@@ -14,9 +14,9 @@ dashboard, and the canonical agentic workflows the forks redirect to.
 
 | Workflow | Runs | What it does |
 |---|---|---|
-| `scan-app-sources.md` | daily | Reads apps.gnome.org, follows each app's page to find where its source lives, checks whether a fork exists, and opens a PR adding the ones that do not. |
-| `find-gtk-apps.md` | daily | The same for the rest of GitHub — topic and code search, awesome lists, Flathub — judged against size, health, toolkit and licence. |
-| `fork-or-mirror.md` | daily | Reads `registry.yml` and makes every listed fork exist: forks it when the upstream is on GitHub, mirrors it in when it is not. |
+| `find-new-gtk-apps-gnome.md` | daily | Reads apps.gnome.org, follows each app's page to find where its source lives, checks whether a fork exists, and opens a PR adding the ones that do not. |
+| `find-new-gtk-apps-github.md` | daily | The same for the rest of GitHub — topic and code search, awesome lists, Flathub — judged against size, health, toolkit and licence. |
+| `check-and-fork-registry-apps.md` | daily | Reads `registry.yml` and makes every listed fork exist: forks it when the upstream is on GitHub, mirrors it in when it is not. |
 | `initial-port.md` | daily | Decides which forks are port targets and gives each one its `Initial port` and `Gem release` issue on the board. |
 | `sync-skills.yml` | 03:17 daily | Mirrors `ruby-gtk-project/skills` into `port-scaffold/.claude/skills/`. |
 | `reconcile-forks.md` | daily | Every fork has a scaffolded `ruby` branch matching `port-scaffold/`. |

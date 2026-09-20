@@ -67,10 +67,10 @@ safe-outputs:
     if-no-changes: "ignore"
 ---
 
-# Find GTK apps
+# Find new GTK apps
 
 Every GTK app that is worth a Ruby port should end up in
-`registry.yml`. `Scan app sources` covers the ones listed on
+`registry.yml`. `check-gnome-apps-site` covers the ones listed on
 apps.gnome.org. Your job is the rest of GitHub: find **${{ inputs.how_many || 1 }}**
 app the campaign does not have, judge whether it is worth porting, and propose
 it.
@@ -177,7 +177,7 @@ three keys:
 - `app` — what the app is called
 - `repo` — where its source lives, the URL you found it at
 - `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
-  be created. It does not exist yet; `Fork or mirror` reads this file and
+  be created. It does not exist yet; `check-and-fork-registry-apps` reads this file and
   creates whatever is missing.
 
 Nothing else goes in the file — no status, no notes, no sections.

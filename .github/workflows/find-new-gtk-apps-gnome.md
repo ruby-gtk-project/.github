@@ -35,7 +35,7 @@ safe-outputs:
     if-no-changes: "ignore"
 ---
 
-# Scan app sources
+# Check the GNOME apps site
 
 Every GNOME Core and Circle app should end up with a fork in this org.
 `registry.yml` at the root of this repo is the list, three keys per entry:
@@ -110,7 +110,7 @@ keys:
 - `app` — the app's name as the site gives it
 - `repo` — where its source actually lives, from Step 2
 - `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
-  be created. It does not exist yet. That is the point: `Fork or mirror` reads
+  be created. It does not exist yet. That is the point: `check-and-fork-registry-apps` reads
   this file and creates whatever is missing, forking it when `repo` is on
   GitHub and mirroring it when it is not.
 
