@@ -38,7 +38,8 @@ steps:
       mkdir -p /tmp/gh-aw/agent
       ORG=ruby-gtk-project
 
-      cp .github/port-registry.yml /tmp/gh-aw/agent/registry.yml
+      # Deliberately NOT copied to /tmp: an agent handed a copy there edits
+      # the copy, and the pull request comes out empty.
 
       # Every upstream already claimed, one per line, lowercased — the cheap
       # check before spending a search on something we have.
@@ -73,8 +74,9 @@ it.
 
 ## What you have
 
-- `/tmp/gh-aw/agent/registry.yml` — the registry. `forked` is what we have,
-  `candidates` is what is queued.
+- `.github/port-registry.yml` — the registry, in the working directory. This
+  is the real file and the only copy: read and write it **at that path**.
+  `forked` is what we have, `candidates` is what is queued.
 - `/tmp/gh-aw/agent/claimed-upstreams.txt` — every upstream already forked,
   as `owner/repo`, lowercased.
 - `/tmp/gh-aw/agent/issue-titles.txt` and `pr-text.txt` — every issue and pull
@@ -113,7 +115,7 @@ Before spending any judgement on an app, check all four:
 1. its `owner/repo`, lowercased, in `claimed-upstreams.txt`
 2. its name in `issue-titles.txt` (`Initial port: <name>-rb`)
 3. its name or URL in `pr-text.txt` — it may be proposed and not yet merged
-4. its name or URL anywhere in `registry.yml`, in either section
+4. its name or URL anywhere in `.github/port-registry.yml`, in either section
 
 Any hit means move on and find another app. Names collide, so compare the
 repository URL, not just the name: a different project called Commit is a
@@ -163,8 +165,9 @@ licence, but an app that fails several is not a good use of a port.
 
 Write `.github/port-registry.yml` with `python3`, adding the app under
 `candidates`. Do not rely on a file editing tool — in this workflow those
-edits are silently dropped and the pull request is discarded as empty. After
-writing, run `git diff --stat` and confirm it is not empty before continuing.
+edits are silently dropped and the pull request is discarded as empty. After writing, run `git status --porcelain .github/port-registry.yml`. If that
+prints nothing your edit went somewhere that does not count — you are probably
+writing under `/tmp`. Fix it and check again, then `git diff --stat`.
 
 Add it with `status: ready-to-fork` and a `github:` field naming
 `owner/repo`, since anything you found on GitHub can be forked directly.
