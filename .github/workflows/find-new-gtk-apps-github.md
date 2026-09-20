@@ -71,8 +71,10 @@ steps:
       fetch /tmp/gh-aw/agent/issue-titles.txt gh issue list -R "$ORG/.github" --state all --limit 500 --json title \
         --jq '.[].title'
 
-      fetch /tmp/gh-aw/agent/pr-text.txt gh pr list -R "$ORG/.github" --state all --limit 200 --json title,body \
-        --jq '.[] | "\(.title)\n\(.body)"'
+      # REST, not GraphQL: the pullRequests GraphQL query has been 500ing on
+      # this repo for the workflow token while the REST pulls endpoint is fine.
+      fetch /tmp/gh-aw/agent/pr-text.txt gh api --paginate "repos/$ORG/.github/pulls?state=all&per_page=100" \
+        --jq '.[] | .title + "\n" + (.body // "")'
 
       wc -l /tmp/gh-aw/agent/claimed-upstreams.txt /tmp/gh-aw/agent/issue-titles.txt
 
