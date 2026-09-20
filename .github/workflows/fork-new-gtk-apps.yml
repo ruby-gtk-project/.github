@@ -6,7 +6,7 @@ name: Fork new GTK apps
 
 on:
   schedule:
-    - cron: "26 23 * * 3"  # weekly, same slot the agentic version used
+    - cron: "26 23 * * *"  # daily
   workflow_dispatch:
     inputs:
       only:
