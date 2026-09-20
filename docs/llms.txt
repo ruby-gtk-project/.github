@@ -1,0 +1,82 @@
+# GitHub Agentic Workflows
+
+> Agent-optimised prompt files for GitHub Agentic Workflows (gh-aw).
+> These markdown files are designed for AI agents and LLMs, not human readers.
+
+## Agent Prompts
+
+- [action-container-substitutions](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/action-container-substitutions.md): How to configure action and container image substitutions in aw.json for private-cloud and air-gapped enterprise environments.
+- [agent-runtime-instructions](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/agent-runtime-instructions.md): Choose and configure agent runtimes for GitHub Agentic Workflows.
+- [agentic-chat](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/agentic-chat.md): AI assistant for creating clear, actionable task descriptions for GitHub Copilot coding agent
+- [agentic-workflows-mcp](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/agentic-workflows-mcp.md): agentic-workflows MCP server tool reference for workflows that call status, logs, audit, or compile
+- [asciicharts](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/asciicharts.md): Guidance for generating compact ASCII charts that render cleanly in GitHub markdown surfaces.
+- [campaign](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/campaign.md): Guidance for designing campaign-style agentic workflows with measurable goals, pacing controls, and safe output constraints.
+- [charts-trending](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/charts-trending.md): Full trending-analysis patterns, best practices, and reporting guidance for chart workflows.
+- [charts](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/charts.md): Guidance for adding Python data visualization to agentic workflows with compact setup patterns and links to the full trending guide.
+- [cli-commands](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/cli-commands.md): Complete reference for gh aw CLI commands and their MCP tool equivalents for restricted environments
+- [compat](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/compat.md)
+- [configure-agentic-engine](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/configure-agentic-engine.md): Guide for configuring new declarative agentic engines — engine definition fields, auth wiring, behavior blocks, and validation.
+- [context](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/context.md): GitHub context expression variables and Handlebars-style template conditionals ({{#if}}) for agentic workflows.
+- [create-agentic-workflow-trigger-details](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/create-agentic-workflow-trigger-details.md): Detailed trigger and escalation guidance referenced by create-agentic-workflow.md section 2.
+- [create-agentic-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/create-agentic-workflow.md): Design and create new agentic workflows using GitHub Agentic Workflows (gh-aw) — unified interview-first experience with concise guidance on triggers, tools, and security.
+- [create-shared-agentic-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/create-shared-agentic-workflow.md): Create shared agentic workflow components that wrap MCP servers using secure, reusable patterns.
+- [debug-agentic-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/debug-agentic-workflow.md): Debug and refine agentic workflows using gh-aw CLI tools and focused run-log analysis.
+- [dependabot](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/dependabot.md): Instructions for fixing Dependabot PRs that update dependencies in generated workflow manifest files
+- [deployment-status](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/deployment-status.md): Reference pattern for monitoring external deployment failures using the deployment_status trigger and creating incident issues automatically.
+- [designer-mappings](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/designer-mappings.md): Quick reference mappings from user requirements to agentic workflow triggers, outputs, tools, and guardrails.
+- [designer](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/designer.md): Structured interview playbook for turning user goals into complete, runnable agentic workflow specifications.
+- [drive-memory](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/drive-memory.md): Private-preview GitHub Drives memory backend — experimental, gated, do not configure unless explicitly enrolled.
+- [enclaves](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/enclaves.md): Private-repository enclaves (preview) — finite-disclosure access to approved private repos via the MCP gateway.
+- [evals](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/evals.md): Guide for adding BinEval-style binary evaluations to agentic workflows — syntax, intent-derived question methodology, and anti-patterns.
+- [experiments](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/experiments.md): Guide for setting up A/B testing experiments in agentic workflows — syntax, design principles, dimensions to test, how to measure results, and anti-patterns.
+- [github-agentic-workflows](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/github-agentic-workflows.md): GitHub Agentic Workflows
+- [github-mcp-server-pagination](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/github-mcp-server-pagination.md): Pagination guidance for GitHub MCP tools to stay within token limits while retrieving complete result sets.
+- [github-mcp-server-tools](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/github-mcp-server-tools.md): Toolset-by-toolset reference for GitHub MCP server tools, including purposes and key parameters.
+- [github-mcp-server](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/github-mcp-server.md): Overview and practical guidance for configuring and using GitHub MCP server toolsets in agentic workflows.
+- [instructions](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/instructions.md): Repository-specific overlay rules that refine default gh-aw guidance for workflow authoring and validation.
+- [intent](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/intent.md): Design-time guidance for deriving an outcome-oriented workflow intent and using it to select, implement, and evaluate an agentic workflow.
+- [jobs](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/jobs.md): Maps every compiler-generated job to its purpose, dependencies, and GitHub token or GitHub App configuration so agents grant credentials only to the job that needs them.
+- [linter-workflows](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/linter-workflows.md): Design evidence-driven workflows that mine, refine, and apply custom linter rules without overfitting or creating unbounded remediation work.
+- [llms](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/llms.md): Discover LLM API endpoints, ports, and available model names inside the AWF agent container using the api-proxy /reflect endpoint.
+- [loop](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/loop.md): Loop-engineering workflow patterns and implementation guidance for gh-aw workflows.
+- [lsp](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/lsp.md): Language Server Protocol (LSP) configuration reference for gh-aw Copilot workflows — frontmatter syntax, supported servers, and file extension mapping.
+- [maintainer](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/maintainer.md): Guidance for designing bounded, stateful repository maintenance workflows that triage backlogs, improve code, and report to maintainers.
+- [mcp-clis](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/mcp-clis.md): MCP CLI command usage guidance and JSON payload patterns
+- [memory-stateful-patterns](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/memory-stateful-patterns.md): Worked patterns for stateful agentic workflows — baseline metric comparison with cache-memory, and "alert on new findings" scanning with repo-memory.
+- [memory](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/memory.md): Guide for choosing the right persistent memory strategy in agentic workflows — cache-memory, repo-memory, and repo-memory with wiki. Covers deduplication, stateful baseline comparison (metrics/coverage), and stateful scanning ("alert on new X").
+- [messages](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/messages.md): Style guide for workflow status messages (all safe-outputs.messages template types).
+- [multi-agent-research](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/multi-agent-research.md): Design guide for long-running agentic workflows that run multi-agent research — problem framing, orchestration policy, diversity, verification, and return conditions. Distilled from the OpenAI Cycle Double Cover (CDC) prompt.
+- [network](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/network.md): Network access configuration reference for gh-aw workflows — valid ecosystem identifiers, domain patterns, and common mistakes to avoid.
+- [optimize-agentic-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/optimize-agentic-workflow.md): Analyze and reduce token consumption in agentic workflows — audit-based measurement, DataOps, gh-proxy, sub-agents, and prompt optimization.
+- [patterns](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/patterns.md): Agentic workflow pattern router for selecting the best documented pattern and playbook.
+- [playwright](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/playwright.md): Configure and use the built-in Playwright CLI integration in GitHub Agentic Workflows.
+- [pr-reviewer](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/pr-reviewer.md): Guidance for implementing PR reviewer agentic workflows with ready_for_review triggers, centralized slash commands, and safe review actions.
+- [release-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/release-workflow.md): Guidance for creating release agentic workflows that combine classic Action jobs (build, test, publish) with an agent job that generates release highlights.
+- [report](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/report.md): Guidelines for creating agentic workflows that generate reports — output type selection, formatting style, and automatic cleanup.
+- [reuse](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/reuse.md): Imports, shared components, import-schema, and gh aw add/update for GitHub Agentic Workflows
+- [safe-outputs-automation](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/safe-outputs-automation.md): Safe-output reference for workflow dispatch, code scanning, checks, agent sessions, and assignment operations.
+- [safe-outputs-content](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/safe-outputs-content.md): Safe-output reference for issue, discussion, comment, and pull request content operations.
+- [safe-outputs-management](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/safe-outputs-management.md): Safe-output reference for update, label, milestone, project, release, and upload operations.
+- [safe-outputs-runtime](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/safe-outputs-runtime.md): Safe-output reference for runtime defaults, custom jobs, scripts, actions, global configuration, and output variables.
+- [safe-outputs](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/safe-outputs.md): Compact index for safe-output operations and runtime configuration in GitHub Agentic Workflows.
+- [serena-tool](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/serena-tool.md): Guidance for when to use the Serena LSP MCP server for semantic code analysis in agentic workflow tasks.
+- [shared-safe-jobs](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/shared-safe-jobs.md): Shared pattern for custom safe-output jobs that consume structured agent output.
+- [skills](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/skills.md): Guide for using skills and plugins in agentic workflows — compiler-managed `skills:`/`plugins:` installs plus hint, fusion, and inline strategies
+- [subagents](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/subagents.md): Guide for defining inline sub-agents in workflow markdown files — syntax, engine placement, frontmatter fields, and best practices.
+- [syntax-agentic](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/syntax-agentic.md): Agentic workflow specific frontmatter fields for GitHub Agentic Workflows.
+- [syntax-core](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/syntax-core.md): Core GitHub Actions frontmatter fields supported by GitHub Agentic Workflows.
+- [syntax-engine](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/syntax-engine.md): `engine:` frontmatter field detail for GitHub Agentic Workflows.
+- [syntax-tools-imports](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/syntax-tools-imports.md): Cache, tool, import, and permission reference for GitHub Agentic Workflows frontmatter.
+- [syntax](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/syntax.md): Compact index for the GitHub Agentic Workflows frontmatter schema.
+- [test-coverage](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/test-coverage.md): Guidance for creating agentic workflows that analyze test coverage — prefer reading pre-computed CI artifacts over re-running tests.
+- [test-expression](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/test-expression.md)
+- [token-optimization-caching-budgets](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/token-optimization-caching-budgets.md): Prompt caching, AI-credit budget guardrails, and bounded file reads for GitHub Agentic Workflows.
+- [token-optimization-observability](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/token-optimization-observability.md): OpenTelemetry export and harness-execution-experience learning loops for token optimization in GitHub Agentic Workflows.
+- [token-optimization](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/token-optimization.md): Guide for reducing token consumption in agentic workflows — DataOps, gh-proxy, inline sub-agents, caveman experiments, and audit-based measurement.
+- [triggers](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/triggers.md): Trigger patterns for GitHub Agentic Workflows — events, fuzzy scheduling, fork security, slash commands, and label commands.
+- [update-agentic-workflow](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/update-agentic-workflow.md): Update existing agentic workflows using GitHub Agentic Workflows (gh-aw) with concise guidance on minimal changes and validation.
+- [upgrade-agentic-workflows](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/upgrade-agentic-workflows.md): Upgrade agentic workflows to the latest version of gh-aw with automated compilation and error fixing
+- [visual-regression](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/visual-regression.md): Reference prompt for visual regression testing using playwright + cache-memory for baseline screenshot storage across pull requests
+- [workflow-constraints](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/workflow-constraints.md): Shared architectural and security constraints for designing or updating agentic workflows.
+- [workflow-editing](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/workflow-editing.md): Shared guidance for editing, recompiling, and validating GitHub Agentic Workflow files.
+- [workflow-patterns](https://raw.githubusercontent.com/github/gh-aw/main/.github/aw/workflow-patterns.md): Shared design patterns for command workflows, monitoring workflows, scheduled one-item-at-a-time (All You Can Eat) workflows, large-repository workflows, database migration reviews, and cross-repository operations.
