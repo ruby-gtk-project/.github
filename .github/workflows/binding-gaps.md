@@ -69,9 +69,12 @@ steps:
         .gaps | map(select(.app_count >= $min))
       ' /tmp/gh-aw/agent/gaps.json > /tmp/gh-aw/agent/to-file.json
 
-      # Carry this run forward for next week's deltas.
+      # Carry this run forward for next week's deltas. Only the namespace and
+      # its app count are needed, and the memory branch has a patch-size limit
+      # the whole of gaps.json (40 KB) does not fit inside.
       mkdir -p /tmp/gh-aw/repo-memory/default
-      cp /tmp/gh-aw/agent/gaps.json /tmp/gh-aw/repo-memory/default/gaps.json
+      jq '{scan_date, gaps: [.gaps[] | {namespace, app_count}]}' \
+        /tmp/gh-aw/agent/gaps.json > /tmp/gh-aw/repo-memory/default/gaps.json
 
       jq -r '"\(.gaps|length) gaps, \(.coverage.namespaces) namespaces covered, \(.unclassified|length) unclassified"' \
         /tmp/gh-aw/agent/gaps.json
@@ -203,14 +206,19 @@ Opened by `binding-gaps`. The scan is in
 [reports/binding-gaps-<DATE>.md](https://github.com/${{ github.repository }}/blob/main/reports/binding-gaps-<DATE>.md).
 ```
 
-Then add each one to the board with `update_project`: the project URL
-`https://github.com/orgs/ruby-gtk-project/projects/4`, no `operation` (adding
-an item is what it does when `operation` is omitted), `content_type` `issue`,
-the issue's `temporary_id`, and `fields`:
+Then add each one to the board with `update_project`. Pass exactly these four
+arguments and **no others** — in particular there is no `temporary_id` argument
+and no `add` operation. Adding an item is what the tool does when `operation`
+is omitted, and the temporary id goes in `content_number`:
 
-- `Status` — `Todo`
-- `Apps blocked` — `app_count`
-- `Namespace` — `namespace`
+- `project` — `https://github.com/orgs/ruby-gtk-project/projects/4`
+- `content_type` — `issue`
+- `content_number` — the `temporary_id` you gave that issue, e.g. `aw_gap_soup`
+- `fields` — `{"Status": "Todo", "Apps blocked": <app_count>, "Namespace": "<namespace>"}`
+
+One `update_project` call per issue, so the number of calls matches the number
+of issues exactly. An argument the tool does not recognise makes it drop every
+argument and add nothing, so do not add any.
 
 Titles are deduplicated, so a gap that was filed last week updates nothing
 rather than filing twice. Do not close, rename or re-file an existing issue.
