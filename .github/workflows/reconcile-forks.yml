@@ -22,7 +22,7 @@ on:
         type: boolean
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: reconcile-forks
@@ -41,6 +41,17 @@ jobs:
 
       - name: Let git push with the same token
         run: gh auth setup-git
+
+      - name: Fork what the registry says to fork
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          .github/aw/fork-from-registry.sh
+          if ! git diff --quiet .github/port-registry.yml; then
+            git add .github/port-registry.yml
+            git commit -m "Registry: promote newly forked apps"
+            git push
+          fi
 
       - name: Issues match the registry and the templates
         run: .github/aw/ensure-port-issues.sh
