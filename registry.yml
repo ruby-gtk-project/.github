@@ -38,6 +38,9 @@
 - app: cartridges
   repo: https://github.com/kra-mo/cartridges
   fork: https://github.com/ruby-gtk-project/cartridges-rb
+- app: Chess Clock
+  repo: https://gitlab.gnome.org/World/chess-clock
+  fork: https://github.com/ruby-gtk-project/Chess-Clock-rb
 - app: clairvoyant
   repo: https://github.com/cassidyjames/clairvoyant
   fork: https://github.com/ruby-gtk-project/clairvoyant-rb
