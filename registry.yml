@@ -71,6 +71,9 @@
 - app: Curtail
   repo: https://github.com/Huluti/Curtail
   fork: https://github.com/ruby-gtk-project/Curtail-rb
+- app: Déjà Dup Backups
+  repo: https://gitlab.gnome.org/World/deja-dup
+  fork: https://github.com/ruby-gtk-project/deja-dup-rb
 - app: decibels
   repo: https://github.com/GNOME/decibels
   fork: https://github.com/ruby-gtk-project/decibels-rb
