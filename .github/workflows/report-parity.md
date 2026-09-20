@@ -93,7 +93,7 @@ safe-outputs:
     draft: false
     # A review reports; it does not fix. An exclusive allowlist means a PR
     # carrying anything but the report is refused rather than reviewed.
-    allowed-files: ["PARITY_REPORT-*.md"]
+    allowed-files: [".reports/PARITY_REPORT-*.md"]
     if-no-changes: "error"
 ---
 
@@ -170,9 +170,10 @@ working from the original's source:
 
 ## Step 4 — Write the report
 
-Write `PARITY_REPORT-<date>.md` at the root of `./target` (which is the port's
-`ruby` branch), where `<date>` is from `context.env`. Exactly this shape, so
-that two reports on the same repo can be compared:
+Write `.reports/PARITY_REPORT-<date>.md` under `./target` (which is the port's
+`ruby` branch), where `<date>` is from `context.env`. Generated parity
+documents live in `.reports/` — create the directory first. Exactly this
+shape, so that two reports on the same repo can be compared:
 
 ```markdown
 # Parity report — <repo>
