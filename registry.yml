@@ -185,6 +185,9 @@
 - app: loupe
   repo: https://github.com/GNOME/loupe
   fork: https://github.com/ruby-gtk-project/loupe-rb
+- app: Lorem
+  repo: https://gitlab.gnome.org/World/design/lorem
+  fork: https://github.com/ruby-gtk-project/lorem-rb
 - app: Mousai
   repo: https://github.com/SeaDve/Mousai
   fork: https://github.com/ruby-gtk-project/Mousai-rb
