@@ -191,6 +191,9 @@
 - app: nautilus
   repo: https://github.com/GNOME/nautilus
   fork: https://github.com/ruby-gtk-project/nautilus-rb
+- app: Newsflash
+  repo: https://gitlab.com/news-flash/news_flash_gtk
+  fork: https://github.com/ruby-gtk-project/newsflash-rb
 - app: Paper-Clip
   repo: https://github.com/Diego-Ivan/Paper-Clip
   fork: https://github.com/ruby-gtk-project/Paper-Clip-rb
