@@ -3,7 +3,7 @@ Release **{{REPO}}** to [rubygems.org](https://rubygems.org). Everything below h
 ### Complete
 - [ ] Every window, dialog, page, menu item, keyboard shortcut, preference, action, empty state and error state the original has, the port has. Work through the upstream source file by file — that is the only way to know.
 - [ ] No stubs, no `TODO`, no "not implemented yet" paths left in `lib/` or `bin/`.
-- [ ] **Parity review completed.** Run the **Parity review** workflow from this repo's Actions tab once the port looks finished. It compares the `ruby` branch against the original and opens a PR adding `.reports/PARITY_REPORT-<date>.md`. This box is ticked when a report on the current code says **PASS** — merge it, and link it here. A FAIL report is the gap list: fix it and run the review again.
+- [ ] **Parity review completed.** Run the **Parity review** workflow from this repo's Actions tab once the port looks finished. It compares the `ruby` branch against the original and commits `.reports/PARITY_REPORT-<date>.md`. This box is ticked when a report on the current code says **PASS** — link it here. A FAIL report is the gap list: fix it and run the review again.
 
 ### Functional
 - [ ] The app launches and its main flows work, checked with `ruby-gtk-testing`.

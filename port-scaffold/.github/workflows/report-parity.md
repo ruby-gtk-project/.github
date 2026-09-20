@@ -1,8 +1,8 @@
 ---
 description: |
   Reviews this Ruby GTK4 port against the original app it was ported from and
-  writes a dated PARITY_REPORT into .reports/ as a pull request. Triggered by
-  hand once a port is believed finished.
+  writes a dated PARITY_REPORT into .reports/ on the ruby branch.
+  Triggered by hand once a port is believed finished.
 
 on:
   workflow_dispatch:
@@ -67,21 +67,29 @@ steps:
 
       cat "$OUT/context.env"
 
-safe-outputs:
-  create-pull-request:
-    title-prefix: "[parity] "
-    labels: [parity-review]
-    max: 1
-    draft: false
-    # .reports/ is a top-level dot-folder, which gh-aw protects by default
-    # (ADR-28486). The parity document is the whole point, and allowed-files
-    # above already restricts every patch to exactly that document — so the
-    # protected-files guard is redundant here and is switched off.
-    protected-files: allowed
-    # A review reports; it does not fix. An exclusive allowlist means a PR
-    # carrying anything but the report is refused rather than reviewed.
-    allowed-files: [".reports/PARITY_REPORT-*.md"]
-    if-no-changes: "error"
+post-steps:
+  - name: Commit the report
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+    run: |
+      set -euo pipefail
+      # the census step recorded the date the agent was told to use
+      date=$(grep '^date=' /tmp/gh-aw/agent/parity/context.env | cut -d= -f2)
+      f=".reports/PARITY_REPORT-${date}.md"
+      [ -s "$f" ] || { echo "::error::agent did not write $f"; exit 1; }
+      git config user.name  "github-actions[bot]"
+      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      git add .reports
+      if git diff --cached --quiet; then
+        echo "the documents are unchanged — nothing to commit"
+        exit 0
+      fi
+      git commit -m "reports: parity review $(date -u +%F)"
+      url="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+      git pull --rebase --autostash "$url" ruby
+      git push "$url" HEAD:ruby
+
 ---
 
 # Parity review
@@ -214,17 +222,13 @@ The verdict is **PASS** only when every category's surviving gap count is zero
 and Step 3 turned up nothing. Anything else is **FAIL** with the gaps listed.
 A port with one missing dialog is not a pass with a note.
 
-## Step 5 — Open the pull request
-
-Call `create_pull_request` titled `Parity report <date>`, adding only the
-report file. The body is the Summary and the Verdict, and a line saying which
-commits were compared.
-
 ## Rules
 
 - Never edit anything but the report file.
+- The commit is automatic — the run fails if the report is missing when you
+  finish, so write it before you finish.
 - If the port has no application code, stop and say so — there is nothing to
-  review yet, and no report should be written.
+  review yet, and the run should end without the report.
 - If you could not complete the review, say why in the report and mark the
-  verdict FAIL. Do not open a PR carrying a report you know is incomplete
-  without saying so in it.
+  verdict FAIL. Never write a report you know is incomplete without saying so
+  in it.

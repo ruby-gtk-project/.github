@@ -18,6 +18,15 @@ answer it. Read them first.
 
 ## Working on the workflows
 
+**Agents are limited to decision-making and creation.** Persistence —
+commits, pushes, issue board syncs, comment rewrites — belongs in
+`post-steps:` (or in plain Actions workflows) running on the runner with the
+PAT. Never give the agent a write it can fumble when a step can do it
+deterministically: a deduplicated safe-output registers no temporary id, so
+agent-driven follow-up writes fail on every run after the first. If a piece of
+work has no judgement in it at all, it is not an agentic workflow — it is a
+plain action (see `fork-new-gtk-apps.yml`).
+
 - Edit the `.md`, never the `.lock.yml`. Recompile with `gh aw compile`.
 - **Always compile all workflows at once** (`gh aw compile`, no filter). The
   action-failure expiry patch only runs on a full compile — compiling a single
