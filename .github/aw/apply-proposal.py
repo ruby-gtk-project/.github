@@ -40,8 +40,9 @@ def parse_proposal(body):
     for e in entries:
         if e['status'] == 'ready-to-fork' and not e.get('github'):
             sys.exit(f"{e['app']}: ready-to-fork needs a github: field")
-        if e['status'] == 'ready-to-import' and not e.get('vcs'):
-            sys.exit(f"{e['app']}: ready-to-import needs a vcs: field")
+        # vcs may be absent here and inherited from the registry entry: the
+        # agent's output has non-GitHub URLs redacted, and the registry
+        # already holds the real one. Checked after the merge instead.
     return entries
 
 
@@ -88,6 +89,8 @@ def main():
                 if m:
                     data[m.group(1)] = m.group(2).strip()
         data.update({k: v for k, v in e.items() if k != 'app'})
+        if data['status'] == 'ready-to-import' and not data.get('vcs'):
+            sys.exit(f"{app}: ready-to-import and no vcs, in the proposal or the registry")
         new = render(app, data)
         if app in by_app:
             if by_app[app] != new:

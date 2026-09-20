@@ -17,7 +17,10 @@ timeout-minutes: 30
 permissions: read-all
 
 network:
-  allowed: [defaults, github]
+  # Without these, every non-GitHub URL is redacted out of the agent's output
+  # as `(gitlab.gnome.org/redacted)` — which is precisely the upstream URL the
+  # import route needs.
+  allowed: [defaults, github, "gitlab.gnome.org", "gitlab.com", "codeberg.org", "flathub.org", "apps.gnome.org"]
 
 tools:
   edit:
