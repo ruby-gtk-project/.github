@@ -30,6 +30,10 @@ tools:
   # why a run reported "no write access" and claimed 0 of 83 forks existed.
   bash: ["*"]
   github:
+    # gh-proxy puts a pre-authenticated gh CLI in the agent's bash. The
+    # default MCP-server mode leaves bash gh unauthenticated — a run failed
+    # with "gh reports that GH_TOKEN must be set" (issue #257).
+    mode: gh-proxy
     toolsets: [repos]
     # The agent creates and pushes repositories in the org — the repo-scoped
     # GITHUB_TOKEN cannot do that. This is the one PAT with those powers.
@@ -69,6 +73,7 @@ gh repo fork <owner>/<name> --org ruby-gtk-project --fork-name <name>-rb --clone
 instead:
 
 ```sh
+gh auth setup-git                           # once: let git use gh's credentials for github.com
 git ls-remote --symref <repo> HEAD          # learn its default branch first
 git clone --mirror <repo> /tmp/gh-aw/agent/m
 gh repo create ruby-gtk-project/<name>-rb --public --description "Ruby GTK4 port of <app>. Upstream: <repo>"

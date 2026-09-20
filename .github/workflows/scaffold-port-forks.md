@@ -29,6 +29,9 @@ tools:
   # bare-command entries that deny the workflow's own documented commands.
   bash: ["*"]
   github:
+    # gh-proxy puts a pre-authenticated gh CLI in the agent's bash — the
+    # default MCP-server mode leaves bash gh unauthenticated.
+    mode: gh-proxy
     toolsets: [repos, issues]
     # The agent pushes to the forks' ruby branches — other repositories, which
     # the repo-scoped GITHUB_TOKEN cannot write. The one PAT that can.
@@ -62,7 +65,9 @@ parts of it are ours outright and must match exactly:
 - `cops/` — the custom rubocop cops
 
 Clone the fork's `ruby` branch shallowly, compare those two against
-`port-scaffold/`, and if they differ, copy ours over, commit and push.
+`port-scaffold/`, and if they differ, copy ours over, commit and push. The gh
+CLI is pre-authenticated; run `gh auth setup-git` once before your first push
+so git uses its credentials for github.com.
 
 **Everything else in `port-scaffold/` is seeded once and never overwritten** —
 `flake.nix`, `Gemfile`, `.rubocop.yml`, `.envrc`, `.gitignore`, `AGENTS.md`,
