@@ -87,12 +87,23 @@ from it and add them.
   apps we already have; `candidates` are apps we know about but have no GitHub
   home for yet.
 
-## Step 1 — Which apps are new
+## Step 1 — What needs work this run
 
-An app is new if neither its name nor its source repo appears anywhere in the
-registry. Match on substance, not string equality: `Apostrophe` in the registry
-as fork `Apostrophe-rb` with upstream `ApostropheEditor/Apostrophe` is the same
-app as `Apostrophe` on the page, and is not new.
+Two kinds of app need you, and most runs will have both:
+
+1. **Candidates with `status: needs-github-home`.** These are already in the
+   registry and are the main event — a port cannot start until one of them has
+   a GitHub home. Work through every single one.
+2. **Apps on the page that the registry does not mention at all.** Match on
+   substance, not string equality: `Apostrophe` on the page is the same app as
+   fork `Apostrophe-rb` with upstream `ApostropheEditor/Apostrophe`, and is not
+   new.
+
+An app already being listed as a candidate is **not** a reason to skip it.
+Being listed with no `github:` field is the problem you are here to solve. A
+run that finds every app "already represented" and opens no pull request has
+done nothing.
+
 
 ## Step 2 — Find where it really lives on GitHub
 
@@ -123,17 +134,21 @@ ago is not a home; say so rather than registering it.
 Add each new app to `.github/port-registry.yml` and open one pull request with
 all of them. Keep the file's existing shape and ordering.
 
-- Found a GitHub home you are confident in → add it under `candidates` with
-  `status: ready-to-fork` and a `github:` field naming `owner/repo`.
-- Found nothing, or nothing you trust → add it under `candidates` with
-  `status: needs-github-home` and leave `github` out.
+- Found a GitHub home you are confident in → set that candidate's `status` to
+  `ready-to-fork` and add a `github:` field naming `owner/repo`. Merging the
+  pull request is what causes the fork to be created.
+- Found nothing, or nothing you trust → leave `status: needs-github-home` and
+  add a `checked:` field with today's date and one line on what you looked for,
+  so the next run does not repeat the same dead end.
 - Put what convinced you in the PR body, per app, with links. Someone approves
   this by reading it, so a bare list of names is not enough.
 
 Never edit the `forked` section. Those are existing forks; this workflow only
 proposes additions.
 
-If nothing is new, say so and open no pull request.
+Open no pull request only when every candidate already has a `github:` field
+or has been checked and genuinely has no GitHub presence, and no app on the
+page is missing from the registry. Say which of those two it was.
 
 ## Rules
 
