@@ -25,10 +25,14 @@ SCAFFOLD=$ROOT/port-scaffold
 ONLY=${ONLY:-}
 DRY=${DRY_RUN:-}
 
-# Overwritten every run: the scaffold owns these outright, so an edit made in
-# a fork is drift and gets reverted. AGENTS.md and CLAUDE.md are written only
-# when absent — they carry per-app prose a fork is allowed to grow.
-AUTH=(.claude/skills cops .rubocop.yml flake.nix Gemfile .envrc .gitignore)
+# Overwritten every run. The scaffold owns these outright: they are shared
+# tooling, identical in every fork, and an edit to them inside a fork is drift.
+AUTH=(.claude/skills cops)
+
+# Written only when absent. A real port grows these — console-rb's flake.nix
+# is 229 lines away from the scaffold's and gnome-contacts-rb has its own
+# gems — so the scaffold seeds them once and never touches them again.
+SEED=(.rubocop.yml flake.nix Gemfile .envrc .gitignore)
 
 rc=0
 work=$(mktemp -d)
@@ -75,6 +79,9 @@ while read -r repo; do
     mkdir -p "$(dirname "$d/$p")"
     rm -rf "${d:?}/$p"
     cp -a "$SCAFFOLD/$p" "$d/$p"
+  done
+  for p in "${SEED[@]}"; do
+    [ -e "$d/$p" ] || cp -a "$SCAFFOLD/$p" "$d/$p"
   done
   if [ ! -e "$d/AGENTS.md" ]; then
     sed "s/{{APP}}/${repo%-rb}/g" "$SCAFFOLD/AGENTS.md" > "$d/AGENTS.md"
