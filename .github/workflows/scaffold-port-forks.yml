@@ -90,14 +90,12 @@ jobs:
             fi
             rsync -a --delete port-scaffold/.claude/skills/ "$tmp/r/.claude/skills/"
             rsync -a --delete port-scaffold/cops/ "$tmp/r/cops/"
-            # The parity report workflows (.md only — each fork compiles its
-            # own locks), the compiler workflow, the scanner and the pinned
-            # actions are ours too, and must match exactly.
-            mkdir -p "$tmp/r/.github/workflows" "$tmp/r/.github/aw"
-            cp port-scaffold/.github/workflows/report-parity*.md "$tmp/r/.github/workflows/"
-            cp port-scaffold/.github/workflows/compile-agentic-workflows.yml "$tmp/r/.github/workflows/"
-            cp port-scaffold/.github/aw/parity-scan.sh "$tmp/r/.github/aw/"
-            cp .github/aw/actions-lock.json "$tmp/r/.github/aw/actions-lock.json"
+            # The parity workflows were a wrong turn — the skills run locally
+            # with the porting agent, not on Actions. Remove them from forks
+            # that received them.
+            rm -f "$tmp/r/.github/workflows/report-parity"*.md \
+                  "$tmp/r/.github/workflows/report-parity"*.lock.yml \
+                  "$tmp/r/.github/workflows/compile-agentic-workflows.yml"
             for f in flake.nix Gemfile .rubocop.yml .envrc .gitignore CLAUDE.md; do
               [ -e "$tmp/r/$f" ] || cp -a "port-scaffold/$f" "$tmp/r/$f"
             done

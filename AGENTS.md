@@ -39,11 +39,12 @@ plain action (see `fork-new-gtk-apps.yml`).
 - After editing, compile and check the diff of the lock matches what you meant
   to change. Then test with `gh workflow run <file> --ref main`, watch with
   `gh run watch <id>`, and inspect with `gh aw audit <id>`.
-- **The parity reports** (`report-parity`, `report-parity-test`,
-  `report-parity-translation`) **live in `port-scaffold/.github/workflows/`**,
-  synced into every fork as `.md` only; each fork compiles its own locks with
-  `compile-agentic-workflows.yml` on push. Edit them in the scaffold, never in
-  a fork. They are dispatch-only and write to `.reports/` in the target repo.
+- **Parity reports do not run on GitHub.** The parity skills
+  (component-identification, component-parity, test-parity,
+  translation-parity, accountability-ensurance) are exercised by the local
+  porting agent via a subagent, writing `.reports/` in the fork. A previous
+  incarnation ran them as gh-aw workflows; that was removed — the Initial
+  port issue is what tells the porting agent to do it.
 
 ## Lessons paid for with broken runs
 

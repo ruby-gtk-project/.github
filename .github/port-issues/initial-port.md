@@ -9,4 +9,4 @@ This is a full parity port. Nothing is left out: every window, dialog, page, men
 
 It is done when the app does everything the original does.
 
-Also use the parity skills in `.claude/skills/` — `component-identification` and `component-parity` (does the UI match?), `test-parity` (is every upstream test ported?), `accountability-ensurance` (is a gap being excused rather than built?). See https://github.com/ruby-gtk-project/skills
+As you go, have a subagent carry out the parity reports with the parity skills in `.claude/skills/`: `component-identification` and `component-parity` (does the UI match?), `test-parity` (is every upstream test ported?), `translation-parity` (did every msgid survive?), and `accountability-ensurance` (is a gap being excused rather than built?). Each writes its document under `.reports/`. The port is not done while any of them says otherwise. See https://github.com/ruby-gtk-project/skills
