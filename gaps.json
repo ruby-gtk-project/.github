@@ -3,19 +3,19 @@
   "gaps": [
     {
       "namespace": "Soup",
-      "app_count": 20
+      "app_count": 21
     },
     {
       "namespace": "Xdp",
-      "app_count": 17
+      "app_count": 18
     },
     {
       "namespace": "Json",
-      "app_count": 9
+      "app_count": 10
     },
     {
       "namespace": "XdpGtk4",
-      "app_count": 8
+      "app_count": 9
     },
     {
       "namespace": "Gly",
@@ -26,7 +26,15 @@
       "app_count": 7
     },
     {
+      "namespace": "Spelling",
+      "app_count": 6
+    },
+    {
       "namespace": "GWeather",
+      "app_count": 5
+    },
+    {
+      "namespace": "Gee",
       "app_count": 5
     },
     {
@@ -38,14 +46,6 @@
       "app_count": 5
     },
     {
-      "namespace": "Spelling",
-      "app_count": 5
-    },
-    {
-      "namespace": "Gee",
-      "app_count": 4
-    },
-    {
       "namespace": "Geoclue",
       "app_count": 4
     },
@@ -54,15 +54,19 @@
       "app_count": 4
     },
     {
+      "namespace": "Goa",
+      "app_count": 4
+    },
+    {
+      "namespace": "EDataServer",
+      "app_count": 3
+    },
+    {
       "namespace": "GTop",
       "app_count": 3
     },
     {
       "namespace": "GeocodeGlib",
-      "app_count": 3
-    },
-    {
-      "namespace": "Goa",
       "app_count": 3
     },
     {
@@ -83,10 +87,6 @@
     },
     {
       "namespace": "Colord",
-      "app_count": 2
-    },
-    {
-      "namespace": "EDataServer",
       "app_count": 2
     },
     {
