@@ -13,4 +13,4 @@
 * [ports in progress](https://github.com/ruby-gtk-project/projects/1)
 * [planning](https://github.com/ruby-gtk-project/.github)
 
-[why?](https://github.com/ruby-gtk-project/.github/issues/84#issuecomment-5539179414)
+but... [why?](https://github.com/ruby-gtk-project/.github/issues/84#issuecomment-5539179414)
