@@ -267,249 +267,109 @@ candidates:
     source: circle
     vcs: https://gitlab.gnome.org/World/amberol
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Apostrophe
-    source: circle
-    vcs: https://gitlab.gnome.org/World/apostrophe/
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: AudioSharing
     source: circle
     vcs: https://gitlab.gnome.org/World/AudioSharing
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Authenticator
-    source: circle
-    vcs: https://gitlab.gnome.org/World/Authenticator
-    host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Bazaar
-    source: circle
-    vcs: https://gitlab.gnome.org/World/bazaar
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Boatswain
     source: circle
     vcs: https://gitlab.gnome.org/World/boatswain
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Bustle
-    source: circle
-    vcs: https://gitlab.gnome.org/World/bustle
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Chessclock
     source: circle
     vcs: https://gitlab.gnome.org/World/chess-clock
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Citations
     source: circle
     vcs: https://gitlab.gnome.org/World/citations
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Collision
-    source: circle
-    vcs: https://codeberg.org/GeopJr/Collision/
-    host: codeberg.org
-    status: needs-github-home
-  - app: Commit
-    source: circle
-    vcs: https://commit.sonny.re/source
-    host: commit.sonny.re
-    status: needs-github-home
-  - app: Console
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
-  - app: Constrict
-    source: circle
-    vcs: https://gitlab.gnome.org/World/Constrict
-    host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Converter
-    source: circle
-    vcs: https://gitlab.com/adhami3310/Switcheroo
-    host: gitlab.com
-    status: needs-github-home
-  - app: Decoder
-    source: circle
-    vcs: https://gitlab.gnome.org/World/decoder/
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: DejaDup
     source: circle
     vcs: https://gitlab.gnome.org/World/deja-dup
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
+  - app: Decoder
+    source: circle
+    vcs: https://gitlab.gnome.org/World/decoder/
+    host: gitlab.gnome.org
+    status: ready-to-import
   - app: DieBahn
     source: circle
     vcs: https://gitlab.com/schmiddi-on-mobile/railway
     host: gitlab.com
-    status: needs-github-home
-  - app: DiskUtility
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
-  - app: EarTag
-    source: circle
-    vcs: https://gitlab.gnome.org/World/eartag/
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Elastic
     source: circle
     vcs: https://gitlab.gnome.org/World/elastic
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Emblem
     source: circle
     vcs: https://gitlab.gnome.org/World/design/emblem
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Fragments
     source: circle
     vcs: https://gitlab.gnome.org/World/Fragments
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Graphs
-    source: circle
-    vcs: https://gitlab.gnome.org/World/Graphs
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Hiit
     source: circle
     vcs: https://gitlab.gnome.org/World/exercise-timer/-/work_items
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Identity
     source: circle
     vcs: https://gitlab.gnome.org/YaLTeR/identity
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Impression
-    source: circle
-    vcs: https://gitlab.com/adhami3310/Impression
-    host: gitlab.com
-    status: needs-github-home
+    status: ready-to-import
   - app: Iotas
     source: circle
     vcs: https://gitlab.gnome.org/World/iotas
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Junction
-    source: circle
-    vcs: https://junction.sonny.re/source
-    host: junction.sonny.re
-    status: needs-github-home
+    status: ready-to-import
   - app: Komikku
     source: circle
     vcs: https://codeberg.org/valos/Komikku
     host: codeberg.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Lorem
     source: circle
     vcs: https://gitlab.gnome.org/World/design/lorem
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Nautilus
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
+    status: ready-to-import
   - app: NewsFlash
     source: circle
     vcs: https://gitlab.com/news-flash/news_flash_gtk
     host: gitlab.com
-    status: needs-github-home
+    status: ready-to-import
   - app: Obfuscate
     source: circle
     vcs: https://gitlab.gnome.org/World/obfuscate/
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: PikaBackup
-    source: circle
-    vcs: https://gitlab.gnome.org/World/pika-backup/
-    host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Podcasts
-    source: circle
-    vcs: https://gitlab.gnome.org/World/podcasts
-    host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Secrets
     source: circle
     vcs: https://gitlab.gnome.org/World/secrets
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Settings
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
+    status: ready-to-import
   - app: Shortwave
     source: circle
     vcs: https://gitlab.gnome.org/World/Shortwave
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Software
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
-  - app: Solanum
-    source: circle
-    vcs: https://gitlab.gnome.org/World/Solanum/
-    host: gitlab.gnome.org
-    status: needs-github-home
-  - app: SystemMonitor
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
-  - app: Tally
-    source: circle
-    vcs: https://codeberg.org/vtrlx/tally
-    host: codeberg.org
-    status: needs-github-home
-  - app: Tangram
-    source: circle
-    vcs: https://tangram.sonny.re/source
-    host: tangram.sonny.re
-    status: needs-github-home
-  - app: TextPieces
-    source: circle
-    vcs: https://gitlab.com/liferooter/textpieces
-    host: gitlab.com
-    status: needs-github-home
-  - app: Tour
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
-  - app: Tuba
-    source: circle
-    vcs: https://codeberg.org/GeopJr/Tuba/
-    host: codeberg.org
-    status: needs-github-home
+    status: ready-to-import
   - app: VideoTrimmer
     source: circle
     vcs: https://gitlab.gnome.org/YaLTeR/video-trimmer
     host: gitlab.gnome.org
-    status: needs-github-home
+    status: ready-to-import
   - app: Warp
     source: circle
     vcs: https://gitlab.gnome.org/World/warp/
     host: gitlab.gnome.org
-    status: needs-github-home
-  - app: Workbench
-    source: circle
-    vcs: https://workbench.sonny.re/source
-    host: workbench.sonny.re
-    status: needs-github-home
-  - app: Yelp
-    source: core
-    vcs: ~
-    host: UNRESOLVED
-    status: needs-github-home
+    status: ready-to-import
