@@ -1,11 +1,10 @@
 ---
 description: |
-  Scans apps.gnome.org for GNOME Core and Circle apps, works out where each
-  one's source actually lives, and opens a pull request adding any app the
-  port registry does not have yet.
+  Reads apps.gnome.org, finds the apps that have no fork in the org, and opens
+  a pull request adding them to registry.yml.
 
 on:
-  schedule: weekly on tuesday
+  schedule: daily
   workflow_dispatch:
 
 engine:
@@ -17,164 +16,114 @@ timeout-minutes: 30
 permissions: read-all
 
 network:
-  # Without these, every non-GitHub URL is redacted out of the agent's output
-  # as `(gitlab.gnome.org/redacted)` — which is precisely the upstream URL the
-  # import route needs.
-  allowed: [defaults, github, "gitlab.gnome.org", "gitlab.com", "codeberg.org", "flathub.org", "apps.gnome.org"]
+  # Without these the upstream URLs are redacted out of your own output as
+  # `(gitlab.gnome.org/redacted)`, which is exactly the URL the registry needs.
+  allowed: [defaults, github, "gitlab.gnome.org", "gitlab.com", "codeberg.org", "apps.gnome.org"]
 
 tools:
   edit:
-  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *", "python3 *", "curl *", "git diff*", "git status*"]
+  bash: ["cat *", "ls *", "wc *", "grep *", "curl *", "jq *", "gh repo view *", "gh api *", "git diff*", "git status*"]
   github:
     toolsets: [repos, search]
-
-steps:
-  - name: Catalogue the apps
-    env:
-      GH_TOKEN: ${{ github.token }}
-    run: |
-      set -euo pipefail
-      mkdir -p /tmp/gh-aw/agent
-      curl -sS --max-time 60 https://apps.gnome.org/en-GB/ -o /tmp/gh-aw/agent/index.html
-
-      # This step only catalogues what is on the page: name, app id, and the
-      # URL of the app's own page. It deliberately does NOT try to work out
-      # where the source lives — that is the agent's job, by reading each
-      # app page, because no rule maps an app to its repository reliably.
-      #
-      # The page is minified with unquoted attributes, so patterns expecting
-      # href="x" match nothing. Sections run core -> circle -> development.
-      python3 - <<'PY'
-      import re, json
-      h = open('/tmp/gh-aw/agent/index.html', encoding='utf-8').read()
-      def cards(a, b):
-          seg = h[h.index('id=' + a):h.index('id=' + b)]
-          return re.findall(r'href=([A-Za-z0-9._-]+)/>\s*<img[^>]*app-icon/scalable/([A-Za-z0-9._-]+)\.svg', seg)
-      out = []
-      for group, cs in {'core': cards('core', 'circle'), 'circle': cards('circle', 'development')}.items():
-          for name, appid in cs:
-              out.append({'group': group, 'app': name, 'id': appid,
-                          'page': f'https://apps.gnome.org/en-GB/{name}/'})
-      json.dump(out, open('/tmp/gh-aw/agent/apps.json', 'w'), indent=1)
-      print(len(out), 'apps catalogued')
-      PY
 
 safe-outputs:
   create-pull-request:
     title-prefix: "[registry] "
     labels: [registry]
     max: 1
-    allowed-files: ["port-registry.yml"]
+    allowed-files: ["registry.yml"]
     if-no-changes: "ignore"
 ---
 
 # Scan app sources
 
-Every GNOME Core and Circle app gets ported. `\.github/port-registry.yml` is the
-list of the ones we know about. Your job is to find the apps that are missing
-from it and add them.
+Every GNOME Core and Circle app should end up with a fork in this org.
+`registry.yml` at the root of this repo is the list, three keys per entry:
 
-## What you have
+```yaml
+- app: Apostrophe
+  repo: https://github.com/ApostropheEditor/Apostrophe
+  fork: https://github.com/ruby-gtk-project/Apostrophe-rb
+```
 
-- `/tmp/gh-aw/agent/apps.json` — every app on apps.gnome.org: its group
-  (`core` or `circle`), its app ID, and `page`, the URL of its own page on
-  apps.gnome.org. Where its source lives is **not** in this file. You find
-  that by reading the pages.
-- `port-registry.yml` — the registry, at the root of the working directory.
-  This is the real file and the only copy: read it and write it **at that
-  path**. There is deliberately no copy under `/tmp`. `forked` entries are
-  apps we already have; `candidates` are apps we know about but have no
-  GitHub home for yet.
+Your job is to find apps that are not in it and add them.
 
-## Step 0 — Count what you were given
+## Step 1 — List the apps
 
-`jq length /tmp/gh-aw/agent/apps.json` and say the number. Every app in that
-file is in scope. A previous run reported working through "all 83 apps" when
-the file held 99 — if your count and the file disagree, the file is right.
+`https://apps.gnome.org/en-GB/` lists them in three sections. You want the
+**core** and **circle** ones, not development tools. Each app links to its own
+page at `https://apps.gnome.org/en-GB/<Name>/`.
 
-## Step 1 — What needs work this run
+The page is minified and its attributes are unquoted, so a pattern expecting
+`href="x"` matches nothing — `href=Amberol/` is what it actually looks like.
+Fetch it and work out the list yourself:
 
-Two kinds of app need you, and most runs will have both:
+```sh
+curl -sS https://apps.gnome.org/en-GB/ | grep -o 'id=[a-z-]*'
+```
 
-1. **Candidates with `status: needs-github-home`.** These are already in the
-   registry and are the main event — a port cannot start until one of them has
-   a GitHub home. Work through every single one.
-2. **Apps on the page that the registry does not mention at all.** Match on
-   substance, not string equality: `Apostrophe` on the page is the same app as
-   fork `Apostrophe-rb` with upstream `ApostropheEditor/Apostrophe`, and is not
-   new.
+Sections run core, then circle, then development. Say how many apps you found
+in each before going on.
 
-An app already being listed as a candidate is **not** a reason to skip it.
-Being listed with no `github:` field is the problem you are here to solve. A
-run that finds every app "already represented" and opens no pull request has
-done nothing.
+## Step 2 — Find where each app's source lives
 
-
-## Step 2 — Read each app's page to find its source
-
-Every app has a page at the `page` URL in `apps.json`, and that page links to
-the project's own homepage or repository. Fetch it and read it:
+Read the app's own page. It links to the project's homepage or repository,
+and that is the authority:
 
 ```sh
 curl -sS https://apps.gnome.org/en-GB/Amberol/ | grep -o 'href=[^ >]*'
 ```
 
-That page is the authority on where the app lives. Do not guess from the app
-ID, and do not assume a Flathub record is current.
+Most are not on GitHub — gitlab.gnome.org, gitlab.com and codeberg.org are
+all common, and that is fine. The `repo` field records wherever the source
+actually is; it does not have to be GitHub.
 
-What you find there is usually not GitHub, and that is the whole difficulty:
+## Step 3 — Does it already have a fork
 
-- `gitlab.gnome.org/GNOME/<x>` is usually mirrored to `github.com/GNOME/<x>`.
-  Usually — check the mirror exists and is not years behind, do not assume it.
-- `gitlab.gnome.org/World/<x>` is a third-party app hosted on GNOME's GitLab.
-  Its GitHub home, if it has one, is under the **author's** account, not
-  GNOME's. Apostrophe lives at `gitlab.gnome.org/World/apostrophe` and its
-  GitHub home is `ApostropheEditor/Apostrophe`. No rewrite of the URL gets you
-  there — you have to search for it.
-- A custom domain is usually a redirect or a project site. Follow it.
-- Some genuinely have no GitHub presence. That is a fine answer, and it means
-  the app gets imported rather than forked.
+Before proposing anything, check both:
 
-When a page points somewhere other than GitHub, search GitHub for the app
-name, the app ID and the author before concluding there is no GitHub home.
-Check what you find is the same app and not a namesake, a fork of a fork, or
-a mirror that stopped updating years ago.
+1. Is the app already in `registry.yml`? Compare the `repo` URL, not just the
+   name — names collide, and a different project called Commit is a different
+   project.
+2. Does a fork already exist in the org that this file has simply not caught
+   up with? Look for it:
 
-## Step 3 — Update the registry and open the pull request
+```sh
+gh repo view ruby-gtk-project/<name>-rb --json name,parent
+```
 
-Edit `port-registry.yml` at the root of the working directory, then open one
-pull request with all of your changes.
+Be careful here, because the obvious check is the one that fails. An app's
+page usually points at GitLab while its fork was made from its GitHub home —
+`Apostrophe` shows `gitlab.gnome.org/World/apostrophe` on the page and is
+already forked as `Apostrophe-rb` from `ApostropheEditor/Apostrophe`. Matching
+those two URLs against each other finds nothing, and you would propose an app
+we have had all along. Check the fork name and the app identity, not just the
+URL.
 
-For each candidate you resolved, set its `status` and add the field that
-status requires:
+Anything that already has a fork is not new. Skip it silently.
 
-- `ready-to-fork` — a real GitHub home. Add `github: owner/repo`.
-- `ready-to-import` — no GitHub home, but the upstream git URL works. Keep
-  the existing `vcs:`; it is already correct in the registry, and non-GitHub
-  URLs are redacted out of your output anyway.
-- `needs-github-home` — nothing works. Add `checked:` with today's date and
-  one line on what you tried, so the next run does not repeat it.
+## Step 4 — Add the new ones
 
-**A candidate that turns out to be an app we already forked should be deleted
-from `candidates` entirely, not given a status.** This happens often: the
-first candidate list was built by matching Flathub's `vcs_browser` against
-fork parents, which misses every app whose page lists GitLab while its fork
-came from a GitHub home. 27 of the first 50 candidates were already forked.
-Check `forked` and the fork names before proposing anything — `Apostrophe` is
-already there as `Apostrophe-rb`.
+For each genuinely new app, add an entry to `registry.yml` with the three
+keys:
 
-Never edit the `forked` section otherwise. Entries move there when a fork or
-import actually succeeds.
+- `app` — the app's name as the site gives it
+- `repo` — where its source actually lives, from Step 2
+- `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
+  be created. It does not exist yet. That is the point: `Fork or mirror` reads
+  this file and creates whatever is missing, forking it when `repo` is on
+  GitHub and mirroring it when it is not.
 
-In the pull request body, give the evidence per app: what convinced you that
-repo is that app, with links. Someone approves this by reading it, and
-merging it is what causes the fork or import to happen.
+Keep the file's existing shape and ordering. Nothing else goes in it — no
+status fields, no notes, no sections.
+
+Then open one pull request with all of them. In the body, per app: what it is,
+where its source is, and how you know it has no fork yet. Someone approves
+this by reading it, and merging it is what causes the fork to be created.
 
 ## Rules
 
-- One pull request per run, covering every new app.
-- An app you are unsure about still goes in, as `needs-github-home`, with your
-  doubt written down. Leaving it out entirely is how an app goes missing for a
-  month with nobody noticing.
-- Never fork anything yourself, and never edit any file but the registry.
-  Merging the pull request is what authorises a fork.
+- If every app already has a fork, open no pull request and say so. That is a
+  normal result, not a failure.
+- Never remove or edit an existing entry. You only add.
+- Never fork anything yourself.

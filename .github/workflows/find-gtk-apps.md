@@ -63,23 +63,28 @@ safe-outputs:
     title-prefix: "[registry] "
     labels: [registry, discovery]
     max: 1
-    allowed-files: ["port-registry.yml"]
+    allowed-files: ["registry.yml"]
     if-no-changes: "ignore"
 ---
 
 # Find GTK apps
 
 Every GTK app that is worth a Ruby port should end up in
-`.github/port-registry.yml`. `Scan app sources` covers the ones listed on
+`registry.yml`. `Scan app sources` covers the ones listed on
 apps.gnome.org. Your job is the rest of GitHub: find **${{ inputs.how_many || 1 }}**
 app the campaign does not have, judge whether it is worth porting, and propose
 it.
 
 ## What you have
 
-- `port-registry.yml` — the registry, at the root of the working directory.
-  This is the real file and the only copy: read and write it **at that path**.
-  `forked` is what we have, `candidates` is what is queued.
+- `registry.yml` — the registry, at the root of the working directory. Three
+  keys per entry and nothing else:
+
+  ```yaml
+  - app: Apostrophe
+    repo: https://github.com/ApostropheEditor/Apostrophe
+    fork: https://github.com/ruby-gtk-project/Apostrophe-rb
+  ```
 - `/tmp/gh-aw/agent/claimed-upstreams.txt` — every upstream already forked,
   as `owner/repo`, lowercased.
 - `/tmp/gh-aw/agent/issue-titles.txt` and `pr-text.txt` — every issue and pull
@@ -118,7 +123,7 @@ Before spending any judgement on an app, check all four:
 1. its `owner/repo`, lowercased, in `claimed-upstreams.txt`
 2. its name in `issue-titles.txt` (`Initial port: <name>-rb`)
 3. its name or URL in `pr-text.txt` — it may be proposed and not yet merged
-4. its name or URL anywhere in `port-registry.yml`, in either section
+4. its name or URL anywhere in `registry.yml`
 
 Any hit means move on and find another app. Names collide, so compare the
 repository URL, not just the name: a different project called Commit is a
@@ -166,11 +171,18 @@ licence, but an app that fails several is not a good use of a port.
 
 ## Step 4 — Propose it
 
-Add the app to `candidates` in `port-registry.yml` at the root of the working
-directory, with `status: ready-to-fork` and a `github:` field naming
-`owner/repo`. Then open one pull request.
+Add an entry to `registry.yml` at the root of the working directory, with the
+three keys:
 
-In the body, for each app:
+- `app` — what the app is called
+- `repo` — where its source lives, the URL you found it at
+- `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
+  be created. It does not exist yet; `Fork or mirror` reads this file and
+  creates whatever is missing.
+
+Nothing else goes in the file — no status, no notes, no sections.
+
+Then open one pull request. In the body, for each app:
 
 - what it is, in a sentence
 - the licence, and where you saw it

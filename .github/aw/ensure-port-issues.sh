@@ -17,7 +17,7 @@ HUB=$ORG/.github
 PROJECT=1
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 TPL=$ROOT/.github/port-issues
-REG=$ROOT/port-registry.yml
+REG=$ROOT/registry.yml
 ONLY=${ONLY:-}
 DRY=${DRY_RUN:-}
 
@@ -27,20 +27,22 @@ trap 'rm -rf "$work"' EXIT
 
 say() { printf '%s\n' "$*"; }
 
-python3 - "$REG" > "$work/targets" <<'PY'
+# registry.yml carries three keys per entry: app, repo, fork. The branch the
+# port issue points at is whatever the fork's parent calls its default branch,
+# so it is looked up per repo rather than stored.
+python3 -c "
 import re, sys
-text = open(sys.argv[1]).read()
-block = text.split('forked:', 1)[1].split('\ncandidates:', 1)[0]
-fork = branch = None
-for line in block.splitlines():
-    m = re.match(r'\s*-\s*fork:\s*(\S+)', line)
+for line in open(sys.argv[1]):
+    m = re.match(r'\\s*fork:\\s*(\\S+)', line)
     if m:
-        fork, branch = m.group(1), 'main'
-    m = re.match(r'\s*upstream_branch:\s*(\S+)', line)
-    if m and fork:
-        print(f'{fork}\t{m.group(1)}')
-        fork = None
-PY
+        print(m.group(1).rstrip('/').rsplit('/', 1)[-1])
+" "$REG" > "$work/forks"
+
+: > "$work/targets"
+while read -r name; do
+  branch=$(gh api "repos/$ORG/$name" -q '.parent.default_branch // .default_branch' 2>/dev/null || echo main)
+  printf '%s\t%s\n' "$name" "$branch" >> "$work/targets"
+done < "$work/forks"
 
 count=$(wc -l < "$work/targets")
 if [ "$count" -eq 0 ]; then
