@@ -120,17 +120,24 @@ repo is worse than a missing one.
 `/tmp/gh-aw/agent/projects.json` lists the org's projects. If none is titled
 **Initial port**, create it with `create_project`, titled exactly that.
 
-`/tmp/gh-aw/agent/project-items.json` is what is already on the board — every
-port target already there is done, skip it.
+`/tmp/gh-aw/agent/project-items.json` is what is already on the board. Each
+port target gets **two** issues, so check for them by title separately — a
+repo with `Initial port: <repo>` on the board may still be missing its
+`Gem release: <repo>`.
 
 ## Step 3 — The issues
 
 The issues live **here**, in `${{ github.repository }}` — one per port target,
 all on the board. Do not create issues in the forks.
 
-For each port target with no item on the board, call `create_issue` with title
-`Initial port: <repo>` and this body, replacing `<repo>` with the fork's name
-and `<upstream>` with its `upstream_branch` from the inventory:
+Each port target gets two issues: the port itself, and the release checklist
+that says when it is finished. Create whichever of the two is not already on
+the board.
+
+### `Initial port: <repo>`
+
+Call `create_issue` with title `Initial port: <repo>` and this body, replacing
+`<repo>` with the fork's name and `<upstream>` with its `upstream_branch` from the inventory:
 
 ```markdown
 Port **<repo>** to Ruby GTK4/Libadwaita.
@@ -145,14 +152,50 @@ This is a full parity port. Nothing is left out: every window, dialog, page, men
 It is done when the app does everything the original does.
 ```
 
+### `Gem release: <repo>`
+
+Call `create_issue` with title `Gem release: <repo>`, `labels: ["gem-release"]`,
+and this body, replacing `<repo>` with the fork's name:
+
+```markdown
+Release **<repo>** to [rubygems.org](https://rubygems.org). Everything below has to be true before the push.
+
+### Complete
+- [ ] Every window, dialog, page, menu item, keyboard shortcut, preference, action, empty state and error state the original has, the port has. Work through the upstream source file by file — that is the only way to know.
+- [ ] No stubs, no `TODO`, no "not implemented yet" paths left in `lib/` or `bin/`.
+- [ ] **Parity review completed.** Run the [Parity review](https://github.com/ruby-gtk-project/.github/actions/workflows/parity-review.lock.yml) workflow against this repo once the port looks finished. It compares the `ruby` branch against the original and opens a PR adding `PARITY_REPORT-<date>.md`. This box is ticked when a report on the current code says **PASS** — merge it, and link it here. A FAIL report is the gap list: fix it and run the review again.
+
+### Functional
+- [ ] The app launches and its main flows work, checked with `ruby-gtk-testing`.
+- [ ] Runs from a clean checkout via the dev shell (`nix develop --command`).
+
+### Packaged
+- [ ] A `.gemspec` exists at the repo root, and `gem build` succeeds with no warnings.
+- [ ] `gem install ./<repo>-0.1.0.gem` in a clean directory installs, and the installed command launches the app. Building is not the same as shipping something that runs — this is the check that proves it.
+- [ ] `spec.files` includes the non-Ruby assets: `.ui` files, GResource bundles, icons, GSettings schemas. A GTK gem that omits these installs fine and crashes on launch.
+- [ ] `spec.executables` / `bin/` are wired so `gem install` gives a working command.
+- [ ] Runtime dependencies declared with bounds (`gtk4` and friends), and `required_ruby_version` set.
+- [ ] System dependencies (GTK4, libadwaita) documented in the README — bundler cannot install those.
+
+### Legal and metadata
+- [ ] `spec.license` and the `LICENSE` file match **upstream's** licence. This repo is a fork of a licensed app; the port inherits that licence, it does not get a new one.
+- [ ] The gem name is free on rubygems.org.
+- [ ] Version is `0.1.0`, and `allowed_push_host` is set to `https://rubygems.org`.
+- [ ] `homepage`, `source_code_uri` and `changelog_uri` set in `spec.metadata`.
+
+It is done when `gem push` would be the only step left.
+```
+
 Then add each issue to the project with `update_project`. **Always pass the
 project's real full URL in every call** — the configured default contains a
 `<PORT_PROJECT_NUMBER>` placeholder and is not a real board.
 
 ## Rules
 
-- One issue per port target, titled `Initial port: <repo>`, always in this
-  repo. Titles are deduplicated, so a target that already has one is untouched.
+- Two issues per port target — `Initial port: <repo>` and `Gem release: <repo>`
+  — always in this repo. Titles are deduplicated, so a target that already has
+  one of them keeps it and only the missing one is created.
 - Never create issues in repos you could not positively identify as port
   targets.
-- If every port target is already on the board, do nothing and say so.
+- If every port target already has both issues on the board, do nothing and
+  say so.
