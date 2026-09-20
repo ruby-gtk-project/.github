@@ -1,8 +1,8 @@
 # port-scaffold
 
-The shared setup every fork's `ruby` branch starts from: the `ruby-gtk` and
-`ruby-gtk-testing` skills, the GTK4 dev shell, the house rubocop config and
-custom cops, `AGENTS.md` (`CLAUDE.md` symlinks to it), and `Gemfile`.
+The shared setup every fork's `ruby` branch starts from: all six skills, the
+GTK4 dev shell, the house rubocop config and custom cops, `AGENTS.md`
+(`CLAUDE.md` symlinks to it), and `Gemfile`.
 
 Until now this existed only as whatever a fork happened to be created with.
 `frogr-rb`, `workbench`, `workbench-demos` and `gtk-demos-and-examples` never
@@ -19,13 +19,28 @@ That is the whole first setup step for a fork:
    Upstream is never even fetched.
 2. Copies this scaffold onto it, with `{{APP}}` in `AGENTS.md` replaced by the
    app name (defaults to the repo name minus `-rb`).
-3. Pulls the four parity skills from
-   [`ruby-gtk-project/skills`](https://github.com/ruby-gtk-project/skills) into
-   `.claude/skills/` — that repo stays their only home.
-4. Pushes the branch and sets it as the repo's default.
+3. Pushes the branch and sets it as the repo's default.
 
 It refuses if `ruby` already exists; recreating the branch would throw away
 whatever port work is sitting on it.
+
+## Skills
+
+`.claude/skills/` carries all six, vendored here so a scaffold apply needs
+nothing but this directory:
+
+| Skill | Answers |
+|---|---|
+| `ruby-gtk` | How is Ruby GTK4/Libadwaita written in this org? |
+| `ruby-gtk-testing` | Does the app actually run and do the thing? |
+| `component-identification` | What UI does this app actually have? |
+| `component-parity` | Does the port's UI match the original's? |
+| `test-parity` | Does the port test every single thing upstream tested? |
+| `accountability-ensurance` | Is any of this being excused rather than built? |
+
+The last four come from
+[`ruby-gtk-project/skills`](https://github.com/ruby-gtk-project/skills). When
+that repo changes, re-copy them here.
 
 ## Why this matters for the board
 

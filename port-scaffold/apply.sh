@@ -23,12 +23,8 @@ fi
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-git clone -q --depth 1 "https://github.com/$ORG/skills" "$work/skills" || exit 1
-
 cp -a "$HERE" "$work/r"
 rm -f "$work/r/apply.sh" "$work/r/README.md"
-mkdir -p "$work/r/.claude/skills"
-cp -a "$work"/skills/*/ "$work/r/.claude/skills/"
 sed -i "s/{{APP}}/$app/g" "$work/r/AGENTS.md"
 
 cd "$work/r" || exit 1
