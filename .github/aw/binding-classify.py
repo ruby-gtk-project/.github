@@ -253,6 +253,16 @@ result = {
         ) if previous else [],
         "had_previous": bool(previous),
     },
+    # An issue's body is written once and deduplicate-by-title never refreshes
+    # it, so a gap whose port count changed needs its issue rewritten. Both
+    # counts are here so the agent restates rather than recalculates.
+    "moved_detail": [
+        {"namespace": r["namespace"], "was": prev_gaps[r["namespace"]]["app_count"],
+         "now": r["app_count"], "apps": r["apps"]}
+        for r in gaps
+        if previous and r["namespace"] in prev_gaps
+        and r["app_count"] != prev_gaps[r["namespace"]]["app_count"]
+    ],
     "unclassified": [
         {"name": name, "app_count": len(apps), "apps": sorted(apps)}
         for name, apps in sorted(unclassified.items(), key=lambda kv: -len(kv[1]))

@@ -94,6 +94,7 @@ steps:
               top4_names: [.gaps[:4][].namespace]
             },
             delta,
+            moved_detail,
             ranked: [ .gaps[] | {namespace, app_count, evidence,
                                  filed: (.namespace | IN($filed[]))} ],
             per_app,
@@ -159,6 +160,14 @@ safe-outputs:
     labels: [binding]
     title-prefix: "[binding] "
     deduplicate-by-title: true
+  # deduplicate-by-title skips a title that already exists, it does not
+  # refresh it - so without this an issue's port count is frozen at whatever
+  # it was the week it was filed while the board silently stays correct.
+  update-issue:
+    max: 15
+    target: "*"
+    status:
+    body:
 ---
 
 # Binding gaps
@@ -203,6 +212,8 @@ entry — no more, no fewer.
 - `unclassified[]` — names the scan found but `namespace-map.json` does not
   classify, those blocking 2+ ports only; `unclassified_total` is the full
   count. This matters: see below.
+- `moved_detail[]` — gaps whose port count changed since last week, each with
+  `namespace`, `was`, `now` and the current `apps`. Empty on a first run.
 - `rust_top[]` — the most common Rust crates that are not bindings at all.
 
 `/tmp/gh-aw/agent/scan-date.txt` holds today's date, `YYYY-MM-DD`. Call it
@@ -227,7 +238,7 @@ Two things that look like gaps and are not:
   has entries the gap count is a **floor, not a total**, and the report has to
   say so.
 
-**Do all of Step 1 before you start Step 2.** The issues are the output that
+**Do Steps 1 and 2 before you start Step 3.** The issues are the output that
 matters; the report is written from the same files and can be rewritten next
 week if the run runs long.
 
@@ -264,7 +275,20 @@ finish, so an issue that already exists still lands on it with its fields set.
 Titles are deduplicated, so a gap that was filed last week updates nothing
 rather than filing twice. Do not close, rename or re-file an existing issue.
 
-## Step 2 — The report
+## Step 2 — Refresh the issues that moved
+
+An issue body is written once. A title that already exists is skipped, not
+rewritten, so a gap whose port count changed keeps last week's number until
+someone corrects it.
+
+For each entry in `report.json`'s `moved_detail`, call `update_issue` on the
+open issue titled `[binding] <namespace>: Ruby binding needed` and replace its
+body with the same shape Step 1 uses, built from `now` and `apps`. Change
+nothing else — not the title, not the status, not the labels.
+
+If `moved_detail` is empty, skip this step entirely and say so in the report.
+
+## Step 3 — The report
 
 Write `reports/binding-gaps-<DATE>.md`. Exactly this shape:
 
