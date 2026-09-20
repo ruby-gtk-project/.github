@@ -70,7 +70,7 @@ safe-outputs:
 # Find new GTK apps
 
 Every GTK app that is worth a Ruby port should end up in
-`registry.yml`. `check-gnome-apps-site` covers the ones listed on
+`registry.yml`. `find-new-gtk-apps-gnome` covers the ones listed on
 apps.gnome.org. Your job is the rest of GitHub: find **${{ inputs.how_many || 1 }}**
 app the campaign does not have, judge whether it is worth porting, and propose
 it.
