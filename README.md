@@ -18,11 +18,11 @@ dashboard, and the canonical agentic workflows the forks redirect to.
 | `find-new-gtk-apps-github.md` | daily | The same for the rest of GitHub — topic and code search, awesome lists, Flathub — judged against size, health, toolkit and licence. |
 | `check-and-fork-registry-apps.md` | daily | Reads `registry.yml` and makes every listed fork exist: forks it when the upstream is on GitHub, mirrors it in when it is not. |
 | `initial-port.md` | daily | Decides which forks are port targets and gives each one its `Initial port` and `Gem release` issue on the board. |
-| `sync-skills.yml` | 03:17 daily | Mirrors `ruby-gtk-project/skills` into `port-scaffold/.claude/skills/`. |
+| `sync-port-scaffold-skills.yml` | 03:17 daily | Mirrors `ruby-gtk-project/skills` into `port-scaffold/.claude/skills/`. |
 | `reconcile-forks.md` | daily | Every fork has a scaffolded `ruby` branch matching `port-scaffold/`. |
-| `weekly-report.md` | Mondays | Fleet report from every fork's `PORTING.md`, committed to `reports/` with a review issue. |
-| `binding-gaps.md` | Mondays | Works out which GObject Introspection namespaces the ports need, subtracts what ruby-gnome ships, opens an issue per missing gem. |
-| `parity-review.md` | on demand | Compares a finished port against the original and opens a PR adding a dated `PARITY_REPORT`. |
+| `report-weekly-progress.md` | Mondays | Fleet report from every fork's `PORTING.md`, committed to `reports/` with a review issue. |
+| `report-binding-gaps.md` | Mondays | Works out which GObject Introspection namespaces the ports need, subtracts what ruby-gnome ships, opens an issue per missing gem. |
+| `report-parity.md` | on demand | Compares a finished port against the original and opens a PR adding a dated `PARITY_REPORT`. |
 
 `registry.yml` is the gate: an entry in it is the instruction to fork, and
 entries only arrive by pull request.

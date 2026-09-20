@@ -32,7 +32,7 @@ tools:
     - "diff *"
     - "cp *"
     - "sed *"
-    - "rm -rf /tmp/*"
+    - "rm -rf /tmp/gh-aw/agent/*"
     - "gh repo view *"
     - "gh api *"
     - "git clone *"

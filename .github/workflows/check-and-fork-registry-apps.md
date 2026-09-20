@@ -37,7 +37,7 @@ tools:
     - "git ls-remote *"
     - "git push *"
     - "git -C *"
-    - "rm -rf /tmp/*"
+    - "rm -rf /tmp/gh-aw/agent/*"
   github:
     toolsets: [repos]
 ---
@@ -76,10 +76,10 @@ instead:
 
 ```sh
 git ls-remote --symref <repo> HEAD          # learn its default branch first
-git clone --mirror <repo> /tmp/m
+git clone --mirror <repo> /tmp/gh-aw/agent/m
 gh repo create ruby-gtk-project/<name>-rb --public --description "Ruby GTK4 port of <app>. Upstream: <repo>"
-git -C /tmp/m push https://github.com/ruby-gtk-project/<name>-rb "refs/heads/*:refs/heads/*" "refs/tags/*:refs/tags/*"
-rm -rf /tmp/m
+git -C /tmp/gh-aw/agent/m push https://github.com/ruby-gtk-project/<name>-rb "refs/heads/*:refs/heads/*" "refs/tags/*:refs/tags/*"
+rm -rf /tmp/gh-aw/agent/m
 ```
 
 Push branches and tags only, as above. A plain `--mirror` push also carries

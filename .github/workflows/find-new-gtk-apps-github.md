@@ -159,7 +159,7 @@ licence, but an app that fails several is not a good use of a port.
 - Written in Vala, C, Python, GJS or Rust. All five are readable as a spec.
 - Check what it links against beyond GTK and Libadwaita. GStreamer, WebKit,
   libsecret, Poppler and friends need ruby-gnome bindings that may not exist
-  — see the `Bindings` project and the `binding-gaps` workflow. An app whose
+  — see the `Bindings` project and the `report-binding-gaps` workflow. An app whose
   core feature needs a binding we do not have is blocked, not portable, and
   should be proposed only with that stated plainly.
 - A test suite upstream is a bonus: `test-parity` needs something to count.
