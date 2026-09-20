@@ -24,50 +24,40 @@ network:
 
 tools:
   edit:
-  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *", "python3 *", "git diff*", "git status*"]
+  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *", "python3 *", "curl *", "git diff*", "git status*"]
   github:
     toolsets: [repos, search]
 
 steps:
-  - name: Inventory apps.gnome.org
+  - name: Catalogue the apps
     env:
       GH_TOKEN: ${{ github.token }}
     run: |
       set -euo pipefail
       mkdir -p /tmp/gh-aw/agent
-      curl -sS --max-time 60 https://apps.gnome.org/en-GB/ -o /tmp/gh-aw/agent/apps.html
+      curl -sS --max-time 60 https://apps.gnome.org/en-GB/ -o /tmp/gh-aw/agent/index.html
 
-      # The page is minified with unquoted attributes, so patterns that expect
+      # This step only catalogues what is on the page: name, app id, and the
+      # URL of the app's own page. It deliberately does NOT try to work out
+      # where the source lives — that is the agent's job, by reading each
+      # app page, because no rule maps an app to its repository reliably.
+      #
+      # The page is minified with unquoted attributes, so patterns expecting
       # href="x" match nothing. Sections run core -> circle -> development.
       python3 - <<'PY'
-      import re, json, urllib.request, time
-      h = open('/tmp/gh-aw/agent/apps.html', encoding='utf-8').read()
+      import re, json
+      h = open('/tmp/gh-aw/agent/index.html', encoding='utf-8').read()
       def cards(a, b):
           seg = h[h.index('id=' + a):h.index('id=' + b)]
           return re.findall(r'href=([A-Za-z0-9._-]+)/>\s*<img[^>]*app-icon/scalable/([A-Za-z0-9._-]+)\.svg', seg)
-      groups = {'core': cards('core', 'circle'), 'circle': cards('circle', 'development')}
       out = []
-      for group, cs in groups.items():
+      for group, cs in {'core': cards('core', 'circle'), 'circle': cards('circle', 'development')}.items():
           for name, appid in cs:
-              urls = {}
-              try:
-                  with urllib.request.urlopen(f'https://flathub.org/api/v2/appstream/{appid}', timeout=20) as r:
-                      urls = json.load(r).get('urls') or {}
-              except Exception:
-                  pass
               out.append({'group': group, 'app': name, 'id': appid,
-                          'vcs': urls.get('vcs_browser') or '',
-                          'homepage': urls.get('homepage') or '',
-                          'bugtracker': urls.get('bugtracker') or ''})
-              time.sleep(0.05)
+                          'page': f'https://apps.gnome.org/en-GB/{name}/'})
       json.dump(out, open('/tmp/gh-aw/agent/apps.json', 'w'), indent=1)
-      print(len(out), 'apps')
+      print(len(out), 'apps catalogued')
       PY
-
-      # Deliberately NOT copied to /tmp. An earlier version handed the agent
-      # a copy there and it edited the copy, so every run produced a perfect
-      # pull request body and an empty patch.
-      wc -l .github/port-registry.yml
 
 safe-outputs:
   create-pull-request:
@@ -86,9 +76,10 @@ from it and add them.
 
 ## What you have
 
-- `/tmp/gh-aw/agent/apps.json` — every app on apps.gnome.org, with its group
-  (`core` or `circle`), its app ID, and whatever `vcs_browser`, `homepage` and
-  `bugtracker` Flathub holds for it.
+- `/tmp/gh-aw/agent/apps.json` — every app on apps.gnome.org: its group
+  (`core` or `circle`), its app ID, and `page`, the URL of its own page on
+  apps.gnome.org. Where its source lives is **not** in this file. You find
+  that by reading the pages.
 - `port-registry.yml` — the registry, at the root of the working directory.
   This is the real file and the only copy: read it and write it **at that
   path**. There is deliberately no copy under `/tmp`. `forked` entries are
@@ -119,29 +110,35 @@ run that finds every app "already represented" and opens no pull request has
 done nothing.
 
 
-## Step 2 — Find where it really lives on GitHub
+## Step 2 — Read each app's page to find its source
 
-This is the part that needs you, and the reason this is not a script.
+Every app has a page at the `page` URL in `apps.json`, and that page links to
+the project's own homepage or repository. Fetch it and read it:
 
-Only about a quarter of these apps list a GitHub URL. The rest sit on
-`gitlab.gnome.org`, `gitlab.com` or `codeberg.org` — and a good number of those
-*also* have a GitHub home that the page never mentions. There is no rule that
-derives one from the other:
+```sh
+curl -sS https://apps.gnome.org/en-GB/Amberol/ | grep -o 'href=[^ >]*'
+```
+
+That page is the authority on where the app lives. Do not guess from the app
+ID, and do not assume a Flathub record is current.
+
+What you find there is usually not GitHub, and that is the whole difficulty:
 
 - `gitlab.gnome.org/GNOME/<x>` is usually mirrored to `github.com/GNOME/<x>`.
-  Usually — verify it, do not assume it.
+  Usually — check the mirror exists and is not years behind, do not assume it.
 - `gitlab.gnome.org/World/<x>` is a third-party app hosted on GNOME's GitLab.
   Its GitHub home, if it has one, is under the **author's** account, not
   GNOME's. Apostrophe lives at `gitlab.gnome.org/World/apostrophe` and its
   GitHub home is `ApostropheEditor/Apostrophe`. No rewrite of the URL gets you
-  there; you have to go and look.
-- Some genuinely have no GitHub presence at all. That is a fine answer.
+  there — you have to search for it.
+- A custom domain is usually a redirect or a project site. Follow it.
+- Some genuinely have no GitHub presence. That is a fine answer, and it means
+  the app gets imported rather than forked.
 
-Search GitHub for the app name, the app ID, the upstream author. Check that
-what you find is the same app and not a namesake, a fork of a fork, or an
-abandoned copy — compare the description, the language, the recent commits
-against the upstream you started from. A mirror that stopped updating two years
-ago is not a home; say so rather than registering it.
+When a page points somewhere other than GitHub, search GitHub for the app
+name, the app ID and the author before concluding there is no GitHub home.
+Check what you find is the same app and not a namesake, a fork of a fork, or
+a mirror that stopped updating years ago.
 
 ## Step 3 — Update the registry and open the pull request
 
