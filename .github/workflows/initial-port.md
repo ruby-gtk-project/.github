@@ -152,57 +152,24 @@ Each port target gets two issues: the port itself, and the release checklist
 that says when it is finished. Create whichever of the two is not already on
 the board.
 
-### `Initial port: <repo>`
+### The two bodies
 
-Call `create_issue` with title `Initial port: <repo>` and this body, replacing
-`<repo>` with the fork's name and `<upstream>` with its `upstream_branch` from the inventory:
+Both bodies are files in this repo. **Copy the file's contents verbatim** into
+the issue:
 
-```markdown
-Port **<repo>** to Ruby GTK4/Libadwaita.
+- `.github/port-issues/initial-port.md` for `Initial port: <repo>`, label
+  `port`
+- `.github/port-issues/gem-release.md` for `Gem release: <repo>`, label
+  `gem-release`
 
-1. `git clone https://github.com/ruby-gtk-project/<repo>`. The default branch `ruby` is the port — it has the dev shell, rubocop config and skills, but no app code yet.
-2. The original implementation is on the `<upstream>` branch of that same repo. That is the spec: read it, don't copy it.
-3. Port it using the `ruby-gtk` skill in `.claude/skills/`, and check it actually runs with `ruby-gtk-testing`.
-4. Push to `ruby`.
+Substitute only two placeholders: `{{REPO}}` with the fork's name, and
+`{{UPSTREAM}}` with its `upstream_branch` from the inventory.
 
-This is a full parity port. Nothing is left out: every window, dialog, page, menu item, keyboard shortcut, preference, action, empty state and error state the original has, the port has. Working through the `<upstream>` source file by file is the only way to know you have them all.
-
-It is done when the app does everything the original does.
-```
-
-### `Gem release: <repo>`
-
-Call `create_issue` with title `Gem release: <repo>`, `labels: ["gem-release"]`,
-and this body, replacing `<repo>` with the fork's name:
-
-```markdown
-Release **<repo>** to [rubygems.org](https://rubygems.org). Everything below has to be true before the push.
-
-### Complete
-- [ ] Every window, dialog, page, menu item, keyboard shortcut, preference, action, empty state and error state the original has, the port has. Work through the upstream source file by file — that is the only way to know.
-- [ ] No stubs, no `TODO`, no "not implemented yet" paths left in `lib/` or `bin/`.
-- [ ] **Parity review completed.** Run the [Parity review](https://github.com/ruby-gtk-project/.github/actions/workflows/parity-review.lock.yml) workflow against this repo once the port looks finished. It compares the `ruby` branch against the original and opens a PR adding `PARITY_REPORT-<date>.md`. This box is ticked when a report on the current code says **PASS** — merge it, and link it here. A FAIL report is the gap list: fix it and run the review again.
-
-### Functional
-- [ ] The app launches and its main flows work, checked with `ruby-gtk-testing`.
-- [ ] Runs from a clean checkout via the dev shell (`nix develop --command`).
-
-### Packaged
-- [ ] A `.gemspec` exists at the repo root, and `gem build` succeeds with no warnings.
-- [ ] `gem install ./<repo>-0.1.0.gem` in a clean directory installs, and the installed command launches the app. Building is not the same as shipping something that runs — this is the check that proves it.
-- [ ] `spec.files` includes the non-Ruby assets: `.ui` files, GResource bundles, icons, GSettings schemas. A GTK gem that omits these installs fine and crashes on launch.
-- [ ] `spec.executables` / `bin/` are wired so `gem install` gives a working command.
-- [ ] Runtime dependencies declared with bounds (`gtk4` and friends), and `required_ruby_version` set.
-- [ ] System dependencies (GTK4, libadwaita) documented in the README — bundler cannot install those.
-
-### Legal and metadata
-- [ ] `spec.license` and the `LICENSE` file match **upstream's** licence. This repo is a fork of a licensed app; the port inherits that licence, it does not get a new one.
-- [ ] The gem name is free on rubygems.org.
-- [ ] Version is `0.1.0`, and `allowed_push_host` is set to `https://rubygems.org`.
-- [ ] `homepage`, `source_code_uri` and `changelog_uri` set in `spec.metadata`.
-
-It is done when `gem push` would be the only step left.
-```
+Do not summarise, shorten, reword or improve them. This is not a style
+preference. A previous run wrote its own versions instead and produced 79
+issues averaging 860 characters against a 2310 character template, with the
+whole release checklist paraphrased away — `Gem release: console-rb` came out
+as "Release console-rb to rubygems.org." and nothing else.
 
 Then add each issue to the project with `update_project`. **Always pass the
 project's real full URL in every call** — the configured default contains a

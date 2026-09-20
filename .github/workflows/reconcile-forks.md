@@ -1,7 +1,7 @@
 ---
 description: |
-  Every fork in registry.yml has a scaffolded `ruby` branch and its two port
-  issues on the board, matching the templates.
+  Every fork in registry.yml has a scaffolded `ruby` branch matching
+  port-scaffold/.
 
 on:
   schedule: daily
@@ -33,8 +33,6 @@ tools:
     - "cp *"
     - "sed *"
     - "rm -rf /tmp/*"
-    - "gh issue *"
-    - "gh project *"
     - "gh repo view *"
     - "gh api *"
     - "git clone *"
@@ -46,7 +44,7 @@ tools:
 
 # Reconcile forks
 
-`registry.yml` lists every app and its fork. For each fork, three things have
+`registry.yml` lists every app and its fork. For each fork, two things have
 to be true. Work through them fork by fork, and change nothing that is already
 correct — most runs should find almost everything in order.
 
@@ -83,34 +81,12 @@ you write `AGENTS.md` replace `{{APP}}` with the app name.
 Delete each clone once you are done with it, and do one at a time — the whole
 fleet does not fit on the runner.
 
-## 3 — Both issues exist, on the board
-
-Each fork gets `Initial port: <fork>` and `Gem release: <fork>`, in **this**
-repo, both on the Initial port project (number 1).
-
-Their bodies come from `.github/port-issues/initial-port.md` and
-`.github/port-issues/gem-release.md`. **Copy the file's contents verbatim.**
-Substitute only `{{REPO}}` with the fork name and `{{UPSTREAM}}` with the
-branch the fork's parent calls default (`gh api repos/ruby-gtk-project/<fork>
--q .parent.default_branch`).
-
-Do not summarise, shorten, reword or improve these bodies. This is not a
-style preference. A previous run wrote its own versions and produced 79 issues
-averaging 860 characters against a 2310 character template, with the entire
-release checklist paraphrased into a single sentence — `Gem release:
-console-rb` came out as "Release console-rb to rubygems.org." and nothing
-else. If an existing issue's body does not match the template, replace it with
-the template.
-
-Check for the two issues **separately**. A fork having one of them is not
-evidence it has the other: at one point every fork had its `Initial port`
-issue and not one had its `Gem release` issue.
-
 ## Rules
 
 - Never delete a repository, a branch or an issue.
 - Never touch a fork's `lib/`, `bin/`, `test/` or any other port code. You
-  maintain the scaffold and the issues, nothing else.
+  maintain the scaffold, nothing else. The two port issues belong to
+  `initial-port`, not to you.
 - Never edit `registry.yml`.
 - If a fork in the registry does not exist, say so and move on — `Fork or
   mirror` creates it, not you.
