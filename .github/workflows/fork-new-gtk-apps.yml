@@ -1,0 +1,129 @@
+# Creates every fork listed in registry.yml: forks the GitHub-hosted
+# upstreams, mirrors the rest. Plain Actions, not gh-aw — registry.yml is the
+# decision and this is the mechanism; there is no judgement in it. The agents
+# belong upstream of this file, proposing registry entries by pull request.
+name: Fork new GTK apps
+
+on:
+  schedule:
+    - cron: "26 23 * * 3"  # weekly, same slot the agentic version used
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Act on a single fork (name or app), blank = all"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  issues: write  # the failure-issue step
+
+concurrency:
+  group: fork-new-gtk-apps
+  cancel-in-progress: false
+
+jobs:
+  fork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ORG: ruby-gtk-project
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create every missing fork
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          set -uo pipefail
+
+          python3 -c 'import yaml' 2>/dev/null || pip install --quiet --user pyyaml
+
+          # registry.yml -> TSV: fork name, app, upstream URL
+          python3 - <<'PY' > /tmp/registry.tsv
+          import yaml
+          for e in yaml.safe_load(open('registry.yml')):
+              fork = e['fork'].rstrip('/').rsplit('/', 1)[-1]
+              print(f"{fork}\t{e['app']}\t{e['repo']}")
+          PY
+
+          created=(); skipped=(); failed=()
+
+          while IFS=$'\t' read -r name app repo; do
+            [ -n "$ONLY" ] && [ "$name" != "$ONLY" ] && [ "$app" != "$ONLY" ] && continue
+
+            if gh api "repos/$ORG/$name" >/dev/null 2>&1; then
+              if [ "$(gh api "repos/$ORG/$name/branches?per_page=1" --jq 'length')" -gt 0 ]; then
+                skipped+=("$name"); continue
+              fi
+              # Exists but empty: an earlier attempt created the repo and the
+              # push never landed. Treat it as missing; do not recreate it.
+              echo "$name exists but is empty — completing it"
+            fi
+
+            if [[ "$repo" == https://github.com/* ]]; then
+              if gh repo fork "${repo#https://github.com/}" --org "$ORG" --fork-name "$name" --clone=false; then
+                created+=("$name (fork)")
+              else
+                failed+=("$name (fork failed)")
+              fi
+              continue
+            fi
+
+            # Mirror route for non-GitHub upstreams.
+            tmp=$(mktemp -d)
+            if ! gh api "repos/$ORG/$name" >/dev/null 2>&1; then
+              gh repo create "$ORG/$name" --public \
+                --description "Ruby GTK4 port of $app. Upstream: $repo" \
+                || { failed+=("$name (create failed)"); rm -rf "$tmp"; continue; }
+            fi
+            # Push branches and tags only. A --mirror push would also carry the
+            # forge's own refs (GitLab merge-request refs), which GitHub rejects.
+            if git clone --mirror "$repo" "$tmp/m" \
+               && git -C "$tmp/m" push "https://x-access-token:${GH_TOKEN}@github.com/$ORG/$name" \
+                  "refs/heads/*:refs/heads/*" "refs/tags/*:refs/tags/*"; then
+              # Keep the upstream's default branch name — the port issues say
+              # the original lives on that branch, and that has to stay true.
+              default=$(git -C "$tmp/m" symbolic-ref --short HEAD 2>/dev/null || true)
+              [ -n "$default" ] && gh api -X PATCH "repos/$ORG/$name" -f default_branch="$default" >/dev/null || true
+              created+=("$name (mirror)")
+            else
+              failed+=("$name (mirror failed)")
+            fi
+            rm -rf "$tmp"
+          done < /tmp/registry.tsv
+
+          echo "== created (${#created[@]})"; printf '%s\n' "${created[@]}"
+          echo "== already present (${#skipped[@]})"
+          echo "== failed (${#failed[@]})"; printf '%s\n' "${failed[@]}"
+
+          # Fail loudly: after this step, every registry fork must exist and
+          # have at least one branch. A green run that did not do that is the
+          # worst outcome this workflow can produce.
+          missing=()
+          while IFS=$'\t' read -r name app repo; do
+            [ -n "$ONLY" ] && [ "$name" != "$ONLY" ] && [ "$app" != "$ONLY" ] && continue
+            gh api "repos/$ORG/$name" >/dev/null 2>&1 || { missing+=("$name (absent)"); continue; }
+            [ "$(gh api "repos/$ORG/$name/branches?per_page=1" --jq 'length')" -gt 0 ] \
+              || missing+=("$name (empty)")
+          done < /tmp/registry.tsv
+
+          if [ ${#failed[@]} -gt 0 ] || [ ${#missing[@]} -gt 0 ]; then
+            printf '%s\n' "${failed[@]}" "${missing[@]}" > /tmp/fork-failed.txt
+            echo "::error::forks still missing after this run: ${failed[*]:-} ${missing[*]:-}"
+            exit 1
+          fi
+          echo "all registry forks exist"
+
+      - name: File an issue when the run failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+        run: |
+          title="[fork-new-gtk-apps] Run failed"
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ "$(gh issue list -R "$ORG/.github" --state open --search "in:title \"$title\"" --json number --jq 'length')" = "0" ]; then
+            gh issue create -R "$ORG/.github" --title "$title" \
+              --body "$(printf 'The fork run failed — see %s\n\n```\n%s\n```' "$url" "$(cat /tmp/fork-failed.txt 2>/dev/null || echo 'see the run log')")"
+          fi
