@@ -20,9 +20,9 @@ The gap count is a floor because 81 names are unclassified.
 | GstPbutils | 7 | import, meson | filed |
 | Spelling | 6 | import, meson | filed |
 | GWeather | 5 | import, meson | filed |
+| Gee | 5 | meson | filed |
 | GlyGtk4 | 5 | import, meson | filed |
 | GstPlay | 5 | cargo, import, meson | filed |
-| Gee | 5 | meson | filed |
 | Geoclue | 4 | import, meson | filed |
 | GnomeDesktop | 4 | import, meson | filed |
 | Goa | 4 | import, meson | filed |
@@ -64,7 +64,7 @@ The gap count is a floor because 81 names are unclassified.
 
 New: none.
 Closed: none.
-Moved: EDataServer, Gee, Goa, Json, Soup, Spelling, Xdp, XdpGtk4.
+Moved: none.
 
 ## Ports by what they are waiting on
 
