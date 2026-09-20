@@ -1,0 +1,49 @@
+# Drives every port fork to its desired state: orphan `ruby` branch, `ruby` as
+# default, scaffold matching port-scaffold/, both issues on the board.
+#
+# Plain Actions, not gh-aw. Every decision in it is a boolean over the API —
+# there is no judgement to make, so there is no model, and it can exit
+# non-zero when something is wrong instead of quietly reporting success.
+name: Reconcile forks
+
+on:
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Reconcile a single fork, e.g. frogr-rb (blank = all)"
+        required: false
+        type: string
+      dry_run:
+        description: "Report what would change, change nothing"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reconcile-forks
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      ONLY: ${{ inputs.only }}
+      DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Let git push with the same token
+        run: gh auth setup-git
+
+      - name: Reconcile
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          .github/aw/reconcile-forks.sh
