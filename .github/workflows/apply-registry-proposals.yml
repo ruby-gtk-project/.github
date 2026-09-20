@@ -30,9 +30,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'registry-proposal')
     runs-on: ubuntu-latest
     env:
-      # Not GITHUB_TOKEN: "GitHub Actions is not permitted to create or
-      # approve pull requests" in this org, so the PR must come from a PAT.
-      GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ISSUE: ${{ inputs.issue || github.event.issue.number }}
     steps:
       - uses: actions/checkout@v4
