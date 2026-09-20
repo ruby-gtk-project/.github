@@ -2,36 +2,38 @@
 
 ## Summary
 
-35 gaps across 51 ports, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists. All from `fleet` and `coverage`.
+47 gaps across 52 ports, 35 of them with an issue and 12 blocking a single port each, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists.
 
-It takes one gem to unblock the most ports: Soup, which is needed by 20 ports. Xdp is the next highest-leverage target at 17 ports.
+The top four gaps (Soup, Xdp, Json, XdpGtk4) unblock 37 of the 52 blocked ports between them.
+
+The gap count is a floor because 81 names are unclassified.
 
 ## Ranked gaps
 
 | Namespace | Ports blocked | Seen in | Issue |
 |---|---|---|---|
-| Soup | 20 | cargo, import, meson | filed |
-| Xdp | 17 | cargo, import, meson | filed |
-| Json | 9 | import, meson | filed |
-| XdpGtk4 | 8 | import, meson | filed |
+| Soup | 21 | cargo, import, meson | filed |
+| Xdp | 18 | cargo, import, meson | filed |
+| Json | 10 | import, meson | filed |
+| XdpGtk4 | 9 | import, meson | filed |
 | Gly | 7 | cargo, import, meson | filed |
 | GstPbutils | 7 | import, meson | filed |
+| Spelling | 6 | import, meson | filed |
 | GWeather | 5 | import, meson | filed |
 | GlyGtk4 | 5 | import, meson | filed |
 | GstPlay | 5 | cargo, import, meson | filed |
-| Spelling | 5 | import, meson | filed |
-| Gee | 4 | meson | filed |
+| Gee | 5 | meson | filed |
 | Geoclue | 4 | import, meson | filed |
 | GnomeDesktop | 4 | import, meson | filed |
+| Goa | 4 | import, meson | filed |
+| EDataServer | 3 | meson | filed |
 | GTop | 3 | meson | filed |
 | GeocodeGlib | 3 | import, meson | filed |
-| Goa | 3 | import, meson | filed |
 | GtkUnixPrint | 3 | meson | filed |
 | Malcontent | 3 | meson | filed |
 | UDisks | 3 | cargo, meson | filed |
 | AppStream | 2 | meson | filed |
 | Colord | 2 | meson | filed |
-| EDataServer | 2 | meson | filed |
 | Flatpak | 2 | meson | filed |
 | GExiv2 | 2 | meson | filed |
 | GUdev | 2 | meson | filed |
@@ -60,7 +62,9 @@ It takes one gem to unblock the most ports: Soup, which is needed by 20 ports. X
 
 ## Since last week
 
-New: none. Closed: none. Moved: none.
+New: none.
+Closed: none.
+Moved: EDataServer, Gee, Goa, Json, Soup, Spelling, Xdp, XdpGtk4.
 
 ## Ports by what they are waiting on
 
@@ -122,4 +126,12 @@ New: none. Closed: none. Moved: none.
 
 ## Not bindings
 
-The Rust upstreams also use pure-Rust dependencies; these need a Ruby equivalent rather than a gem, so no issue was opened. The most common are `gettext-rs`, `log`, `serde_json`, `async-channel`, `tracing-subscriber`, and `serde`.
+The pure-Rust dependencies of the Rust upstreams — `gettext-rs`, `log`, `serde_json`, `async-channel`, and `tracing-subscriber` — need a Ruby equivalent rather than a gem, so no issue was opened.
+
+## Unclassified
+
+| Name | Ports blocked |
+|---|---|
+| libecal-2.0 | 2 |
+
+These names are not classified by `namespace-map.json`; each is either a missing gap or a name that should be marked as not a binding target. Until they are classified, the numbers above are a floor. (81 unclassified names in all.)
