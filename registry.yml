@@ -83,6 +83,9 @@
 - app: eartag
   repo: https://github.com/serialuart/eartag
   fork: https://github.com/ruby-gtk-project/eartag-rb
+- app: Elastic
+  repo: https://gitlab.gnome.org/World/elastic
+  fork: https://github.com/ruby-gtk-project/elastic-rb
 - app: epiphany
   repo: https://github.com/GNOME/epiphany
   fork: https://github.com/ruby-gtk-project/epiphany-rb
