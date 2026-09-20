@@ -47,6 +47,9 @@
 - app: cartridges
   repo: https://github.com/kra-mo/cartridges
   fork: https://github.com/ruby-gtk-project/cartridges-rb
+- app: Chess Clock
+  repo: https://gitlab.gnome.org/World/chess-clock
+  fork: https://github.com/ruby-gtk-project/Chess-Clock-rb
 - app: Citations
   repo: https://gitlab.gnome.org/World/citations
   fork: https://github.com/ruby-gtk-project/Citations-rb
