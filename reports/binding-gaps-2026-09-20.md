@@ -2,9 +2,9 @@
 
 ## Summary
 
-47 gaps across 52 ports, 35 of them with an issue and 12 blocking a single port each, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists.
+47 gaps across 53 ports, 35 of them with an issue and 12 blocking a single port each, 47 namespaces already covered by ruby-gnome, 28 ports needing nothing beyond what exists.
 
-The top four gaps (Soup, Xdp, Json, XdpGtk4) unblock 37 of the 52 blocked ports between them.
+The top four gaps (Soup, Xdp, Json, XdpGtk4) unblock 38 of the 53 blocked ports between them.
 
 The gap count is a floor because 81 names are unclassified.
 
@@ -12,16 +12,16 @@ The gap count is a floor because 81 names are unclassified.
 
 | Namespace | Ports blocked | Seen in | Issue |
 |---|---|---|---|
-| Soup | 21 | cargo, import, meson | filed |
+| Soup | 22 | cargo, import, meson | filed |
 | Xdp | 18 | cargo, import, meson | filed |
-| Json | 10 | import, meson | filed |
+| Json | 11 | import, meson | filed |
 | XdpGtk4 | 9 | import, meson | filed |
-| Gly | 7 | cargo, import, meson | filed |
+| Gly | 8 | cargo, import, meson | filed |
 | GstPbutils | 7 | import, meson | filed |
 | Spelling | 6 | import, meson | filed |
 | GWeather | 5 | import, meson | filed |
 | Gee | 5 | meson | filed |
-| GlyGtk4 | 5 | import, meson | filed |
+| GlyGtk4 | 6 | import, meson | filed |
 | GstPlay | 5 | cargo, import, meson | filed |
 | Geoclue | 4 | import, meson | filed |
 | GnomeDesktop | 4 | import, meson | filed |
@@ -62,9 +62,9 @@ The gap count is a floor because 81 names are unclassified.
 
 ## Since last week
 
-New: none.
-Closed: none.
-Moved: none.
+New: —.
+Closed: — (unexplained).
+Moved: Gly, GlyGtk4, Json, Soup.
 
 ## Ports by what they are waiting on
 
@@ -126,7 +126,7 @@ Moved: none.
 
 ## Not bindings
 
-The pure-Rust dependencies of the Rust upstreams — `gettext-rs`, `log`, `serde_json`, `async-channel`, and `tracing-subscriber` — need a Ruby equivalent rather than a gem, so no issue was opened.
+These are pure-Rust dependencies of the Rust upstreams; they need a Ruby equivalent rather than a gem, and no issue was opened. The most common are `gettext-rs`, `log`, `serde_json`, `tracing-subscriber`, `async-channel`.
 
 ## Unclassified
 
@@ -134,4 +134,4 @@ The pure-Rust dependencies of the Rust upstreams — `gettext-rs`, `log`, `serde
 |---|---|
 | libecal-2.0 | 2 |
 
-These names are not classified by `namespace-map.json`; each is either a missing gap or a name that should be marked as not a binding target. Until they are classified, the numbers above are a floor. (81 unclassified names in all.)
+These names are not classified by `namespace-map.json`; each is either a missing gap or a name that should be marked as not a binding target. Until all 81 unclassified names are classified, the numbers above are a floor.
