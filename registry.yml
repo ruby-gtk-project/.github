@@ -17,6 +17,9 @@
 - app: Authenticator
   repo: https://github.com/bilelmoussaoui/Authenticator
   fork: https://github.com/ruby-gtk-project/Authenticator-rb
+- app: Audio Sharing
+  repo: https://gitlab.gnome.org/World/AudioSharing
+  fork: https://github.com/ruby-gtk-project/AudioSharing-rb
 - app: baobab
   repo: https://github.com/GNOME/baobab
   fork: https://github.com/ruby-gtk-project/baobab-rb
