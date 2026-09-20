@@ -22,12 +22,15 @@ PER_REPO = %w[
   github_issue_labels
   github_branch_default
   github_repository_collaborators
-  github_actions_repository_oidc_subject_claim_customization_template
 ]
 
 # Deliberately absent, and why:
 #   github_actions_repository_access_level  — 422s on public repos
 #   github_repository_pages                 — no repo has Pages configured
+#   github_actions_repository_oidc_subject_claim_customization_template
+#                                           — repos use the default template, so
+#                                             include_claim_keys imports empty and
+#                                             fails its own 1-item minimum
 #   github_repository_ruleset / _webhook / _deploy_key / _environment /
 #   _autolink_reference / _custom_property / github_branch_protection
 #                                           — composite import IDs, and the org
