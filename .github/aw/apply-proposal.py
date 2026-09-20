@@ -14,7 +14,12 @@ import re
 import sys
 
 FIELDS = ('source', 'vcs', 'host', 'github', 'status', 'checked')
-VALID = {'ready-to-fork', 'ready-to-import', 'needs-github-home'}
+# `drop` removes a candidate: it turned out to be an app we already forked.
+# The registry's first candidate list was built by URL-matching Flathub's
+# vcs_browser against fork parents, which silently misses every app whose page
+# lists GitLab while its fork came from a GitHub home. 27 of the first 50 were
+# wrong that way.
+VALID = {'ready-to-fork', 'ready-to-import', 'needs-github-home', 'drop'}
 
 
 def parse_proposal(body):
@@ -38,6 +43,8 @@ def parse_proposal(body):
     if bad:
         sys.exit(f"entries with a bad or missing status: {[e['app'] for e in bad]}")
     for e in entries:
+        if e['status'] == 'drop':
+            continue
         if e['status'] == 'ready-to-fork' and not e.get('github'):
             sys.exit(f"{e['app']}: ready-to-fork needs a github: field")
         # vcs may be absent here and inherited from the registry entry: the
@@ -82,6 +89,12 @@ def main():
     changed = []
     for e in entries:
         app = e['app']
+        if e['status'] == 'drop':
+            if app in by_app:
+                blocks.remove(by_app[app])
+                del by_app[app]
+                changed.append(f'{app} dropped (already forked)')
+            continue
         data = {}
         if app in by_app:
             for line in by_app[app][1:]:
