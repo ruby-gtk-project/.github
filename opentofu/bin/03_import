@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# 3/4: fresh state, plan the imports. Needs GITHUB_TOKEN.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+rm -f terraform.tfstate terraform.tfstate.backup tfplan
+tofu init -input=false
+tofu plan -input=false -out=tfplan

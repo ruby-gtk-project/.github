@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+gem "rhcl"
+gem "racc" # rhcl generates a racc parser but omits the runtime dep

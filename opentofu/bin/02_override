@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+# 2/4: force the attributes we standardise on across every repo file bin/01_generate
+# wrote. Everything else keeps the real value GitHub reported. Edit SETTINGS.
+require "rhcl"
+
+SETTINGS = {
+  "visibility"             => "public",
+  "has_issues"             => true,
+  "has_wiki"               => false,
+  "has_projects"           => false,
+  "allow_merge_commit"     => false,
+  "allow_squash_merge"     => true,
+  "allow_rebase_merge"     => false,
+  "delete_branch_on_merge" => true,
+}
+
+def hcl(value, indent)
+  pad = "  " * indent
+  case value
+  when Hash then "{\n" + value.map { |k, v| "#{pad}  #{k} #{v.is_a?(Hash) ? "" : "= "}#{hcl(v, indent + 1)}" }.join("\n") + "\n#{pad}}"
+  when Array then "[" + value.map { |v| hcl(v, indent) }.join(", ") + "]"
+  when String then value.inspect
+  when nil then "null"
+  else value.to_s
+  end
+end
+
+# A block whose value is a Hash is a nested block (no `=`), everything else an
+# attribute. rhcl can't read the `import` block's bare reference, so that half
+# of the file is kept verbatim and only the resource is parsed.
+def render(type, name, body)
+  lines = body.map do |k, v|
+    v.is_a?(Hash) ? "  #{k} #{hcl(v, 1)}" : "  #{k} = #{hcl(v, 1)}"
+  end
+  "resource #{type.inspect} #{name.inspect} {\n#{lines.join("\n")}\n}\n"
+end
+
+Dir.chdir(File.expand_path("../..", __dir__) + "/opentofu")
+files = Dir["*.tf"] - ["main.tf", "organization.tf"]
+abort "no generated repo files — run bin/01_generate first" if files.empty?
+
+files.each do |f|
+  imports, resource = File.read(f).split(/^(?=resource ")/, 2)
+  abort "#{f}: no resource block" unless resource
+  type, name, body = Rhcl.parse(resource).fetch("resource").flat_map { |t, r| r.map { |n, b| [t, n, b] } }.first
+  File.write(f, imports + render(type, name, body.merge(SETTINGS)))
+end
+system("tofu", "fmt") or warn "tofu fmt failed"
+warn "overrode #{SETTINGS.size} attributes in #{files.size} files"

@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+# 1/4: ask GitHub what the forks and the org actually look like, and write that
+# out as config — every writable attribute of every resource listed below, real
+# values. One .tf per repo (all its resources together) plus organization.tf.
+# Needs GITHUB_TOKEN. Run bin/02_override afterwards.
+#
+# Add a resource type here to bring more settings under management. Only types
+# that exist for every repo can be imported; things that may not exist yet
+# (rulesets, branch protection, environments) have to be written by hand as
+# plain resources instead — you cannot import what is not there.
+require "yaml"
+
+ORG = "ruby-gtk-project"
+
+PER_REPO = %w[
+  github_repository
+  github_actions_repository_permissions
+  github_workflow_repository_permissions
+  github_repository_dependabot_security_updates
+  github_repository_vulnerability_alerts
+  github_repository_topics
+  github_issue_labels
+  github_branch_default
+  github_repository_collaborators
+  github_actions_repository_oidc_subject_claim_customization_template
+]
+
+# Deliberately absent, and why:
+#   github_actions_repository_access_level  — 422s on public repos
+#   github_repository_pages                 — no repo has Pages configured
+#   github_repository_ruleset / _webhook / _deploy_key / _environment /
+#   _autolink_reference / _custom_property / github_branch_protection
+#                                           — composite import IDs, and the org
+#                                             has zero of these objects to import;
+#                                             write them as plain resources to create.
+
+PER_ORG = %w[
+  github_organization_settings
+  github_actions_organization_permissions
+  github_actions_organization_workflow_permissions
+]
+
+DIR = File.expand_path("../..", __dir__) + "/opentofu"
+Dir.chdir(DIR)
+
+repos = YAML.load_file("../registry.yml").map do |e|
+  name = e.fetch("fork").split("/").last
+  [name.gsub(/[^A-Za-z0-9]+/, "_").downcase, name]
+end.to_h
+
+def import_block(type, id, target)
+  "import {\n  to = #{type}.#{id}\n  id = #{target.inspect}\n}\n"
+end
+
+imports = repos.flat_map { |id, name| PER_REPO.map { |t| import_block(t, id, name) } }
+imports += PER_ORG.map { |t| import_block(t, "org", ORG) }
+
+Dir["*.tf"].each { |f| File.delete(f) unless f == "main.tf" }
+File.write("imports.tf", imports.join("\n"))
+
+abort "tofu init failed" unless system("tofu", "init", "-input=false")
+abort "tofu plan failed" unless
+  system("tofu", "plan", "-input=false", "-generate-config-out=generated.tf")
+
+# Generated config lands in one file; regroup it so each repo owns a file with
+# all of its resources, each next to the import block that populates it.
+files = Hash.new { |h, k| h[k] = +"" }
+File.read("generated.tf")
+    .split(/^(?=(?:# __generated__.*\n)?resource ")/)
+    .select { |b| b.include?('resource "') }
+    .each do |block|
+  type, id = block.match(/^resource "(\S+)" "(\S+)"/)[1..2]
+  target = id == "org" ? ORG : repos.fetch(id)
+  files[id == "org" ? "organization" : id] << import_block(type, id, target) << "\n" << block.strip << "\n\n"
+end
+
+files.each { |name, body| File.write("#{name}.tf", body) }
+File.delete("imports.tf", "generated.tf")
+system("tofu", "fmt") or warn "tofu fmt failed"
+warn "wrote #{files.size} files"

@@ -1,0 +1,18 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    deep_merge (1.2.2)
+    racc (1.8.1)
+    rhcl (0.1.0)
+      deep_merge
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  racc
+  rhcl
+
+BUNDLED WITH
+   2.7.2

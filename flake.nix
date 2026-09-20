@@ -8,13 +8,22 @@
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        gems = pkgs.bundlerEnv {
+          name = "opentofu-gems";
+          ruby = pkgs.ruby_3_4;
+          gemdir = ./opentofu;
+        };
       in
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            (pkgs.opentofu.withPlugins (p: [ p.github ]))
-            pkgs.ruby_3_4
+            (pkgs.opentofu.withPlugins (p: [ p.integrations_github ]))
+            gems
+            gems.wrappedRuby
           ];
+        };
+        devShells.bootstrap = pkgs.mkShell {
+          buildInputs = with pkgs; [ ruby_3_4 bundler bundix ];
         };
       }
     );
