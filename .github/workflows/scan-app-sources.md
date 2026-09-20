@@ -70,9 +70,12 @@ steps:
       wc -l .github/port-registry.yml
 
 safe-outputs:
-  create-issue:
+  create-pull-request:
+    title-prefix: "[registry] "
+    labels: [registry]
     max: 1
-    labels: [registry-proposal]
+    allowed-files: ["port-registry.yml"]
+    if-no-changes: "ignore"
 ---
 
 # Scan app sources
@@ -86,12 +89,11 @@ from it and add them.
 - `/tmp/gh-aw/agent/apps.json` — every app on apps.gnome.org, with its group
   (`core` or `circle`), its app ID, and whatever `vcs_browser`, `homepage` and
   `bugtracker` Flathub holds for it.
-- `.github/port-registry.yml` — the registry, in the working directory. This
-  is the real file and the only copy: read it and write it **at that path**.
-  There is deliberately no copy under `/tmp`, because a previous run edited
-  one and its pull request came out empty. `forked` entries are apps we
-  already have; `candidates` are apps we know about but have no GitHub home
-  for yet.
+- `port-registry.yml` — the registry, at the root of the working directory.
+  This is the real file and the only copy: read it and write it **at that
+  path**. There is deliberately no copy under `/tmp`. `forked` entries are
+  apps we already have; `candidates` are apps we know about but have no
+  GitHub home for yet.
 
 ## Step 0 — Count what you were given
 
@@ -141,37 +143,35 @@ abandoned copy — compare the description, the language, the recent commits
 against the upstream you started from. A mirror that stopped updating two years
 ago is not a home; say so rather than registering it.
 
-## Step 3 — Report what you found
+## Step 3 — Update the registry and open the pull request
 
-You cannot edit files in this workflow. Do not try: every attempt so far has
-produced a flawless pull request body and an empty patch, because the agent
-container's writes never reach the checkout. Report instead, and a script
-applies it.
+Edit `port-registry.yml` at the root of the working directory, then open one
+pull request with all of your changes.
 
-Open one issue. Its body must contain a fenced `yaml` block, and that block is
-what gets applied — everything outside it is for the human reading it.
+For each candidate you resolved, set its `status` and add the field that
+status requires:
 
-```yaml
-- app: Amberol
-  status: ready-to-import
-  vcs: https://gitlab.gnome.org/World/amberol
-- app: Bustle
-  status: ready-to-fork
-  github: bustle/bustle
-- app: Something
-  status: needs-github-home
-  checked: 2026-09-20 searched GitHub for the app id and the author, nothing live
-```
+- `ready-to-fork` — a real GitHub home. Add `github: owner/repo`.
+- `ready-to-import` — no GitHub home, but the upstream git URL works. Keep
+  the existing `vcs:`; it is already correct in the registry, and non-GitHub
+  URLs are redacted out of your output anyway.
+- `needs-github-home` — nothing works. Add `checked:` with today's date and
+  one line on what you tried, so the next run does not repeat it.
 
-One entry per candidate you resolved, using the exact `app` name from the
-registry. `status` is one of the three from Step 2. `ready-to-fork` needs a
-`github:` field; `ready-to-import` needs a `vcs:` field; `needs-github-home`
-needs a `checked:` line saying what you tried.
+**A candidate that turns out to be an app we already forked should be deleted
+from `candidates` entirely, not given a status.** This happens often: the
+first candidate list was built by matching Flathub's `vcs_browser` against
+fork parents, which misses every app whose page lists GitLab while its fork
+came from a GitHub home. 27 of the first 50 candidates were already forked.
+Check `forked` and the fork names before proposing anything — `Apostrophe` is
+already there as `Apostrophe-rb`.
 
-Outside the block, give the evidence per app: what convinced you that repo is
-that app, with links. Someone approves this by reading it.
+Never edit the `forked` section otherwise. Entries move there when a fork or
+import actually succeeds.
 
-Do not list candidates you did not resolve this run.
+In the pull request body, give the evidence per app: what convinced you that
+repo is that app, with links. Someone approves this by reading it, and
+merging it is what causes the fork or import to happen.
 
 ## Rules
 

@@ -47,8 +47,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           .github/aw/fork-from-registry.sh
-          if ! git diff --quiet .github/port-registry.yml; then
-            git add .github/port-registry.yml
+          if ! git diff --quiet port-registry.yml; then
+            git add port-registry.yml
             git commit -m "Registry: promote newly forked apps"
             git push
           fi
@@ -56,8 +56,8 @@ jobs:
       - name: Import what cannot be forked
         run: |
           .github/aw/import-from-registry.sh
-          if ! git diff --quiet .github/port-registry.yml; then
-            git add .github/port-registry.yml
+          if ! git diff --quiet port-registry.yml; then
+            git add port-registry.yml
             git commit -m "Registry: promote newly imported apps"
             git push
           fi

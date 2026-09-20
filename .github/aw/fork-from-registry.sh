@@ -12,7 +12,7 @@ set -uo pipefail
 
 ORG=ruby-gtk-project
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
-REG=$ROOT/.github/port-registry.yml
+REG=$ROOT/port-registry.yml
 DRY=${DRY_RUN:-}
 
 rc=0

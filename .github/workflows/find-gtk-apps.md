@@ -59,9 +59,12 @@ steps:
       wc -l /tmp/gh-aw/agent/claimed-upstreams.txt /tmp/gh-aw/agent/issue-titles.txt
 
 safe-outputs:
-  create-issue:
+  create-pull-request:
+    title-prefix: "[registry] "
+    labels: [registry, discovery]
     max: 1
-    labels: [registry-proposal]
+    allowed-files: ["port-registry.yml"]
+    if-no-changes: "ignore"
 ---
 
 # Find GTK apps
@@ -74,8 +77,8 @@ it.
 
 ## What you have
 
-- `.github/port-registry.yml` — the registry, in the working directory. This
-  is the real file and the only copy: read and write it **at that path**.
+- `port-registry.yml` — the registry, at the root of the working directory.
+  This is the real file and the only copy: read and write it **at that path**.
   `forked` is what we have, `candidates` is what is queued.
 - `/tmp/gh-aw/agent/claimed-upstreams.txt` — every upstream already forked,
   as `owner/repo`, lowercased.
@@ -115,7 +118,7 @@ Before spending any judgement on an app, check all four:
 1. its `owner/repo`, lowercased, in `claimed-upstreams.txt`
 2. its name in `issue-titles.txt` (`Initial port: <name>-rb`)
 3. its name or URL in `pr-text.txt` — it may be proposed and not yet merged
-4. its name or URL anywhere in `.github/port-registry.yml`, in either section
+4. its name or URL anywhere in `port-registry.yml`, in either section
 
 Any hit means move on and find another app. Names collide, so compare the
 repository URL, not just the name: a different project called Commit is a
@@ -163,20 +166,11 @@ licence, but an app that fails several is not a good use of a port.
 
 ## Step 4 — Propose it
 
-You cannot edit files in this workflow — writes from the agent container never
-reach the checkout, so a pull request built from them comes out empty. Report
-instead; a script applies it.
+Add the app to `candidates` in `port-registry.yml` at the root of the working
+directory, with `status: ready-to-fork` and a `github:` field naming
+`owner/repo`. Then open one pull request.
 
-Open one issue whose body contains a fenced `yaml` block. That block is what
-gets applied:
-
-```yaml
-- app: Save Desktop
-  status: ready-to-fork
-  github: vikdevelop/SaveDesktop
-```
-
-Outside the block, for each app:
+In the body, for each app:
 
 - what it is, in a sentence
 - the licence, and where you saw it
@@ -186,8 +180,8 @@ Outside the block, for each app:
 - anything that worries you, stated plainly
 - which searches you ran, so the next run can go somewhere else
 
-Merging the pull request the script opens is what authorises the fork. You
-never fork anything yourself.
+Merging the pull request is what authorises the fork. You never fork anything
+yourself.
 
 ## Rules
 

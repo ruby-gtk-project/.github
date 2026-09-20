@@ -17,7 +17,7 @@ HUB=$ORG/.github
 PROJECT=1
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 TPL=$ROOT/.github/port-issues
-REG=$ROOT/.github/port-registry.yml
+REG=$ROOT/port-registry.yml
 ONLY=${ONLY:-}
 DRY=${DRY_RUN:-}
 
