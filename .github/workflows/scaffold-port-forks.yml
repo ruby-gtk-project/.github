@@ -94,7 +94,7 @@ jobs:
             # own locks), the compiler workflow, the scanner and the pinned
             # actions are ours too, and must match exactly.
             mkdir -p "$tmp/r/.github/workflows" "$tmp/r/.github/aw"
-            cp port-scaffold/.github/workflows/report-parity-*.md "$tmp/r/.github/workflows/"
+            cp port-scaffold/.github/workflows/report-parity*.md "$tmp/r/.github/workflows/"
             cp port-scaffold/.github/workflows/compile-agentic-workflows.yml "$tmp/r/.github/workflows/"
             cp port-scaffold/.github/aw/parity-scan.sh "$tmp/r/.github/aw/"
             cp .github/aw/actions-lock.json "$tmp/r/.github/aw/actions-lock.json"
