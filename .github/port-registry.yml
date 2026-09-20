@@ -1,0 +1,515 @@
+# The port campaign's registry. Nothing is forked, issued or scaffolded that
+# is not listed here; adding an entry is what causes those things to happen.
+#
+# New entries arrive by pull request from the `Scan app sources` workflow, so
+# a person approves every app before the machinery acts on it.
+#
+# `forked` is fact: the fork exists and `upstream` is its real parent on
+# GitHub. `candidates` are apps on apps.gnome.org with no fork yet — none of
+# them are on GitHub, so each needs a GitHub home found before it can be
+# forked. That is a judgement, not a URL rewrite: Apostrophe lives at
+# gitlab.gnome.org/World/apostrophe but its GitHub home is
+# ApostropheEditor/Apostrophe, which no rule derives from the GitLab URL.
+
+forked:
+  - fork: Apostrophe-rb
+    upstream: ApostropheEditor/Apostrophe
+    upstream_branch: master
+  - fork: Authenticator-rb
+    upstream: bilelmoussaoui/Authenticator
+    upstream_branch: master
+  - fork: baobab-rb
+    upstream: GNOME/baobab
+    upstream_branch: main
+  - fork: bazaar-rb
+    upstream: bazaar-org/bazaar
+    upstream_branch: main
+  - fork: Biblioteca-rb
+    upstream: workbenchdev/Biblioteca
+    upstream_branch: main
+  - fork: binary-rb
+    upstream: fizzyizzy05/binary
+    upstream_branch: main
+  - fork: blanket-rb
+    upstream: rafaelmardojai/blanket
+    upstream_branch: master
+  - fork: Bobby-rb
+    upstream: hbons/Bobby
+    upstream_branch: main
+  - fork: bustle-rb
+    upstream: wjt/bustle
+    upstream_branch: master
+  - fork: cartridges-rb
+    upstream: kra-mo/cartridges
+    upstream_branch: main
+  - fork: clairvoyant-rb
+    upstream: cassidyjames/clairvoyant
+    upstream_branch: main
+  - fork: Collision-rb
+    upstream: GeopJr/Collision
+    upstream_branch: main
+  - fork: Commit-rb
+    upstream: sonnyp/Commit
+    upstream_branch: main
+  - fork: console-rb
+    upstream: GNOME/console
+    upstream_branch: main
+  - fork: Constrict-rb
+    upstream: Wartybix/Constrict
+    upstream_branch: main
+  - fork: Curtail-rb
+    upstream: Huluti/Curtail
+    upstream_branch: main
+  - fork: decibels-rb
+    upstream: GNOME/decibels
+    upstream_branch: main
+  - fork: dialect-rb
+    upstream: dialect-app/dialect
+    upstream_branch: main
+  - fork: drum-machine-rb
+    upstream: Revisto/drum-machine
+    upstream_branch: main
+  - fork: eartag-rb
+    upstream: serialuart/eartag
+    upstream_branch: main
+  - fork: epiphany-rb
+    upstream: GNOME/epiphany
+    upstream_branch: main
+  - fork: Errands-rb
+    upstream: mrvladus/Errands
+    upstream_branch: main
+  - fork: eyedropper-rb
+    upstream: FineFindus/eyedropper
+    upstream_branch: main
+  - fork: forge-sparks-rb
+    upstream: rafaelmardojai/forge-sparks
+    upstream_branch: main
+  - fork: fretboard-rb
+    upstream: bragefuglseth/fretboard
+    upstream_branch: main
+  - fork: frogr-rb
+    upstream: GNOME/frogr
+    upstream_branch: master
+  - fork: gaphor-rb
+    upstream: gaphor/gaphor
+    upstream_branch: main
+  - fork: gnome-calculator-rb
+    upstream: GNOME/gnome-calculator
+    upstream_branch: main
+  - fork: gnome-calendar-rb
+    upstream: GNOME/gnome-calendar
+    upstream_branch: main
+  - fork: gnome-characters-rb
+    upstream: GNOME/gnome-characters
+    upstream_branch: main
+  - fork: gnome-clocks-rb
+    upstream: GNOME/gnome-clocks
+    upstream_branch: master
+  - fork: gnome-connections-rb
+    upstream: GNOME/gnome-connections
+    upstream_branch: master
+  - fork: gnome-contacts-rb
+    upstream: GNOME/gnome-contacts
+    upstream_branch: main
+  - fork: gnome-control-center-rb
+    upstream: GNOME/gnome-control-center
+    upstream_branch: main
+  - fork: gnome-disk-utility-rb
+    upstream: GNOME/gnome-disk-utility
+    upstream_branch: main
+  - fork: gnome-font-viewer-rb
+    upstream: GNOME/gnome-font-viewer
+    upstream_branch: main
+  - fork: gnome-logs-rb
+    upstream: GNOME/gnome-logs
+    upstream_branch: master
+  - fork: gnome-mahjongg-rb
+    upstream: GNOME/gnome-mahjongg
+    upstream_branch: main
+  - fork: gnome-maps-rb
+    upstream: GNOME/gnome-maps
+    upstream_branch: main
+  - fork: gnome-music-rb
+    upstream: GNOME/gnome-music
+    upstream_branch: master
+  - fork: gnome-podcasts-rb
+    upstream: alatiera/gnome-podcasts
+    upstream_branch: main
+  - fork: gnome-software-rb
+    upstream: GNOME/gnome-software
+    upstream_branch: main
+  - fork: gnome-system-monitor-rb
+    upstream: GNOME/gnome-system-monitor
+    upstream_branch: main
+  - fork: gnome-text-editor-rb
+    upstream: GNOME/gnome-text-editor
+    upstream_branch: main
+  - fork: gnome-tour-rb
+    upstream: GNOME/gnome-tour
+    upstream_branch: main
+  - fork: gnome-weather-rb
+    upstream: GNOME/gnome-weather
+    upstream_branch: main
+  - fork: Gradia-rb
+    upstream: AlexanderVanhee/Gradia
+    upstream_branch: main
+  - fork: Graphs-rb
+    upstream: sstendahl/Graphs
+    upstream_branch: main
+  - fork: gtk-demos-and-examples
+    upstream: GNOME/gtk
+    upstream_branch: main
+  - fork: Hieroglyphic-rb
+    upstream: FineFindus/Hieroglyphic
+    upstream_branch: main
+  - fork: Impression-rb
+    upstream: adhami3310/Impression
+    upstream_branch: main
+  - fork: Junction-rb
+    upstream: sonnyp/Junction
+    upstream_branch: main
+  - fork: keypunch-rb
+    upstream: bragefuglseth/keypunch
+    upstream_branch: main
+  - fork: loupe-rb
+    upstream: GNOME/loupe
+    upstream_branch: main
+  - fork: Mousai-rb
+    upstream: SeaDve/Mousai
+    upstream_branch: main
+  - fork: nautilus-rb
+    upstream: GNOME/nautilus
+    upstream_branch: main
+  - fork: Paper-Clip-rb
+    upstream: Diego-Ivan/Paper-Clip
+    upstream_branch: main
+  - fork: papers-rb
+    upstream: GNOME/papers
+    upstream_branch: main
+  - fork: pika-backup-rb
+    upstream: pika-backup/pika-backup
+    upstream_branch: main
+  - fork: planify-rb
+    upstream: alainm23/planify
+    upstream_branch: main
+  - fork: polari-rb
+    upstream: GNOME/polari
+    upstream_branch: main
+  - fork: raider-rb
+    upstream: ADBeveridge/raider
+    upstream_branch: main
+  - fork: resources-rb
+    upstream: nokyan/resources
+    upstream_branch: main
+  - fork: sessions-rb
+    upstream: pojntfx/sessions
+    upstream_branch: main
+  - fork: share-preview-rb
+    upstream: rafaelmardojai/share-preview
+    upstream_branch: master
+  - fork: showtime-rb
+    upstream: GNOME/showtime
+    upstream_branch: main
+  - fork: simple-scan-rb
+    upstream: GNOME/simple-scan
+    upstream_branch: master
+  - fork: snapshot-rb
+    upstream: GNOME/snapshot
+    upstream_branch: main
+  - fork: Solanum-rb
+    upstream: BrainBlasted/Solanum
+    upstream_branch: main
+  - fork: Sudoku-rb
+    upstream: sepehr-rs/Sudoku
+    upstream_branch: main
+  - fork: Switcheroo-rb
+    upstream: adhami3310/Switcheroo
+    upstream_branch: main
+  - fork: tally-rb
+    upstream: vtrlx/tally
+    upstream_branch: trunk
+  - fork: Tangram-rb
+    upstream: sonnyp/Tangram
+    upstream_branch: main
+  - fork: textpieces-rb
+    upstream: liferooter/textpieces
+    upstream_branch: main
+  - fork: Tuba-rb
+    upstream: GeopJr/Tuba
+    upstream_branch: main
+  - fork: valuta-rb
+    upstream: ideveCore/Valuta
+    upstream_branch: main
+  - fork: webfont-kit-generator-rb
+    upstream: rafaelmardojai/webfont-kit-generator
+    upstream_branch: master
+  - fork: Wike-rb
+    upstream: hugolabe/Wike
+    upstream_branch: master
+  - fork: Wordbook-rb
+    upstream: mufeedali/Wordbook
+    upstream_branch: main
+  - fork: workbench
+    upstream: workbenchdev/Workbench
+    upstream_branch: main
+  - fork: workbench-demos
+    upstream: workbenchdev/demos
+    upstream_branch: main
+  - fork: Workbench-rb
+    upstream: workbenchdev/Workbench
+    upstream_branch: main
+  - fork: yelp-rb
+    upstream: GNOME/yelp
+    upstream_branch: master
+
+candidates:
+  - app: Amberol
+    source: circle
+    vcs: https://gitlab.gnome.org/World/amberol
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Apostrophe
+    source: circle
+    vcs: https://gitlab.gnome.org/World/apostrophe/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: AudioSharing
+    source: circle
+    vcs: https://gitlab.gnome.org/World/AudioSharing
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Authenticator
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Authenticator
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Bazaar
+    source: circle
+    vcs: https://gitlab.gnome.org/World/bazaar
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Boatswain
+    source: circle
+    vcs: https://gitlab.gnome.org/World/boatswain
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Bustle
+    source: circle
+    vcs: https://gitlab.gnome.org/World/bustle
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Chessclock
+    source: circle
+    vcs: https://gitlab.gnome.org/World/chess-clock
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Citations
+    source: circle
+    vcs: https://gitlab.gnome.org/World/citations
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Collision
+    source: circle
+    vcs: https://codeberg.org/GeopJr/Collision/
+    host: codeberg.org
+    status: needs-github-home
+  - app: Commit
+    source: circle
+    vcs: https://commit.sonny.re/source
+    host: commit.sonny.re
+    status: needs-github-home
+  - app: Console
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: Constrict
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Constrict
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Converter
+    source: circle
+    vcs: https://gitlab.com/adhami3310/Switcheroo
+    host: gitlab.com
+    status: needs-github-home
+  - app: Decoder
+    source: circle
+    vcs: https://gitlab.gnome.org/World/decoder/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: DejaDup
+    source: circle
+    vcs: https://gitlab.gnome.org/World/deja-dup
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: DieBahn
+    source: circle
+    vcs: https://gitlab.com/schmiddi-on-mobile/railway
+    host: gitlab.com
+    status: needs-github-home
+  - app: DiskUtility
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: EarTag
+    source: circle
+    vcs: https://gitlab.gnome.org/World/eartag/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Elastic
+    source: circle
+    vcs: https://gitlab.gnome.org/World/elastic
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Emblem
+    source: circle
+    vcs: https://gitlab.gnome.org/World/design/emblem
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Fragments
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Fragments
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Graphs
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Graphs
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Hiit
+    source: circle
+    vcs: https://gitlab.gnome.org/World/exercise-timer/-/work_items
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Identity
+    source: circle
+    vcs: https://gitlab.gnome.org/YaLTeR/identity
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Impression
+    source: circle
+    vcs: https://gitlab.com/adhami3310/Impression
+    host: gitlab.com
+    status: needs-github-home
+  - app: Iotas
+    source: circle
+    vcs: https://gitlab.gnome.org/World/iotas
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Junction
+    source: circle
+    vcs: https://junction.sonny.re/source
+    host: junction.sonny.re
+    status: needs-github-home
+  - app: Komikku
+    source: circle
+    vcs: https://codeberg.org/valos/Komikku
+    host: codeberg.org
+    status: needs-github-home
+  - app: Lorem
+    source: circle
+    vcs: https://gitlab.gnome.org/World/design/lorem
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Nautilus
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: NewsFlash
+    source: circle
+    vcs: https://gitlab.com/news-flash/news_flash_gtk
+    host: gitlab.com
+    status: needs-github-home
+  - app: Obfuscate
+    source: circle
+    vcs: https://gitlab.gnome.org/World/obfuscate/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: PikaBackup
+    source: circle
+    vcs: https://gitlab.gnome.org/World/pika-backup/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Podcasts
+    source: circle
+    vcs: https://gitlab.gnome.org/World/podcasts
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Secrets
+    source: circle
+    vcs: https://gitlab.gnome.org/World/secrets
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Settings
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: Shortwave
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Shortwave
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Software
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: Solanum
+    source: circle
+    vcs: https://gitlab.gnome.org/World/Solanum/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: SystemMonitor
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: Tally
+    source: circle
+    vcs: https://codeberg.org/vtrlx/tally
+    host: codeberg.org
+    status: needs-github-home
+  - app: Tangram
+    source: circle
+    vcs: https://tangram.sonny.re/source
+    host: tangram.sonny.re
+    status: needs-github-home
+  - app: TextPieces
+    source: circle
+    vcs: https://gitlab.com/liferooter/textpieces
+    host: gitlab.com
+    status: needs-github-home
+  - app: Tour
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
+  - app: Tuba
+    source: circle
+    vcs: https://codeberg.org/GeopJr/Tuba/
+    host: codeberg.org
+    status: needs-github-home
+  - app: VideoTrimmer
+    source: circle
+    vcs: https://gitlab.gnome.org/YaLTeR/video-trimmer
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Warp
+    source: circle
+    vcs: https://gitlab.gnome.org/World/warp/
+    host: gitlab.gnome.org
+    status: needs-github-home
+  - app: Workbench
+    source: circle
+    vcs: https://workbench.sonny.re/source
+    host: workbench.sonny.re
+    status: needs-github-home
+  - app: Yelp
+    source: core
+    vcs: ~
+    host: UNRESOLVED
+    status: needs-github-home
