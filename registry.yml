@@ -182,6 +182,9 @@
 - app: keypunch
   repo: https://github.com/bragefuglseth/keypunch
   fork: https://github.com/ruby-gtk-project/keypunch-rb
+- app: Komikku
+  repo: https://codeberg.org/valos/Komikku
+  fork: https://github.com/ruby-gtk-project/Komikku-rb
 - app: loupe
   repo: https://github.com/GNOME/loupe
   fork: https://github.com/ruby-gtk-project/loupe-rb
