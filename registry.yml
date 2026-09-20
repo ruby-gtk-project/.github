@@ -29,6 +29,9 @@
 - app: blanket
   repo: https://github.com/rafaelmardojai/blanket
   fork: https://github.com/ruby-gtk-project/blanket-rb
+- app: Boatswain
+  repo: https://gitlab.gnome.org/World/boatswain
+  fork: https://github.com/ruby-gtk-project/Boatswain-rb
 - app: Bobby
   repo: https://github.com/hbons/Bobby
   fork: https://github.com/ruby-gtk-project/Bobby-rb
