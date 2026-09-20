@@ -22,9 +22,6 @@ dashboard, and the canonical agentic workflows the forks redirect to.
 | `sync-port-scaffold-skills.yml` | 03:17 daily | Mirrors `ruby-gtk-project/skills` into `port-scaffold/.claude/skills/`. | **Commits to `main` of this repo directly.** No pull request. |
 | `report-weekly-progress.md` | Mondays | Fleet report from every fork's `PORTING.md`. | Commits the report to `reports/` and opens a review issue on the Reports project. |
 | `report-binding-gaps.md` | monthly | Works out which GObject Introspection namespaces the ports need and subtracts what ruby-gnome ships. | Commits a scan to `reports/`, and opens or updates one issue per missing gem on the Bindings project. |
-| `report-parity.md` | on demand | Compares a finished port against the original. Run it when a port looks done. | Opens a pull request **in the fork being reviewed**, adding `.reports/PARITY_REPORT-<date>.md`. |
-| `report-parity-test.md` | on demand | Runs the test-parity census on one fork: every upstream test mapped to a named Ruby test, or a gap with the behaviour owed. | Opens a pull request in the fork adding `.reports/TEST_PARITY.md`. |
-| `report-parity-translation.md` | on demand | Compares the upstream message catalogue against the port's, msgid by msgid, and which languages survive. | Opens a pull request in the fork adding `.reports/TRANSLATION_PARITY.md` and `.reports/translation-parity.yaml`. |
 | `report-excuse-audit.md` | Thursdays | Scans every fork's `ruby` branch for phrases that present missing work as a settled decision. | Commits the audit to `reports/`, and opens a review issue on the Reports project. |
 
 `registry.yml` is the gate: an entry in it is the instruction to fork, and

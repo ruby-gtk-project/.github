@@ -22,11 +22,19 @@ answer it. Read them first.
 - **Always compile all workflows at once** (`gh aw compile`, no filter). The
   action-failure expiry patch only runs on a full compile — compiling a single
   workflow leaves its lock file with the wrong `EXPIRES_HOURS` value.
+- **Never pipe `gh aw compile` into `tail`/`head` inside an `&&` chain** — the
+  pipeline masks a non-zero exit and you commit stale locks. Check the exit
+  code.
 - The compiler pins: do not change action SHAs, container digests, or compiler
   version by hand. Upgrade with `gh aw upgrade`.
 - After editing, compile and check the diff of the lock matches what you meant
   to change. Then test with `gh workflow run <file> --ref main`, watch with
   `gh run watch <id>`, and inspect with `gh aw audit <id>`.
+- **The parity reports** (`report-parity`, `report-parity-test`,
+  `report-parity-translation`) **live in `port-scaffold/.github/workflows/`**,
+  synced into every fork as `.md` only; each fork compiles its own locks with
+  `compile-agentic-workflows.yml` on push. Edit them in the scaffold, never in
+  a fork. They are dispatch-only and write to `.reports/` in the target repo.
 
 ## Lessons paid for with broken runs
 

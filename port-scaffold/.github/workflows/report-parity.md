@@ -1,24 +1,19 @@
 ---
 description: |
-  Reviews a Ruby GTK4 port against the original app it was ported from and
-  writes a dated PARITY_REPORT into that repo as a pull request. Triggered by
+  Reviews this Ruby GTK4 port against the original app it was ported from and
+  writes a dated PARITY_REPORT into .reports/ as a pull request. Triggered by
   hand once a port is believed finished.
 
 on:
   workflow_dispatch:
     inputs:
-      repo:
-        description: "Fork to review, e.g. Commit-rb"
-        required: true
-        type: string
       upstream_branch:
         description: "Branch holding the original app (blank = the fork parent's default branch)"
         required: false
         type: string
 
-engine:
-  id: copilot
-  model: gpt-5
+engine: copilot
+model: gpt-5
 
 timeout-minutes: 30
 
@@ -27,18 +22,9 @@ permissions: read-all
 network:
   allowed: [defaults, github]
 
-checkout:
-  - repository: ruby-gtk-project/${{ inputs.repo }}
-    path: ./target
-    fetch-depth: 0
-    fetch: ["*"]
-    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
-
 tools:
   edit:
-  bash:
-    ["cat *", "ls *", "find *", "grep *", "head *", "tail *", "sed -n *",
-     "wc *", "sort *", "jq *", "git log *", "git show *", "git diff *"]
+  bash: ["*"]
   github:
     toolsets: [repos]
 
@@ -46,47 +32,43 @@ steps:
   - name: Scan the port against its upstream
     env:
       GH_TOKEN: ${{ github.token }}
-      REPO: ${{ inputs.repo }}
       UPSTREAM_BRANCH: ${{ inputs.upstream_branch }}
     run: |
       set -euo pipefail
-      ORG=ruby-gtk-project
       OUT=/tmp/gh-aw/agent/parity
       mkdir -p "$OUT"
 
-      # The original and the port are two branches of the same fork, so one
-      # clone and two worktrees give us both trees side by side.
-      git clone --quiet "https://github.com/$ORG/$REPO" /tmp/gh-aw/agent/trees/src
-      cd /tmp/gh-aw/agent/trees/src
+      # The original and the port are two branches of this repository: the
+      # workspace is the port (ruby), the original is fetched alongside.
+      cd "$GITHUB_WORKSPACE"
 
       if [ -z "$UPSTREAM_BRANCH" ]; then
-        UPSTREAM_BRANCH=$(gh api "repos/$ORG/$REPO" --jq '.parent.default_branch // empty')
+        UPSTREAM_BRANCH=$(gh api "repos/${{ github.repository }}" --jq '.parent.default_branch // empty')
       fi
       if [ -z "$UPSTREAM_BRANCH" ]; then
-        echo "Could not determine the upstream branch for $REPO — pass it explicitly." >&2
+        echo "Could not determine the upstream branch — pass it explicitly." >&2
         exit 1
       fi
 
+      git fetch --quiet --depth 1 origin "$UPSTREAM_BRANCH:refs/remotes/origin/$UPSTREAM_BRANCH"
       git worktree add --quiet --detach /tmp/gh-aw/agent/trees/upstream "origin/$UPSTREAM_BRANCH"
-      git worktree add --quiet --detach /tmp/gh-aw/agent/trees/port "origin/ruby"
 
       {
-        echo "repo=$ORG/$REPO"
+        echo "repo=${{ github.repository }}"
         echo "upstream_branch=$UPSTREAM_BRANCH"
         echo "upstream_sha=$(git rev-parse --short "origin/$UPSTREAM_BRANCH")"
-        echo "port_sha=$(git rev-parse --short origin/ruby)"
+        echo "port_sha=$(git rev-parse --short HEAD)"
         echo "date=$(date -u +%Y-%m-%d)"
       } > "$OUT/context.env"
 
-      bash "$GITHUB_WORKSPACE/.github/aw/parity-scan.sh" \
-        /tmp/gh-aw/agent/trees/upstream /tmp/gh-aw/agent/trees/port "$OUT"
+      # The port tree is the workspace itself.
+      bash .github/aw/parity-scan.sh \
+        /tmp/gh-aw/agent/trees/upstream "$GITHUB_WORKSPACE" "$OUT"
 
       cat "$OUT/context.env"
 
 safe-outputs:
   create-pull-request:
-    target-repo: "*"
-    github-token: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
     title-prefix: "[parity] "
     labels: [parity-review]
     max: 1
@@ -100,8 +82,8 @@ safe-outputs:
 # Parity review
 
 A port is finished when the Ruby app does everything the original does. Your
-job is to say whether that is true for one repo, on the evidence, and write it
-down as a report that the next person can re-run and compare against.
+job is to say whether that is true for this repository, on the evidence, and
+write it down as a report that the next person can re-run and compare against.
 
 You are not judging code quality, idiom or style. Only: is anything the
 original does missing from the port.
@@ -129,8 +111,8 @@ The categories, and what a missing item means:
 | `strings` | translatable strings | user-visible text, so usually a feature |
 | `datafiles` | desktop entry, metainfo, schemas, resources | something the packaged app needs |
 
-The two trees are on disk: the original at `/tmp/gh-aw/agent/trees/upstream`, the port at
-`/tmp/gh-aw/agent/trees/port`. Read them.
+The two trees are on disk: the original at `/tmp/gh-aw/agent/trees/upstream`,
+the port is the workspace. Read them.
 
 ## Step 2 — Judge every miss
 
@@ -170,10 +152,10 @@ working from the original's source:
 
 ## Step 4 — Write the report
 
-Write `.reports/PARITY_REPORT-<date>.md` under `./target` (which is the port's
-`ruby` branch), where `<date>` is from `context.env`. Generated parity
-documents live in `.reports/` — create the directory first. Exactly this
-shape, so that two reports on the same repo can be compared:
+Write `.reports/PARITY_REPORT-<date>.md` in the workspace (the port's `ruby`
+branch), where `<date>` is from `context.env`. Generated parity documents live
+in `.reports/` — create the directory first. Exactly this shape, so that two
+reports on the same repo can be compared:
 
 ```markdown
 # Parity report — <repo>
@@ -229,9 +211,9 @@ A port with one missing dialog is not a pass with a note.
 
 ## Step 5 — Open the pull request
 
-Call `create_pull_request` with `repo` set to `<repo>` from `context.env`,
-titled `Parity report <date>`, adding only the report file. The body is the
-Summary and the Verdict, and a line saying which commits were compared.
+Call `create_pull_request` titled `Parity report <date>`, adding only the
+report file. The body is the Summary and the Verdict, and a line saying which
+commits were compared.
 
 ## Rules
 
