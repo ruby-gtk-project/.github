@@ -176,6 +176,9 @@
 - app: Impression
   repo: https://github.com/adhami3310/Impression
   fork: https://github.com/ruby-gtk-project/Impression-rb
+- app: Iotas
+  repo: https://gitlab.gnome.org/World/iotas
+  fork: https://github.com/ruby-gtk-project/iotas-rb
 - app: Junction
   repo: https://github.com/sonnyp/Junction
   fork: https://github.com/ruby-gtk-project/Junction-rb
