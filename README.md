@@ -14,7 +14,7 @@ dashboard, and the canonical agentic workflows the forks redirect to.
 
 | Workflow | Runs | What it does | Outcome |
 |---|---|---|---|
-| `find-new-gtk-apps-gnome.md` | monthly | Reads apps.gnome.org, follows each app's page to find where its source lives, and checks whether a fork exists. | Pull request adding entries to `registry.yml`. Nothing if every app already has a fork. |
+| `find-new-gtk-apps-gnome.md` | monthly | Browses apps.gnome.org with Playwright, follows each app's page to find where its source lives, prefers a GitHub home when one exists, and checks whether a fork exists. | One pull request per new app, adding its entry to `registry.yml`. "No new repos to add" if every app already has a fork. |
 | `find-new-gtk-apps-github.md` | daily | The same for the rest of GitHub — topic and code search, awesome lists, Flathub — judged against size, health, toolkit and licence. | Pull request adding entries to `registry.yml`. Nothing if it finds nothing worth porting. |
 | `check-and-fork-registry-apps.md` | weekly | Reads `registry.yml` and makes every listed fork exist: forks it when the upstream is on GitHub, mirrors it in when it is not. | **Creates repositories in the org directly.** No pull request, no issue. Does nothing to forks that already exist. |
 | `create-initial-port-issues.md` | weekly | Decides which forks are port targets. | Creates `Initial port: <fork>` and `Gem release: <fork>` issues here, bodies copied from `.github/port-issues/`, and adds both to the Initial port project. |

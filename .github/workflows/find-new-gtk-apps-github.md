@@ -28,7 +28,12 @@ network:
   allowed: [defaults, github, "gitlab.gnome.org", "gitlab.com", "codeberg.org", "flathub.org", "apps.gnome.org"]
 
 tools:
-  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *", "python3 *", "git diff*", "git status*"]
+  edit:
+  # Scheduled workflow with no untrusted input (no issue/PR bodies, no
+  # comments) — per the gh-aw bash allowlist decision rule, "*" is acceptable.
+  # A hand-rolled narrow list here compiles to bare-command entries that deny
+  # ordinary commands like `grep -o`, which is how the GNOME-apps run died.
+  bash: ["*"]
   github:
     toolsets: [repos, issues, pull_requests, search]
 
@@ -63,6 +68,7 @@ safe-outputs:
     title-prefix: "[registry] "
     labels: [registry, discovery]
     max: 1
+    draft: false
     allowed-files: ["registry.yml"]
     if-no-changes: "ignore"
 ---
@@ -113,8 +119,10 @@ routes, roughly in order of how much signal they carry:
   authors, and authors who write one GTK app often write several. Look at
   what they publish, and at who stars and forks those repos.
 
-Use more than one route. If the first thing you find is already claimed, go
-find another — that is the normal case, not a failure.
+Use more than one route. Candidates come from searches you ran and pages you
+opened **in this run** — never from memory, and never from a URL you can
+guess. If the first thing you find is already claimed, go find another — that
+is the normal case, not a failure.
 
 ## Step 2 — Is it already ours
 
@@ -169,7 +177,25 @@ licence, but an app that fails several is not a good use of a port.
   inherits it. GPL, LGPL, MIT, Apache are all fine. **No licence file at all
   means no port** — propose it only if you can point at an explicit licence.
 
-## Step 4 — Propose it
+## Step 4 — Verify it exists, and verify your evidence
+
+A proposal is only as good as its links. Before anything goes in a pull
+request:
+
+1. **The repository must resolve.** Open the candidate's GitHub page or run
+   `gh repo view <owner>/<repo>`. A 404, a redirect to a differently named
+   project, or an owner that did not appear in your search results is the end
+   of that candidate — go back to Step 1. Never propose a repository you have
+   not opened this run. A previous run proposed `OdyseeTeam/MissionCenter` — a
+   plausible-looking URL that has never existed — with a paragraph of
+   fabricated evidence linking to files that 404.
+2. **Every claim in the PR body must come from something you read this run.**
+   The licence from its `LICENSE` file, the size from a count you ran, the
+   last-commit date from the actual history, the toolkit from its actual
+   build files. If you cannot point at the fetched page or API response a fact
+   came from, the fact does not exist. Never cite a URL you did not fetch.
+
+## Step 5 — Propose it
 
 Add an entry to `registry.yml` at the root of the working directory, with the
 three keys:
@@ -197,6 +223,8 @@ yourself.
 
 ## Rules
 
+- Propose only repositories you opened and verified this run — never one you
+  remember, and never one whose URL you constructed without fetching it.
 - Propose only apps you have actually checked against all four dedupe sources.
 - If you cannot find anything new that clears Step 3, open no pull request and
   say what you searched and what you rejected. An honest empty run is fine.
