@@ -62,9 +62,10 @@ safe-outputs:
     title-prefix: "[registry] "
     labels: [registry]
     # One pull request per new app, so each can be approved or rejected on its
-    # own. The cap must cover a full catalogue backlog: the first Playwright
-    # run found 22 new apps and had to report itself incomplete at max 5.
-    max: 25
+    # own. The cap must cover a catalogue backlog: the first Playwright run
+    # found 22 new apps and had to report itself incomplete at max 5.
+    # 10 is the schema maximum for create-pull-request.
+    max: 10
     draft: false
     allowed-files: ["registry.yml"]
     if-no-changes: "ignore"
