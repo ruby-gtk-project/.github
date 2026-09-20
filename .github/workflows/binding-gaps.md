@@ -20,7 +20,7 @@ engine:
 
 model: gpt-5
 
-timeout-minutes: 25
+timeout-minutes: 45
 
 permissions: read-all
 
@@ -173,6 +173,10 @@ Two things that look like gaps and are not:
   has entries the gap count is a **floor, not a total**, and the report has to
   say so.
 
+**Do all of Step 1 before you start Step 2.** The issues and the board are the
+output that matters; the report is written from the same file and can be
+rewritten next week if the run runs long.
+
 ## Step 1 — The issues
 
 For every entry in `to-file.json`, call `create_issue`. Give each one a
@@ -183,27 +187,22 @@ Title, exactly — the prefix is added for you, so do not type it:
 
 `<namespace>: Ruby binding needed`
 
-Body:
+Body — keep to exactly this, it is the same shape 30-odd times and every extra
+line costs budget you need for the rest of the run:
 
 ```markdown
-`<namespace>` has no Ruby binding. **<app_count>** ports in the fleet need it.
+`<namespace>` has no Ruby binding. **<app_count>** ports need it.
+
+Matched as <join `pkgconfig` in backticks>, seen in <join `evidence`>.
+ruby-gnome coverage read from `<coverage.source>`.
 
 ### Blocked ports
 
-<Bullet each name in `apps`, linked as https://github.com/ruby-gtk-project/<name>.
-More than 12, put them in a <details> block but give the count in the open.>
-
-### What the scan saw
-
-- Matched as: <join `pkgconfig` in backticks>
-- Found in: <join `evidence` — `meson` is a `dependency()` call in the upstream
-  build, `import` is a `gi.require_version`/`imports.gi`/`gi://` in the upstream
-  source, `cargo` is a gtk-rs crate>
-- ruby-gnome coverage read from `<coverage.source>` on <DATE>
+<Comma-separated `apps`, each as a plain repo name in backticks. One paragraph,
+no bullets, no links.>
 
 ---
-Opened by `binding-gaps`. The scan is in
-[reports/binding-gaps-<DATE>.md](https://github.com/${{ github.repository }}/blob/main/reports/binding-gaps-<DATE>.md).
+[Scan for <DATE>](https://github.com/${{ github.repository }}/blob/main/reports/binding-gaps-<DATE>.md)
 ```
 
 Then add each one to the board with `update_project`. Pass exactly these four
