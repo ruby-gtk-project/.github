@@ -6,7 +6,7 @@ description: |
   commits a report to reports/.
 
 on:
-  schedule: weekly on monday
+  schedule: every 1mo
   workflow_dispatch:
     inputs:
       min_apps:

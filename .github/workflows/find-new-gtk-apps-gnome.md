@@ -4,7 +4,7 @@ description: |
   a pull request adding them to registry.yml.
 
 on:
-  schedule: daily
+  schedule: every 1mo
   workflow_dispatch:
 
 engine:

@@ -4,7 +4,7 @@ description: |
   GitHub, mirroring the ones that are not.
 
 on:
-  schedule: daily
+  schedule: weekly
   workflow_dispatch:
     inputs:
       only:

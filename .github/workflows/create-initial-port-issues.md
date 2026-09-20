@@ -4,7 +4,7 @@ description: |
   "Initial port" issue on the org's Initial port project.
 
 on:
-  schedule: daily
+  schedule: weekly
   workflow_dispatch:
 
 engine:

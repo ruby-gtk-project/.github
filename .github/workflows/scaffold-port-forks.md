@@ -4,7 +4,7 @@ description: |
   port-scaffold/.
 
 on:
-  schedule: daily
+  schedule: weekly
   workflow_dispatch:
     inputs:
       only:
