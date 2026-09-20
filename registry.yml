@@ -95,6 +95,9 @@
 - app: forge-sparks
   repo: https://github.com/rafaelmardojai/forge-sparks
   fork: https://github.com/ruby-gtk-project/forge-sparks-rb
+- app: Fragments
+  repo: https://gitlab.gnome.org/World/Fragments
+  fork: https://github.com/ruby-gtk-project/fragments-rb
 - app: fretboard
   repo: https://github.com/bragefuglseth/fretboard
   fork: https://github.com/ruby-gtk-project/fretboard-rb
