@@ -21,7 +21,7 @@ network:
 
 tools:
   edit:
-  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *"]
+  bash: ["cat *", "jq *", "ls *", "head *", "wc *", "grep *", "python3 *", "git diff*", "git status*"]
   github:
     toolsets: [repos, search]
 
@@ -136,17 +136,34 @@ abandoned copy — compare the description, the language, the recent commits
 against the upstream you started from. A mirror that stopped updating two years
 ago is not a home; say so rather than registering it.
 
-## Step 3 — The pull request
+## Step 3 — Write the file, then open the pull request
 
-Add each new app to `.github/port-registry.yml` and open one pull request with
-all of them. Keep the file's existing shape and ordering.
+**Write `.github/port-registry.yml` with `python3`.** Do not rely on a file
+editing tool: in this workflow those edits are silently dropped, the worktree
+ends up unchanged, and the pull request is discarded as empty no matter how
+good your analysis was. A previous run found all 27 GitHub homes, wrote a
+full pull request body, and produced nothing, for exactly this reason.
+
+Read the file, rewrite it, write it back, then run `git diff --stat` and state
+what changed. If the diff is empty, your edit did not happen — fix that before
+going any further.
+
+Keep the file's existing shape and ordering.
 
 - Found a GitHub home you are confident in → set that candidate's `status` to
   `ready-to-fork` and add a `github:` field naming `owner/repo`. Merging the
   pull request is what causes the fork to be created.
-- Found nothing, or nothing you trust → leave `status: needs-github-home` and
-  add a `checked:` field with today's date and one line on what you looked for,
-  so the next run does not repeat the same dead end.
+- No GitHub home, but the upstream git URL works → `status: ready-to-import`.
+  These get mirrored into the org instead of forked: their history is pushed
+  into a new repo under its own branch name, after which they are ported like
+  any other fork. Most gitlab.gnome.org, gitlab.com and codeberg.org apps end
+  up here, and that is a perfectly good outcome — not a failure to find a
+  mirror. Prefer `ready-to-fork` when a real GitHub home exists, because a
+  fork keeps the upstream link; fall back to this when none does.
+- Nothing works — the URL is dead, or you cannot tell which repo is the app →
+  leave `status: needs-github-home` and add a `checked:` field with today's
+  date and one line on what you looked for, so the next run does not repeat
+  the same dead end.
 - Put what convinced you in the PR body, per app, with links. Someone approves
   this by reading it, so a bare list of names is not enough.
 
