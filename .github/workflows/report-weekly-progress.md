@@ -64,8 +64,8 @@ steps:
           }
         }' > /tmp/gh-aw/agent/raw.json
 
-      # Whether the port has actually started. PLAN.md's enumerated ledger is
-      # not written yet in most forks, so app files on the ruby branch are the
+      # Whether the port has actually started. The enumerated ledger is not
+      # written yet in most forks, so app files on the ruby branch are the
       # only state signal that exists across the whole fleet.
       : > /tmp/gh-aw/agent/app-files.jsonl
       for name in $(jq -r '.[].data.organization.repositories.nodes[].name' /tmp/gh-aw/agent/raw.json); do
@@ -158,9 +158,13 @@ safe-outputs:
 # Weekly fleet report
 
 Once a week you write the port campaign's report: where the fleet actually is,
-what moved since last week, and what is stuck. Read `PLAN.md` in this repo
-first — it defines the campaign, the pilot set, what a "unit" is, and the rule
-that each fork's `PORTING.md` is the source of truth.
+what moved since last week, and what is stuck. The campaign ports every app in
+the org to Ruby GTK4/Libadwaita — one fork per app, the port written on the
+fork's `ruby` branch. A **unit** is the smallest piece of the app that can be
+ported, run and seen: one window, one dialog, one page, one menu item, one
+shortcut, one error state. Each fork's `PORTING.md` is the ledger of those
+units and the source of truth on progress — agent memory is a cache of it, not
+a replacement.
 
 The numbers have already been gathered for you. Do not re-count anything and do
 not estimate — read these files:
@@ -178,7 +182,7 @@ not estimate — read these files:
 ### What the numbers mean, and what they do not
 
 `percent` is `units_done / units_total`, counted from the enumerated checkboxes
-`PLAN.md` says every fork's `PORTING.md` carries.
+every fork's `PORTING.md` carries.
 
 **Most forks do not have that ledger.** Where they have a `PORTING.md` at all it
 is usually retrospective porting notes — a file map, deliberate divergences,
@@ -243,24 +247,25 @@ fill a `—` with a guess.>
 
 ## Pilot set
 
-<PLAN.md names five pilot forks and says nothing runs on the other 73 until they
-produce merged PRs a human would have written the same way. Give each pilot a
-line: where it is, what is blocking it, and state plainly whether the gate to go
+<The pilot forks are `console-rb`, `gnome-contacts-rb`, `gnome-logs-rb`,
+`tally-rb` and `binary-rb`. Nothing runs fleet-wide until the pilots produce
+merged PRs a human would have written the same way. Give each pilot a line:
+where it is, what is blocking it, and state plainly whether the gate to go
 fleet-wide is met.>
 
 ## Stalled
 
 <Bullet each of these, with the repo name and the number. Omit a bullet that has
 no entries:>
-- At the 4 open `[port]` PR cap — PLAN.md stops them scheduling new work.
+- At the 4 open `[port]` PR cap — no new work is scheduled there until one clears.
 - No commit on `ruby` in 14+ days, despite an incomplete ledger.
 - Open PRs not updated in 7+ days — waiting on review.
 
 ## Ledger health
 
-<This is the report's main finding until it stops being one. PLAN.md calls a
-skipped feature that was never written down the only failure mode that matters,
-and the ledger is what catches it. Three groups, each with its count and its
+<This is the report's main finding until it stops being one. A skipped feature
+that was never written down is the only failure mode that matters, and the
+ledger is what catches it. Three groups, each with its count and its
 repo names — collapse a long list in a <details> block, but give the count in
 the open:>
 

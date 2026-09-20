@@ -175,11 +175,10 @@ safe-outputs:
 Once a week you work out which Ruby gems the port campaign needs and nobody has
 written yet, open an issue for each one, and write the report that ranks them.
 
-Read `PLAN.md` in this repo first — it defines the campaign. The short version
-for this job: each fork carries the upstream GNOME app on its original branch
-and the Ruby port on `ruby`, so the upstream build files say exactly which
-libraries a port will have to reach. A library with no Ruby binding is a port
-that cannot be finished.
+Each fork carries the upstream GNOME app on its original branch and the Ruby
+port on `ruby`, so the upstream build files say exactly which libraries a port
+will have to reach. A library with no Ruby binding is a port that cannot be
+finished.
 
 **Every number has already been computed. Do not re-count anything, do not
 open a repository to check a figure, and do not estimate.** If something is not
