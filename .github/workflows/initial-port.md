@@ -121,7 +121,7 @@ Deliberately absent from that list: how much has been ported, and whether the
   Status field is for. Gating the issue on `app == 0` is how `console-rb`,
   `gnome-contacts-rb` and `gnome-logs-rb` — the three pilots — sat off the
   board for a month while this workflow reported success every day.
-- **Scaffolding is not a condition, and not your job.** The `Reconcile forks`
+- **Scaffolding is not a condition, and not your job.** The `Scaffold port forks`
   workflow creates the orphan `ruby` branch and keeps `port-scaffold/` in sync
   on it, nightly, for every fork on the board. An unscaffolded fork is one you
   should add, not skip; adding it is what causes it to be scaffolded.

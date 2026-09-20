@@ -42,7 +42,7 @@ tools:
     toolsets: [repos, issues]
 ---
 
-# Reconcile forks
+# Scaffold port forks
 
 `registry.yml` lists every app and its fork. For each fork, two things have
 to be true. Work through them fork by fork, and change nothing that is already
