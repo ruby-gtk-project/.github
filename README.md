@@ -10,6 +10,9 @@ its own reference implementation.
 This repo is the planning hub: the campaign plan, the per-app epics, the fleet
 dashboard, and the canonical agentic workflows the forks redirect to.
 
+CLAUDE wrote this
+vvvvvvvvvvvvvvvvv
+
 ## Layout
 
 | Path | What |
