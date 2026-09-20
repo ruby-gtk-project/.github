@@ -10,7 +10,7 @@ on:
 engine: copilot
 model: gpt-5
 
-timeout-minutes: 30
+timeout-minutes: 45
 
 permissions: read-all
 
@@ -31,6 +31,23 @@ tools:
   github:
     toolsets: [repos, search]
 
+steps:
+  - name: Apps already proposed
+    env:
+      GH_TOKEN: ${{ github.token }}
+    run: |
+      set -euo pipefail
+      mkdir -p /tmp/gh-aw/agent
+      # Open registry PRs are proposals in flight — proposing those apps again
+      # next run is the failure mode this file prevents. REST, not GraphQL:
+      # the pullRequests GraphQL query has been 500ing for the workflow token.
+      for n in 1 2 3 4; do
+        gh api "repos/ruby-gtk-project/.github/pulls?state=open&per_page=100" \
+          --jq '.[] | .title' > /tmp/gh-aw/agent/open-pr-titles.txt 2>/dev/null && break
+        sleep $((n * 5))
+      done
+      wc -l /tmp/gh-aw/agent/open-pr-titles.txt
+
 safe-outputs:
   threat-detection:
     prompt: |
@@ -45,8 +62,9 @@ safe-outputs:
     title-prefix: "[registry] "
     labels: [registry]
     # One pull request per new app, so each can be approved or rejected on its
-    # own. A monthly scan of the GNOME catalogue finds a handful at most.
-    max: 5
+    # own. The cap must cover a full catalogue backlog: the first Playwright
+    # run found 22 new apps and had to report itself incomplete at max 5.
+    max: 25
     draft: false
     allowed-files: ["registry.yml"]
     if-no-changes: "ignore"
@@ -115,7 +133,7 @@ URL.
 
 ## Step 4 — Does it already have a fork
 
-Before proposing anything, check both:
+Before proposing anything, check all three:
 
 1. Is the app already in `registry.yml`? Compare identity, not just the name
    or URL — names collide, and a different project called Commit is a
@@ -123,11 +141,15 @@ Before proposing anything, check both:
 2. Does a fork already exist in the org that this file has simply not caught
    up with? Look for it:
 
-```sh
-gh repo view ruby-gtk-project/<name>-rb --json name,parent
-```
+   ```sh
+   gh repo view ruby-gtk-project/<name>-rb --json name,parent
+   ```
+3. Is there already an open pull request proposing it?
+   `/tmp/gh-aw/agent/open-pr-titles.txt` lists the titles of every open pull
+   request — an app named in an open `[registry]` PR has been proposed and is
+   awaiting review, which is not new either.
 
-Anything that already has a fork is not new. Skip it silently.
+Anything already registered, forked, or proposed is not new. Skip it silently.
 
 ## Step 5 — Add the new ones
 
