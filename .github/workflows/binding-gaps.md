@@ -51,7 +51,6 @@ steps:
       echo "SCAN_DATE=$SCAN_DATE" >> "$GITHUB_ENV"
       export SCAN_DATE
       echo "$SCAN_DATE" > /tmp/gh-aw/agent/scan-date.txt
-      echo "${MIN_APPS}" > /tmp/gh-aw/agent/min-apps.txt
 
       # Last week's gaps.json, carried on the memory branch. Absent on the
       # first ever run, which the agent is told to treat as "no deltas".
@@ -61,24 +60,49 @@ steps:
       .github/aw/binding-scan.sh ruby-gtk-project \
         .github/aw/namespace-map.json /tmp/gh-aw/agent/scan "$PREV"
 
-      cp /tmp/gh-aw/agent/scan/gaps.json /tmp/gh-aw/agent/gaps.json
+      G=/tmp/gh-aw/agent/scan/gaps.json
 
-      # The issue list, already filtered and already ranked. The agent writes
-      # the bodies for exactly these and invents no others.
+      # The agent gets two purpose-built slices, never the whole scan. Its
+      # conversation carries whatever it reads on every single turn, and at
+      # ~70 tool calls a 40 KB file is what actually costs the run.
+
+      # The issue list: already filtered, already ranked, and carrying only the
+      # fields an issue body uses.
+      jq --argjson min "${MIN_APPS}" '{
+        scan_date,
+        coverage_source: .coverage.source,
+        gaps: [ .gaps[] | select(.app_count >= $min)
+                | {namespace, app_count, apps, pkgconfig, evidence} ]
+      }' "$G" > /tmp/gh-aw/agent/to-file.json
+
+      # The report's facts, with `filed` already decided so the agent does not
+      # have to re-apply the threshold, and the tail already trimmed.
       jq --argjson min "${MIN_APPS}" '
-        .gaps | map(select(.app_count >= $min))
-      ' /tmp/gh-aw/agent/gaps.json > /tmp/gh-aw/agent/to-file.json
+        (.gaps | map(select(.app_count >= $min) | .namespace)) as $filed
+        | {
+            scan_date,
+            fleet,
+            coverage: {source: .coverage.source, namespaces: .coverage.namespaces},
+            delta,
+            ranked: [ .gaps[] | {namespace, app_count, evidence,
+                                 filed: (.namespace | IN($filed[]))} ],
+            per_app,
+            rust_top: [ .rust_not_bindings[:6][].crate ],
+            unclassified: [ .unclassified[] | select(.app_count >= 2)
+                            | {name, app_count} ],
+            unclassified_total: (.unclassified | length)
+          }' "$G" > /tmp/gh-aw/agent/report.json
 
       # Carry this run forward for next week's deltas. Only the namespace and
       # its app count are needed, and the memory branch has a patch-size limit
       # the whole of gaps.json (40 KB) does not fit inside.
       mkdir -p /tmp/gh-aw/repo-memory/default
       jq '{scan_date, gaps: [.gaps[] | {namespace, app_count}]}' \
-        /tmp/gh-aw/agent/gaps.json > /tmp/gh-aw/repo-memory/default/gaps.json
+        "$G" > /tmp/gh-aw/repo-memory/default/gaps.json
 
-      jq -r '"\(.gaps|length) gaps, \(.coverage.namespaces) namespaces covered, \(.unclassified|length) unclassified"' \
-        /tmp/gh-aw/agent/gaps.json
-      echo "to file: $(jq 'length' /tmp/gh-aw/agent/to-file.json) issues (min_apps=${MIN_APPS})"
+      jq -r '"\(.gaps|length) gaps, \(.coverage.namespaces) namespaces covered, \(.unclassified|length) unclassified"' "$G"
+      echo "to file: $(jq '.gaps|length' /tmp/gh-aw/agent/to-file.json) issues (min_apps=${MIN_APPS})"
+      echo "agent inputs: $(wc -c < /tmp/gh-aw/agent/to-file.json) + $(wc -c < /tmp/gh-aw/agent/report.json) bytes (scan was $(wc -c < "$G"))"
 
 post-steps:
   - name: Commit the report
@@ -132,27 +156,32 @@ that cannot be finished.
 open a repository to check a figure, and do not estimate.** If something is not
 in these files, it is unknown — write that it is unknown and print `—`.
 
-- `/tmp/gh-aw/agent/gaps.json` — the whole scan. Fields you will use:
-  - `gaps[]` — one entry per missing namespace, **sorted by `app_count`,
-    highest first**. Each has `namespace`, `app_count`, `apps` (the fork names),
-    `pkgconfig` (the names the scan matched), `evidence` (which of `meson`,
-    `import`, `cargo` it was seen in).
-  - `covered[]` — namespaces ruby-gnome already ships, with the `gem` that
-    provides each. These are **not** gaps; never file an issue for one.
-  - `per_app` — fork name → the namespaces it is waiting on.
-  - `delta` — `new`, `closed` and `moved` since last week, plus
-    `had_previous`. **`had_previous: false` means this is the first run**: say
-    so and skip every delta.
-  - `unclassified[]` — names the scan found but `namespace-map.json` does not
-    classify. This matters: see below.
-  - `rust_not_bindings[]` — Rust crates that are not bindings at all.
-  - `fleet`, `coverage` — counts and where coverage was read from.
-- `/tmp/gh-aw/agent/to-file.json` — **exactly the gaps you open issues for.**
-  Already filtered and already ranked. File one issue per entry, no more, no
-  fewer.
-- `/tmp/gh-aw/agent/scan-date.txt` — today's date, `YYYY-MM-DD`. Call it
-  `<DATE>`.
-- `/tmp/gh-aw/agent/min-apps.txt` — the threshold that produced `to-file.json`.
+You read two files and nothing else. Both are slices of the scan, cut to what
+each step needs — the full scan is 40 KB and would ride along on every turn.
+
+**`/tmp/gh-aw/agent/to-file.json`** — Step 1's input. `scan_date`,
+`coverage_source`, and `gaps[]`: **exactly the gaps you open issues for**,
+sorted by `app_count` highest first, each with `namespace`, `app_count`,
+`apps` (the fork names), `pkgconfig` (the names the scan matched) and
+`evidence` (which of `meson`, `import`, `cargo` it was seen in). One issue per
+entry — no more, no fewer.
+
+**`/tmp/gh-aw/agent/report.json`** — Step 2's input:
+
+- `ranked[]` — **every** gap, in order, with `namespace`, `app_count`,
+  `evidence` and `filed` (whether it got an issue). The threshold has already
+  been applied; do not re-apply it.
+- `per_app` — fork name → the namespaces it is waiting on.
+- `fleet`, `coverage` — counts and where coverage was read from.
+- `delta` — `new`, `closed`, `moved`, and `had_previous`. **`had_previous:
+  false` means this is the first run**: say so and skip every delta.
+- `unclassified[]` — names the scan found but `namespace-map.json` does not
+  classify, those blocking 2+ ports only; `unclassified_total` is the full
+  count. This matters: see below.
+- `rust_top[]` — the most common Rust crates that are not bindings at all.
+
+`/tmp/gh-aw/agent/scan-date.txt` holds today's date, `YYYY-MM-DD`. Call it
+`<DATE>`.
 
 ### What a gap is, and what it is not
 
@@ -163,7 +192,7 @@ of them — never one issue per app.
 
 Two things that look like gaps and are not:
 
-- **Rust crates.** `rust_not_bindings` lists dependencies of the Rust upstreams
+- **Rust crates.** `rust_top` lists dependencies of the Rust upstreams
   that are pure Rust — `regex`, `reqwest`, `serde` and the like. They have no C
   library and no typelib behind them, so no gem has to be written; a port finds
   a Ruby equivalent instead. Mention the category once in the report. Never open
@@ -179,7 +208,7 @@ rewritten next week if the run runs long.
 
 ## Step 1 — The issues
 
-For every entry in `to-file.json`, call `create_issue`. Give each one a
+For every entry in `to-file.json`'s `gaps[]`, call `create_issue`. Give each one a
 `temporary_id` so you can reference it from `update_project` — the issue has no
 number yet.
 
@@ -194,7 +223,7 @@ line costs budget you need for the rest of the run:
 `<namespace>` has no Ruby binding. **<app_count>** ports need it.
 
 Matched as <join `pkgconfig` in backticks>, seen in <join `evidence`>.
-ruby-gnome coverage read from `<coverage.source>`.
+ruby-gnome coverage read from `<coverage_source>`.
 
 ### Blocked ports
 
@@ -247,15 +276,15 @@ and how many names are unclassified.>
 | Namespace | Ports blocked | Seen in | Issue |
 |---|---|---|---|
 
-<Every entry in `gaps`, in the order given. `Issue` is `filed` for the ones in
-`to-file.json` and `—` for the rest. Do not reorder.>
+<Every entry in `ranked`, in the order given. `Issue` is `filed` when `filed`
+is true and `—` when it is false. Do not reorder.>
 
 ## Since last week
 
 <`delta.new`, `delta.closed`, `delta.moved`, each with its namespaces. A closed
-gap means ruby-gnome shipped a gem or the last app needing it changed — say
-which if `covered` shows a gem for it, otherwise say it is unexplained. Omit
-this whole section when `delta.had_previous` is false and say why.>
+gap means ruby-gnome shipped a gem or the last port needing it changed; say
+which if you can tell from `ranked`, otherwise say it is unexplained. Omit this
+whole section when `delta.had_previous` is false and say why.>
 
 ## Ports by what they are waiting on
 
@@ -269,14 +298,15 @@ an issue says who it blocks, this says what each port is short of.>
 
 ## Not bindings
 
-<One short paragraph on `rust_not_bindings`: these are pure-Rust dependencies of
-the Rust upstreams, they need a Ruby equivalent rather than a gem, and no issue
-was opened. Name the four or five most common.>
+<One short paragraph on `rust_top`: these are pure-Rust dependencies of the
+Rust upstreams, they need a Ruby equivalent rather than a gem, and no issue was
+opened. Name the four or five most common.>
 
 ## Unclassified
 
-<Every entry in `unclassified` with `app_count` of 2 or more, as a table of name
-and count. These are names `namespace-map.json` does not classify. Say plainly
+<Every entry in `unclassified`, as a table of name and count — it already holds
+only those blocking 2+ ports, and `unclassified_total` is how many there are in
+all. These are names `namespace-map.json` does not classify. Say plainly
 that each one is either a missing gap or a name that should be marked as not a
 binding target, and that until they are classified the numbers above are a
 floor. Omit the section only when the list is empty.>
@@ -288,5 +318,5 @@ floor. Omit the section only when the list is empty.>
   is missing the run fails, so write it before you finish.
 - Never edit an older report. They are the record the deltas are read against.
 - One issue per entry in `to-file.json`. Not one per app, not one per repo.
-- Every number comes from `gaps.json`. If it is not there, print `—`. An
+- Every number comes from these two files. If it is not there, print `—`. An
   invented number is the only failure here that matters.
