@@ -74,6 +74,9 @@
 - app: decibels
   repo: https://github.com/GNOME/decibels
   fork: https://github.com/ruby-gtk-project/decibels-rb
+- app: GDM Settings
+  repo: https://github.com/gdm-settings/gdm-settings
+  fork: https://github.com/ruby-gtk-project/GDM-Settings-rb
 - app: dialect
   repo: https://github.com/dialect-app/dialect
   fork: https://github.com/ruby-gtk-project/dialect-rb
