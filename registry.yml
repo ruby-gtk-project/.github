@@ -269,6 +269,9 @@
 - app: Workbench
   repo: https://github.com/workbenchdev/Workbench
   fork: https://github.com/ruby-gtk-project/Workbench-rb
+- app: Blink
+  repo: https://github.com/sachesi/blink
+  fork: https://github.com/ruby-gtk-project/Blink-rb
 - app: Extension Manager
   repo: https://github.com/mjakeman/extension-manager
   fork: https://github.com/ruby-gtk-project/Extension-Manager-rb
