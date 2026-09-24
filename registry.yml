@@ -275,3 +275,6 @@
 - app: yelp
   repo: https://github.com/GNOME/yelp
   fork: https://github.com/ruby-gtk-project/yelp-rb
+- app: Kooha
+  repo: https://github.com/SeaDve/Kooha
+  fork: https://github.com/ruby-gtk-project/Kooha-rb
