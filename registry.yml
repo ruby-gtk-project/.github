@@ -275,3 +275,6 @@
 - app: yelp
   repo: https://github.com/GNOME/yelp
   fork: https://github.com/ruby-gtk-project/yelp-rb
+- app: Varia
+  repo: https://github.com/giantpinkrobots/varia
+  fork: https://github.com/ruby-gtk-project/Varia-rb
