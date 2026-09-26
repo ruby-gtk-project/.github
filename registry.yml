@@ -275,3 +275,6 @@
 - app: yelp
   repo: https://github.com/GNOME/yelp
   fork: https://github.com/ruby-gtk-project/yelp-rb
+- app: Cartero
+  repo: https://github.com/danirod/cartero
+  fork: https://github.com/ruby-gtk-project/Cartero-rb
