@@ -68,6 +68,9 @@
 - app: Constrict
   repo: https://github.com/Wartybix/Constrict
   fork: https://github.com/ruby-gtk-project/Constrict-rb
+- app: Cozy
+  repo: https://github.com/geigi/cozy
+  fork: https://github.com/ruby-gtk-project/Cozy-rb
 - app: Curtail
   repo: https://github.com/Huluti/Curtail
   fork: https://github.com/ruby-gtk-project/Curtail-rb
