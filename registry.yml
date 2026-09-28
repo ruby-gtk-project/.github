@@ -275,3 +275,6 @@
 - app: yelp
   repo: https://github.com/GNOME/yelp
   fork: https://github.com/ruby-gtk-project/yelp-rb
+- app: Kollate
+  repo: https://github.com/andrew-lawlor/kollate
+  fork: https://github.com/ruby-gtk-project/Kollate-rb
