@@ -275,3 +275,6 @@
 - app: yelp
   repo: https://github.com/GNOME/yelp
   fork: https://github.com/ruby-gtk-project/yelp-rb
+- app: Rill
+  repo: https://github.com/sachesi/rill
+  fork: https://github.com/ruby-gtk-project/Rill-rb
