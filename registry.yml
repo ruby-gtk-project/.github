@@ -215,6 +215,9 @@
 - app: sessions
   repo: https://github.com/pojntfx/sessions
   fork: https://github.com/ruby-gtk-project/sessions-rb
+- app: Save Desktop
+  repo: https://github.com/vikdevelop/SaveDesktop
+  fork: https://github.com/ruby-gtk-project/SaveDesktop-rb
 - app: share-preview
   repo: https://github.com/rafaelmardojai/share-preview
   fork: https://github.com/ruby-gtk-project/share-preview-rb
