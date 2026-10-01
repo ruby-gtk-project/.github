@@ -89,6 +89,9 @@
 - app: Errands
   repo: https://github.com/mrvladus/Errands
   fork: https://github.com/ruby-gtk-project/Errands-rb
+- app: Exercise Timer
+  repo: https://gitlab.gnome.org/World/exercise-timer
+  fork: https://github.com/ruby-gtk-project/Exercise-Timer-rb
 - app: eyedropper
   repo: https://github.com/FineFindus/eyedropper
   fork: https://github.com/ruby-gtk-project/eyedropper-rb
