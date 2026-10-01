@@ -209,6 +209,9 @@
 - app: raider
   repo: https://github.com/ADBeveridge/raider
   fork: https://github.com/ruby-gtk-project/raider-rb
+- app: Railway
+  repo: https://gitlab.com/schmiddi-on-mobile/railway
+  fork: https://github.com/ruby-gtk-project/Railway-rb
 - app: resources
   repo: https://github.com/nokyan/resources
   fork: https://github.com/ruby-gtk-project/resources-rb
