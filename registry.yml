@@ -212,6 +212,9 @@
 - app: resources
   repo: https://github.com/nokyan/resources
   fork: https://github.com/ruby-gtk-project/resources-rb
+- app: Secrets
+  repo: https://gitlab.gnome.org/World/secrets
+  fork: https://github.com/ruby-gtk-project/Secrets-rb
 - app: sessions
   repo: https://github.com/pojntfx/sessions
   fork: https://github.com/ruby-gtk-project/sessions-rb
