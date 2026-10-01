@@ -191,6 +191,9 @@
 - app: nautilus
   repo: https://github.com/GNOME/nautilus
   fork: https://github.com/ruby-gtk-project/nautilus-rb
+- app: Obfuscate
+  repo: https://gitlab.gnome.org/World/obfuscate
+  fork: https://github.com/ruby-gtk-project/Obfuscate-rb
 - app: Paper-Clip
   repo: https://github.com/Diego-Ivan/Paper-Clip
   fork: https://github.com/ruby-gtk-project/Paper-Clip-rb
