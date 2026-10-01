@@ -218,6 +218,9 @@
 - app: share-preview
   repo: https://github.com/rafaelmardojai/share-preview
   fork: https://github.com/ruby-gtk-project/share-preview-rb
+- app: Shortwave
+  repo: https://gitlab.gnome.org/World/Shortwave
+  fork: https://github.com/ruby-gtk-project/Shortwave-rb
 - app: showtime
   repo: https://github.com/GNOME/showtime
   fork: https://github.com/ruby-gtk-project/showtime-rb
