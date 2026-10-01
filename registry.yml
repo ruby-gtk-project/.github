@@ -251,6 +251,9 @@
 - app: valuta
   repo: https://github.com/ideveCore/Valuta
   fork: https://github.com/ruby-gtk-project/valuta-rb
+- app: Video Trimmer
+  repo: https://gitlab.gnome.org/YaLTeR/video-trimmer
+  fork: https://github.com/ruby-gtk-project/Video-Trimmer-rb
 - app: webfont-kit-generator
   repo: https://github.com/rafaelmardojai/webfont-kit-generator
   fork: https://github.com/ruby-gtk-project/webfont-kit-generator-rb
