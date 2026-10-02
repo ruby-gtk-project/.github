@@ -98,6 +98,9 @@
 - app: fretboard
   repo: https://github.com/bragefuglseth/fretboard
   fork: https://github.com/ruby-gtk-project/fretboard-rb
+- app: Folio
+  repo: https://github.com/toolstack/Folio
+  fork: https://github.com/ruby-gtk-project/Folio-rb
 - app: frogr
   repo: https://github.com/GNOME/frogr
   fork: https://github.com/ruby-gtk-project/frogr-rb
