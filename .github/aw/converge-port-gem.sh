@@ -8,8 +8,9 @@
 # Run by converge-port-gems.yml against a fresh clone of the fork's `ruby`
 # branch. Writes to the clone only — the workflow owns the commit and push.
 #
-# Exit codes: 0 converged, 2 not our error (port not started, or a licence a
-# human must decide), 1 something went wrong that needs fixing.
+# Exit codes: 0 converged and packaged, 3 config seeded but the port has not
+# started yet, 2 nothing to configure (not an application, or a licence a human
+# must decide), 1 something went wrong that needs fixing.
 #
 # kettle-jem needs Ruby >= 4.0 and a bundle pinning prism 1.9.0: it declares
 # `prism >= 1.6.0` but calls Prism::Node#breadth_first_search_all, which only
@@ -58,8 +59,10 @@ sed "s|{{LICENSE}}|$LICENSE|g" "$AW/kettle-jem.yml" > "$CLONE/.structuredmerge/k
 if ! compgen -G "$CLONE/*.gemspec" > /dev/null; then
   entrypoint=$(cd "$CLONE" && ls lib/*.rb 2>/dev/null | head -1 | xargs -r basename | sed 's/\.rb$//')
   if [ -z "$entrypoint" ]; then
-    echo "$FORK: no lib/*.rb entrypoint — port not started" >&2
-    exit 2
+    # The config is already seeded above, so the fork is set up for kettle-jem
+    # the day someone writes lib/. There is nothing to package until then.
+    echo "$FORK: config seeded, no lib/*.rb yet — port not started" >&2
+    exit 3
   fi
   # Every launcher in bin/, minus the dev scripts kettle-jem puts there.
   mapfile -t execs < <(cd "$CLONE" && ls bin 2>/dev/null | grep -vx 'setup\|console')

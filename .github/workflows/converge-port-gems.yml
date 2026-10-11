@@ -83,7 +83,7 @@ jobs:
               print(f"{fork}\t{e['app']}\t{e['license']}")
           PY
 
-          converged=(); unchanged=(); skipped=(); missing=(); failed=()
+          converged=(); unchanged=(); configured=(); skipped=(); missing=(); failed=()
 
           while IFS=$'\t' read -r fork app license; do
             [ -n "$ONLY" ] && [ "$fork" != "$ONLY" ] && [ "$app" != "$ONLY" ] && continue
@@ -104,9 +104,23 @@ jobs:
             rc=0
             bundle exec .github/aw/converge-port-gem.sh "$tmp/r" "$fork" "$license" || rc=$?
             if [ "$rc" = "2" ]; then
-              # Not our error: the port has not started, or the licence is a
-              # compound expression someone has to decide how to state.
+              # Nothing to configure: not an application port, or a compound
+              # licence someone has to decide how to state.
               skipped+=("$fork"); rm -rf "$tmp"; continue
+            elif [ "$rc" = "3" ]; then
+              # Port not started. The kettle-jem config is seeded so the fork is
+              # set up from day one; there is nothing to package yet, so skip
+              # the gem build and commit just the config.
+              git -C "$tmp/r" add -A
+              if git -C "$tmp/r" diff --cached --quiet; then
+                unchanged+=("$fork")
+              elif git -C "$tmp/r" commit -qm "Set up kettle-jem for the gem release" \
+                   && git -C "$tmp/r" push -q origin ruby; then
+                configured+=("$fork")
+              else
+                failed+=("$fork (push)")
+              fi
+              rm -rf "$tmp"; continue
             elif [ "$rc" != "0" ]; then
               failed+=("$fork (converge)"); rm -rf "$tmp"; continue
             fi
@@ -137,7 +151,8 @@ jobs:
             echo "|---|---|---|"
             echo "| converged | ${#converged[@]} | ${converged[*]-} |"
             echo "| already correct | ${#unchanged[@]} | |"
-            echo "| skipped (not started / licence decision) | ${#skipped[@]} | ${skipped[*]-} |"
+            echo "| configured, port not started | ${#configured[@]} | ${configured[*]-} |"
+            echo "| skipped (not an app / licence decision) | ${#skipped[@]} | ${skipped[*]-} |"
             echo "| no ruby branch yet | ${#missing[@]} | ${missing[*]-} |"
             echo "| failed | ${#failed[@]} | ${failed[*]-} |"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -149,7 +164,7 @@ jobs:
             echo "::error::forks that could not be converged: ${failed[*]}"
             exit 1
           fi
-          if [ ${#converged[@]} -eq 0 ] && [ ${#unchanged[@]} -eq 0 ]; then
+          if [ ${#converged[@]} -eq 0 ] && [ ${#unchanged[@]} -eq 0 ] && [ ${#configured[@]} -eq 0 ]; then
             echo "::error::no fork was converged and none was already correct"
             exit 1
           fi
