@@ -9,8 +9,8 @@
 # branch. Writes to the clone only — the workflow owns the commit and push.
 #
 # Exit codes: 0 converged and packaged, 3 config seeded but the port has not
-# started yet, 2 nothing to configure (not an application, or a licence a human
-# must decide), 1 something went wrong that needs fixing.
+# started yet, 2 nothing to configure (not an application port), 1 something
+# went wrong that needs fixing.
 #
 # kettle-jem needs Ruby >= 4.0 and a bundle pinning prism 1.9.0: it declares
 # `prism >= 1.6.0` but calls Prism::Node#breadth_first_search_all, which only
@@ -23,10 +23,9 @@ FORK=${2:?}
 LICENSE=${3:?}
 AW=$(cd "$(dirname "$0")" && pwd)
 
-# A compound expression cannot go into a single `spec.licenses` entry. Refuse
-# rather than silently assert one half of it.
+# A compound expression goes in verbatim: it is valid SPDX, it is what upstream
+# declares, and `spec.licenses = ["A AND B"]` builds. Never assert one half.
 case "$LICENSE" in
-  *" AND "*) echo "$FORK: compound licence ($LICENSE) — needs a decision" >&2; exit 2 ;;
   ""|UNKNOWN) echo "::error::$FORK has no licence in registry.yml" >&2; exit 1 ;;
 esac
 

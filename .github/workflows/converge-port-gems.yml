@@ -104,8 +104,7 @@ jobs:
             rc=0
             bundle exec .github/aw/converge-port-gem.sh "$tmp/r" "$fork" "$license" || rc=$?
             if [ "$rc" = "2" ]; then
-              # Nothing to configure: not an application port, or a compound
-              # licence someone has to decide how to state.
+              # Nothing to configure: not an application port.
               skipped+=("$fork"); rm -rf "$tmp"; continue
             elif [ "$rc" = "3" ]; then
               # Port not started. The kettle-jem config is seeded so the fork is
@@ -152,7 +151,7 @@ jobs:
             echo "| converged | ${#converged[@]} | ${converged[*]-} |"
             echo "| already correct | ${#unchanged[@]} | |"
             echo "| configured, port not started | ${#configured[@]} | ${configured[*]-} |"
-            echo "| skipped (not an app / licence decision) | ${#skipped[@]} | ${skipped[*]-} |"
+            echo "| skipped (not an application port) | ${#skipped[@]} | ${skipped[*]-} |"
             echo "| no ruby branch yet | ${#missing[@]} | ${missing[*]-} |"
             echo "| failed | ${#failed[@]} | ${failed[*]-} |"
           } >> "$GITHUB_STEP_SUMMARY"

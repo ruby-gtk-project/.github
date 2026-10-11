@@ -172,8 +172,9 @@ keys:
   a new one, so a wrong value here relicenses someone else's application. Use
   the `-or-later` form when the licence text carries the "any later version"
   clause and `-only` when it does not. If upstream declares a compound
-  expression (anything containing `AND`), record it verbatim —
-  `converge-port-gems` refuses it and asks for a decision rather than guessing.
+  expression (anything containing `AND`), record it verbatim: it is valid SPDX
+  and goes into `spec.licenses` unchanged. Asserting one half of it would be a
+  misstatement.
 
 Keep the file's existing shape and ordering — entries are alphabetical. Nothing
 else goes in it: no status fields, no notes, no sections.
