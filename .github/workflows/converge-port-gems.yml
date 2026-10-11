@@ -98,8 +98,11 @@ jobs:
               failed+=("$fork (clone)"); rm -rf "$tmp"; continue
             fi
 
-            bundle exec .github/aw/converge-port-gem.sh "$tmp/r" "$fork" "$license"
-            rc=$?
+            # `|| rc=$?` and not a bare call: the default step shell is
+            # `bash -e`, which `set -uo pipefail` does not undo, so a non-zero
+            # exit from the script would kill the step before this check.
+            rc=0
+            bundle exec .github/aw/converge-port-gem.sh "$tmp/r" "$fork" "$license" || rc=$?
             if [ "$rc" = "2" ]; then
               # Not our error: the port has not started, or the licence is a
               # compound expression someone has to decide how to state.
