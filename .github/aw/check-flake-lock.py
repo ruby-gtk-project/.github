@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 """Verify a fork's flake.nix and flake.lock agree.
 
-    check-flake-lock.py <clone-dir>
+    check-flake-lock.py <clone-dir> [fork-name]
 
 A flake is only reproducible if every input declared in flake.nix has a locked
-node in flake.lock, carrying a rev and a narHash. flake.lock is JSON, so this
-reads it as structured data rather than grepping text: a missing node, a
-missing narHash, or a node for an input that flake.nix no longer declares all
-mean the dev shell someone gets is not the one we pinned.
+node in flake.lock carrying a rev and a narHash. flake.lock is JSON, so it is
+read as structured data rather than grepped.
 
-Exit 0 when they agree, 1 with a GitHub error annotation when they do not.
+What is fatal is what breaks reproducibility: no lock at all, a lock that is
+not valid JSON, an input declared but not pinned, or an input pinned without a
+rev or narHash. A node the lock still pins that flake.nix appears not to
+declare is only reported — flake.nix is Nix, not a format this can parse
+exactly, and a stale node does not float an input.
+
+Both input spellings are recognised:
+
+    inputs = { nixpkgs.url = "..."; }      # block form
+    inputs.nixpkgs.url = "...";            # flat form
 """
 import json
 import pathlib
@@ -17,8 +24,8 @@ import re
 import sys
 
 clone = pathlib.Path(sys.argv[1])
+fork = sys.argv[2] if len(sys.argv) > 2 else clone.name
 nix, lock_path = clone / "flake.nix", clone / "flake.lock"
-fork = clone.name
 
 if not nix.exists():
     print(f"::error::{fork} has no flake.nix", file=sys.stderr)
@@ -33,27 +40,32 @@ except json.JSONDecodeError as e:
     print(f"::error::{fork} flake.lock is not valid JSON: {e}", file=sys.stderr)
     sys.exit(1)
 
-declared = set(re.findall(r"^\s*([A-Za-z0-9_-]+)\.url\s*=", nix.read_text(), re.M))
+source = nix.read_text()
+declared = set(re.findall(r"^\s*inputs\.([A-Za-z0-9_-]+)\.(?:url|follows)\s*=", source, re.M))
+declared |= set(re.findall(r"^\s*([A-Za-z0-9_-]+)\.(?:url|follows)\s*=", source, re.M))
+declared.discard("inputs")
+
 root = lock.get("root", "root")
 nodes = lock.get("nodes", {})
-# A transitive input (utils/systems) is a node of its parent, not of the root.
-top = set(nodes.get(root, {}).get("inputs", {})) or (set(nodes) - {root})
+pinned = set(nodes.get(root, {}).get("inputs", {})) or (set(nodes) - {root})
 
-problems = []
-for name in sorted(declared - top):
-    problems.append(f"input '{name}' is declared in flake.nix but absent from flake.lock")
-for name in sorted(top - declared):
-    problems.append(f"flake.lock pins '{name}' but flake.nix no longer declares it")
-for name in sorted(declared & top):
+fatal, notes = [], []
+for name in sorted(declared - pinned):
+    fatal.append(f"input '{name}' is declared in flake.nix but is not pinned in flake.lock")
+for name in sorted(declared & pinned):
     locked = nodes.get(name, {}).get("locked", {})
     if not locked.get("narHash"):
-        problems.append(f"input '{name}' has no narHash in flake.lock")
+        fatal.append(f"input '{name}' is pinned without a narHash")
     elif locked.get("type") == "github" and not locked.get("rev"):
-        problems.append(f"input '{name}' has no rev in flake.lock")
+        fatal.append(f"input '{name}' is pinned without a rev")
+for name in sorted(pinned - declared):
+    notes.append(f"flake.lock pins '{name}', which flake.nix does not appear to declare")
 
-if problems:
-    for p in problems:
-        print(f"::error::{fork} flake mismatch: {p}", file=sys.stderr)
+for n in notes:
+    print(f"{fork}: note: {n}")
+if fatal:
+    for f in fatal:
+        print(f"::error::{fork} flake mismatch: {f}", file=sys.stderr)
     sys.exit(1)
 
-print(f"{fork}: flake.nix and flake.lock agree ({len(declared)} inputs pinned)")
+print(f"{fork}: flake.nix and flake.lock agree ({len(declared & pinned)} inputs pinned)")

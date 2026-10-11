@@ -169,7 +169,7 @@ done
 # 9. The flake and its lock must agree. kettle-jem does not touch flake.nix
 #    (keep_destination — there is no Nix merger in the family), so this is the
 #    one place the invariant is checked.
-if ! "$AW/check-flake-lock.py" "$CLONE"; then
+if ! "$AW/check-flake-lock.py" "$CLONE" "$FORK"; then
   exit 1
 fi
 
