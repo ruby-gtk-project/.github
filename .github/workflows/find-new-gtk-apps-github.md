@@ -98,13 +98,14 @@ it.
 
 ## What you have
 
-- `registry.yml` — the registry, at the root of the working directory. Three
+- `registry.yml` — the registry, at the root of the working directory. Four
   keys per entry and nothing else:
 
   ```yaml
   - app: Apostrophe
     repo: https://github.com/ApostropheEditor/Apostrophe
     fork: https://github.com/ruby-gtk-project/Apostrophe-rb
+    license: GPL-3.0-or-later
   ```
 - `/tmp/gh-aw/agent/claimed-upstreams.txt` — every upstream already forked,
   as `owner/repo`, lowercased.
@@ -213,13 +214,22 @@ request:
 ## Step 5 — Propose it
 
 Add an entry to `registry.yml` at the root of the working directory, with the
-three keys:
+four keys:
 
 - `app` — what the app is called
 - `repo` — where its source lives, the URL you found it at
 - `fork` — `https://github.com/ruby-gtk-project/<name>-rb`, the fork that will
   be created. It does not exist yet; `fork-new-gtk-apps` reads this file and
   creates whatever is missing.
+- `license` — upstream's SPDX licence identifier, read from the
+  `<project_license>` element of the app's `*.metainfo.xml` or `*.appdata.xml`
+  this run, not from memory and not from the repository's licence badge. The
+  port inherits upstream's licence and never gets a new one, so a wrong value
+  here relicenses someone else's application. Use the `-or-later` form when the
+  licence text carries the "any later version" clause and `-only` when it does
+  not. If upstream declares a compound expression (anything with `AND`), record
+  it verbatim — `converge-port-gems` refuses it and asks for a decision rather
+  than guessing.
 
 Nothing else goes in the file — no status, no notes, no sections.
 

@@ -74,12 +74,13 @@ safe-outputs:
 # Check the GNOME apps site
 
 Every GNOME Core and Circle app should end up with a fork in this org.
-`registry.yml` at the root of this repo is the list, three keys per entry:
+`registry.yml` at the root of this repo is the list, four keys per entry:
 
 ```yaml
 - app: Apostrophe
   repo: https://github.com/ApostropheEditor/Apostrophe
   fork: https://github.com/ruby-gtk-project/Apostrophe-rb
+  license: GPL-3.0-or-later
 ```
 
 Your job is to find apps that are not in it and add them.
@@ -154,7 +155,7 @@ Anything already registered, forked, or proposed is not new. Skip it silently.
 
 ## Step 5 — Add the new ones
 
-For each genuinely new app, add an entry to `registry.yml` with the three
+For each genuinely new app, add an entry to `registry.yml` with the four
 keys:
 
 - `app` — the app's name as the site gives it
@@ -163,6 +164,16 @@ keys:
   be created. It does not exist yet. That is the point: `fork-new-gtk-apps` reads
   this file and creates whatever is missing, forking it when `repo` is on
   GitHub and mirroring it when it is not.
+- `license` — upstream's SPDX licence identifier, read from the
+  `<project_license>` element of the app's `*.metainfo.xml` or `*.appdata.xml`
+  in the repository you found at Steps 2–3. Read the file this run; do not use
+  memory and do not use the forge's licence badge, which cannot tell
+  `-or-later` from `-only`. The port inherits upstream's licence and never gets
+  a new one, so a wrong value here relicenses someone else's application. Use
+  the `-or-later` form when the licence text carries the "any later version"
+  clause and `-only` when it does not. If upstream declares a compound
+  expression (anything containing `AND`), record it verbatim —
+  `converge-port-gems` refuses it and asks for a decision rather than guessing.
 
 Keep the file's existing shape and ordering — entries are alphabetical. Nothing
 else goes in it: no status fields, no notes, no sections.

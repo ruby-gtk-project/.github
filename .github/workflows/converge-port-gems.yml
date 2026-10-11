@@ -1,0 +1,164 @@
+# Every port fork that has a port on its `ruby` branch is a buildable gem with
+# upstream's licence and its GTK assets inside the gem. Plain Actions, not
+# gh-aw — the work is scripted and there is no judgement in it.
+#
+# This is the packaging half of the `Gem release: <fork>` issues. It does not
+# release anything: it leaves each fork at the point where `gem build` succeeds.
+name: Converge port gems
+
+on:
+  schedule:
+    - cron: "19 4 * * 1"  # Mondays, after the weekly progress report
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Converge a single fork (fork name or app), blank = all"
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      only:
+        required: false
+        type: string
+        default: ""
+    secrets:
+      GH_AW_PROJECT_GITHUB_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  issues: write  # the failure-issue step
+
+concurrency:
+  group: converge-port-gems
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      ORG: ruby-gtk-project
+    steps:
+      - uses: actions/checkout@v4
+
+      # kettle-jem requires Ruby >= 4.0.
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+
+      - name: Install kettle-jem
+        run: |
+          set -euo pipefail
+          # kettle-jem declares `prism >= 1.6.0` but calls
+          # Prism::Node#breadth_first_search_all, which only exists in prism
+          # >= 1.9.0. Ruby 4.0.x bundles 1.8.1, so the pin is mandatory —
+          # without it every run dies with NoMethodError.
+          mkdir -p "$RUNNER_TEMP/kj"
+          cat > "$RUNNER_TEMP/kj/Gemfile" <<'EOF'
+          source "https://rubygems.org"
+          gem "prism", "1.9.0"
+          gem "kettle-jem", "~> 7.1"
+          EOF
+          echo "BUNDLE_GEMFILE=$RUNNER_TEMP/kj/Gemfile" >> "$GITHUB_ENV"
+          BUNDLE_GEMFILE="$RUNNER_TEMP/kj/Gemfile" bundle install --quiet
+          BUNDLE_GEMFILE="$RUNNER_TEMP/kj/Gemfile" bundle exec kettle-jem version
+
+      - name: Converge every fork
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          set -uo pipefail
+
+          gh auth setup-git  # git pushes authenticate with the PAT
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          python3 -c 'import yaml' 2>/dev/null || pip install --quiet --user pyyaml
+          python3 - <<'PY' > "$RUNNER_TEMP/registry.tsv"
+          import yaml
+          for e in yaml.safe_load(open('registry.yml')):
+              fork = e['fork'].rstrip('/').rsplit('/', 1)[-1]
+              print(f"{fork}\t{e['app']}\t{e['license']}")
+          PY
+
+          converged=(); unchanged=(); skipped=(); missing=(); failed=()
+
+          while IFS=$'\t' read -r fork app license; do
+            [ -n "$ONLY" ] && [ "$fork" != "$ONLY" ] && [ "$app" != "$ONLY" ] && continue
+
+            if ! gh api "repos/$ORG/$fork/branches/ruby" >/dev/null 2>&1; then
+              # No fork, or no ruby branch yet: scaffold-port-forks owns that.
+              missing+=("$fork"); continue
+            fi
+
+            tmp=$(mktemp -d)
+            if ! git clone --quiet --depth 1 --branch ruby "https://github.com/$ORG/$fork" "$tmp/r"; then
+              failed+=("$fork (clone)"); rm -rf "$tmp"; continue
+            fi
+
+            bundle exec .github/aw/converge-port-gem.sh "$tmp/r" "$fork" "$license"
+            rc=$?
+            if [ "$rc" = "2" ]; then
+              # Not our error: the port has not started, or the licence is a
+              # compound expression someone has to decide how to state.
+              skipped+=("$fork"); rm -rf "$tmp"; continue
+            elif [ "$rc" != "0" ]; then
+              failed+=("$fork (converge)"); rm -rf "$tmp"; continue
+            fi
+
+            # gem build is the stated outcome. A fork that converges but does
+            # not build has not reached it.
+            if ! (cd "$tmp/r" && gem build ./*.gemspec >/dev/null 2>&1); then
+              failed+=("$fork (gem build)"); rm -rf "$tmp"; continue
+            fi
+            rm -f "$tmp/r"/*.gem
+
+            git -C "$tmp/r" add -A
+            if git -C "$tmp/r" diff --cached --quiet; then
+              unchanged+=("$fork")
+            elif git -C "$tmp/r" commit -qm "Converge the gem packaging with kettle-jem" \
+                 && git -C "$tmp/r" push -q origin ruby; then
+              converged+=("$fork")
+            else
+              failed+=("$fork (push)")
+            fi
+            rm -rf "$tmp"
+          done < "$RUNNER_TEMP/registry.tsv"
+
+          {
+            echo "## Converge port gems"
+            echo
+            echo "| Outcome | Count | Forks |"
+            echo "|---|---|---|"
+            echo "| converged | ${#converged[@]} | ${converged[*]-} |"
+            echo "| already correct | ${#unchanged[@]} | |"
+            echo "| skipped (not started / licence decision) | ${#skipped[@]} | ${skipped[*]-} |"
+            echo "| no ruby branch yet | ${#missing[@]} | ${missing[*]-} |"
+            echo "| failed | ${#failed[@]} | ${failed[*]-} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Fail loudly on errors in our own work. A fork that does not exist,
+          # or a port nobody has started, is not our error.
+          if [ ${#failed[@]} -gt 0 ]; then
+            printf '%s\n' "${failed[@]}" > "$RUNNER_TEMP/converge-failed.txt"
+            echo "::error::forks that could not be converged: ${failed[*]}"
+            exit 1
+          fi
+          if [ ${#converged[@]} -eq 0 ] && [ ${#unchanged[@]} -eq 0 ]; then
+            echo "::error::no fork was converged and none was already correct"
+            exit 1
+          fi
+
+      - name: File an issue when the run failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_PROJECT_GITHUB_TOKEN }}
+        run: |
+          title="[converge-port-gems] Run failed"
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ "$(gh issue list -R "$ORG/.github" --state open --search "in:title \"$title\"" --json number --jq 'length')" = "0" ]; then
+            gh issue create -R "$ORG/.github" --title "$title" \
+              --body "$(printf 'The gem converge run failed — see %s\n\n```\n%s\n```' "$url" "$(cat "$RUNNER_TEMP/converge-failed.txt" 2>/dev/null || echo 'see the run log')")"
+          fi
