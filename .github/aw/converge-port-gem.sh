@@ -63,6 +63,13 @@ if ! compgen -G "$CLONE/*.gemspec" > /dev/null; then
   fi
   # Every launcher in bin/, minus the dev scripts kettle-jem puts there.
   mapfile -t execs < <(cd "$CLONE" && ls bin 2>/dev/null | grep -vx 'setup\|console')
+  if [ ${#execs[@]} -eq 0 ]; then
+    # No launcher means this is not an application port — gtk-demos-and-examples
+    # is a set of standalone reference scripts. `gem-release.md` requires a
+    # working command from `gem install`, so there is nothing to package here.
+    echo "$FORK: no launcher in bin/ — not an application port" >&2
+    exit 2
+  fi
   exec_list=$(printf '"%s", ' "${execs[@]}"); exec_list="[${exec_list%, }]"
   cat > "$CLONE/${gem_name}.gemspec" <<GS
 # frozen_string_literal: true
