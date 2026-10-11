@@ -33,7 +33,8 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 cp -a "$SCAFFOLD" "$work/r"
-sed -i "s/{{APP}}/$app/g" "$work/r/AGENTS.md"
+# flake.nix names the package and its gem env, so it needs the app name too.
+sed -i "s/{{APP}}/$app/g" "$work/r/AGENTS.md" "$work/r/flake.nix"
 
 cd "$work/r" || exit 1
 git init -q -b ruby

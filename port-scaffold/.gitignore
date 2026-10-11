@@ -2,3 +2,8 @@
 /vendor/bundle/
 /result
 Gemfile.lock
+
+# nix/ is the runtime gemdir for flake.nix. bundlerEnv needs its lock and
+# gemset committed or the app cannot be built reproducibly, so the blanket
+# Gemfile.lock rule above does not apply there.
+!nix/Gemfile.lock
